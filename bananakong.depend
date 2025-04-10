@@ -1,0 +1,36 @@
+# depslib dependency file v1.0
+1744284483 source:d:\hoclamgamesdlbananakong\bananakong\main.cpp
+	"common_func.h"
+	"graphics.h"
+
+1742717405 d:\hoclamgamesdlbananakong\bananakong\mylib.h
+	<SDL.h>
+	<SDL_image.h>
+	<bits/stdc++.h>
+
+1742717405 source:d:\hoclamgamesdlbananakong\bananakong\mylib.cpp
+	"mylib.h"
+
+1742719776 d:\hoclamgamesdlbananakong\bananakong\sprite.h
+	"mylib.h"
+
+1742720573 source:d:\hoclamgamesdlbananakong\bananakong\sprite.cpp
+	"sprite.h"
+
+1743564378 source:d:\hoclamgamesdlbananakong\bananakong\common_func.cpp
+	"common_func.h"
+
+1743916447 d:\hoclamgamesdlbananakong\bananakong\common_func.h
+	<bits/stdc++.h>
+	<SDL.h>
+	<SDL_image.h>
+	<SDL_mixer.h>
+	<SDL_ttf.h>
+
+1744262669 d:\hoclamgamesdlbananakong\bananakong\graphics.h
+	"common_func.h"
+
+1744263735 source:d:\hoclamgamesdlbananakong\bananakong\graphics.cpp
+	"common_func.h"
+	"graphics.h"
+
