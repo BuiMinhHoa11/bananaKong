@@ -1,7 +1,8 @@
 # depslib dependency file v1.0
-1744284483 source:d:\hoclamgamesdlbananakong\bananakong\main.cpp
+1744310558 source:d:\hoclamgamesdlbananakong\bananakong\main.cpp
 	"common_func.h"
 	"graphics.h"
+	"collision.h"
 
 1742717405 d:\hoclamgamesdlbananakong\bananakong\mylib.h
 	<SDL.h>
@@ -27,10 +28,46 @@
 	<SDL_mixer.h>
 	<SDL_ttf.h>
 
-1744262669 d:\hoclamgamesdlbananakong\bananakong\graphics.h
+1744301273 d:\hoclamgamesdlbananakong\bananakong\graphics.h
 	"common_func.h"
 
 1744263735 source:d:\hoclamgamesdlbananakong\bananakong\graphics.cpp
 	"common_func.h"
 	"graphics.h"
+
+1744304265 source:d:\hoclamgamesdlbananakong\bananakong\collision.cpp
+	"common_func.h"
+	"graphics.h"
+	"collision.h"
+
+1744301319 d:\hoclamgamesdlbananakong\bananakong\collision.h
+
+1744353244 source:d:\projectbtl\bananakong\collision.cpp
+	"common_func.h"
+	"graphics.h"
+	"collision.h"
+
+1743916447 d:\projectbtl\bananakong\common_func.h
+	<bits/stdc++.h>
+	<SDL.h>
+	<SDL_image.h>
+	<SDL_mixer.h>
+	<SDL_ttf.h>
+
+1744358921 d:\projectbtl\bananakong\graphics.h
+	"common_func.h"
+
+1744353244 d:\projectbtl\bananakong\collision.h
+
+1743564378 source:d:\projectbtl\bananakong\common_func.cpp
+	"common_func.h"
+
+1744347207 source:d:\projectbtl\bananakong\graphics.cpp
+	"common_func.h"
+	"graphics.h"
+
+1744353733 source:d:\projectbtl\bananakong\main.cpp
+	"common_func.h"
+	"graphics.h"
+	"collision.h"
 
