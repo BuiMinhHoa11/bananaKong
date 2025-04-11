@@ -31,6 +31,8 @@
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
+		<Unit filename="collision.cpp" />
+		<Unit filename="collision.h" />
 		<Unit filename="common_func.cpp" />
 		<Unit filename="common_func.h" />
 		<Unit filename="graphics.cpp" />
