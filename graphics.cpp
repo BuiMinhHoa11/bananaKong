@@ -2,7 +2,7 @@
 #include "common_func.h"
 #include "graphics.h"
 
-const char* KONGRUN_SPRITE_FILE = "D:/HocLamGameSDLbananakong/bananakong/image/CHAR/kong_run.png";
+const char* KONGRUN_SPRITE_FILE = "D:/projectBTL/bananakong/image/CHAR/kong_run.png";
 const int KONGRUN_CLIPS[][4] = {
     {   0, 0, 200, 167},  // Frame 1
     { 200, 0, 200, 167},  // Frame 2
@@ -73,5 +73,48 @@ void Graphics::render(const ScrollingBackground& bgr) {
     while (x > -bgr.width) {
         renderTexture(bgr.texture, x, 0);
         x -= bgr.width;
+    }
+}
+
+//sinh chướng ngại vật
+/*void spawnObstacle(vector<Obstacle>& obstacles, SDL_Texture* texture){
+    Obstacle obs;
+    obs.texture = texture;
+    obs.rect.x = SCREEN_WIDTH;
+    obs.rect.y = 745; // căn theo nền
+    obs.rect.w = 230;
+    obs.rect.h = 156;
+    obstacles.push_back(obs);
+}*/
+
+void spawnObstacleSingle(Obstacle& obs, const map<ObstacleType, SDL_Texture*>& textureMap, int offsetX) {
+    // Chọn loại chướng ngại vật ngẫu nhiên
+    ObstacleType type = static_cast<ObstacleType>(rand() % 3);
+    obs.type = type;
+    obs.texture = textureMap.at(type);
+    obs.rect.x = SCREEN_WIDTH + offsetX;
+    obs.rect.y = 745; // căn theo nền
+    switch (type) {
+        case ObstacleType::ROCK:
+            obs.rect.w = 213;
+            obs.rect.h = 264;
+            break;
+        case ObstacleType::SPIKE:
+            obs.rect.w = 100;
+            obs.rect.h = 120;
+            break;
+        case ObstacleType::LOG:
+            obs.rect.w = 449;
+            obs.rect.h = 177;
+            break;
+    }
+}
+
+void spawnObstacle(std::vector<Obstacle>& obstacles, const map<ObstacleType, SDL_Texture*>& textureMap) {
+    int numToSpawn = rand() % 2 + 1; // 1 hoặc 2 vật cản
+    for (int i = 0; i < numToSpawn; ++i) {
+        Obstacle obs;
+        spawnObstacleSingle(obs, textureMap, i * 150); // Mỗi obstacle cách nhau 150px
+        obstacles.push_back(obs);
     }
 }
