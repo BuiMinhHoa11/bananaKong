@@ -1,7 +1,7 @@
 #include "common_func.h"
 #include "graphics.h"
-#include "collision.h"
 #include "obstacle.h"
+#include "player.h"
 
 int main(int argc, char* argv[]) {
     initSDL(window, renderer);
@@ -38,10 +38,21 @@ int main(int argc, char* argv[]) {
     leafTop.setTexture(leafTopTexture);
 
     //move
-    Sprite kongrun;
+    /*Sprite kongrun;
     SDL_Texture* kongrunTexture = graphics.loadTexture(KONGRUN_SPRITE_FILE);
     kongrun.init(kongrunTexture, KONGRUN_FRAMES, KONGRUN_CLIPS);
-    kongrun.setAnimationSpeed(3); // Đặt tốc độ animation (10 = chậm hơn so với mặc định 5)
+    kongrun.setAnimationSpeed(3); // Đặt tốc độ animation (10 = chậm hơn so với mặc định 5)*/
+
+    // Khởi tạo nhân vật Player
+    Player kong;
+    SDL_Texture* kongrunTexture = graphics.loadTexture(KONGRUN_SPRITE_FILE);
+    if (kongrunTexture == NULL) {
+        SDL_Log("Failed to load kong run texture!");
+    } else {
+        SDL_Log("Kong run texture loaded successfully!");
+    }
+    kong.init(kongrunTexture);
+    kong.setPosition(120, 755); // Đặt vị trí ban đầu phù hợp với game
 
     //chướng ngại vật
     std::map<ObstacleType, SDL_Texture*> obstacleTextures;
@@ -72,6 +83,11 @@ int main(int argc, char* argv[]) {
             if (e.type == SDL_MOUSEBUTTONDOWN && !isGameStarted) {
                 isGameStarted = true; // Bắt đầu game
             }
+            if (e.type == SDL_KEYDOWN && isGameStarted) {
+                if (e.key.keysym.sym == SDLK_SPACE && kong.isOnGround()) {
+                    kong.jump(); // Gọi hàm nhảy của Player
+                }
+            }
         }
 
         // Tính toán deltaTime
@@ -82,7 +98,8 @@ int main(int argc, char* argv[]) {
         // Chỉ cập nhật chuyển động nếu game đã bắt đầu
         if (isGameStarted) {
             // Cập nhật animation và nền
-            kongrun.tick();
+            //kongrun.tick();
+            kong.update(deltaTime);
             backgroundSky.scroll(2 * gameSpeedFactor);
             background.scroll(5 * gameSpeedFactor);
             leafTop.scroll(15 * gameSpeedFactor);
@@ -105,7 +122,8 @@ int main(int argc, char* argv[]) {
         }
 
         // Vẽ nhân vật
-        graphics.render(120, 755, kongrun);
+        //graphics.render(120, 755, kongrun);
+        kong.render(&graphics);
 
         // Hiển thị khung hình
         graphics.presentScene();
@@ -115,24 +133,15 @@ int main(int argc, char* argv[]) {
     }
 
     // Giải phóng tài nguyên
-    SDL_DestroyTexture(kongrunTexture);
-    kongrunTexture = NULL;
-
+    SDL_DestroyTexture(kongrunTexture); kongrunTexture = NULL;
     // Giải phóng texture chướng ngại vật
     for (auto& [type, tex] : obstacleTextures) {
         SDL_DestroyTexture(tex);
         tex = NULL;
     }
-
-    SDL_DestroyTexture(leafTopTexture);
-    leafTopTexture = NULL;
-
-    SDL_DestroyTexture(backgroundTexture);
-    backgroundTexture = NULL;
-
-    SDL_DestroyTexture(skyTexture);
-    skyTexture = NULL;
-
+    SDL_DestroyTexture(leafTopTexture); leafTopTexture = NULL;
+    SDL_DestroyTexture(backgroundTexture); backgroundTexture = NULL;
+    SDL_DestroyTexture(skyTexture); skyTexture = NULL;
     quitSDL(window, renderer);
     return 0;
 }
