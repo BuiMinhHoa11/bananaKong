@@ -48,12 +48,10 @@ int main(int argc, char* argv[]) {
     obstacleTextures[ObstacleType::ROCK] = graphics.loadTexture("D:/projectBTL/bananakong/image/ITEM_BACK/daHeo.png");
     obstacleTextures[ObstacleType::SPIKE] = graphics.loadTexture("D:/projectBTL/bananakong/image/ITEM_BACK/cot.png");
     obstacleTextures[ObstacleType::LOG] = graphics.loadTexture("D:/projectBTL/bananakong/image/ITEM_BACK/grass1.png");
-
     // Kiểm tra load thành công
     for (const auto& [type, tex] : obstacleTextures) {
         if (tex == nullptr) SDL_Log("Failed to load obstacle texture!");
     }
-
     // Khởi tạo bộ quản lý chướng ngại vật
     ObstacleManager obstacleManager(obstacleTextures);
 
@@ -63,7 +61,6 @@ int main(int argc, char* argv[]) {
 
     // Đo thời gian
     Uint32 lastFrameTime = SDL_GetTicks();
-    // Khai báo biến điều chỉnh tốc độ ở đầu file
     float gameSpeedFactor = 0.5f; // 0.5 = 50% tốc độ ban đầu
 
     while (!quit) {
