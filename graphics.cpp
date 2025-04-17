@@ -2,19 +2,19 @@
 
 const char* KONGRUN_SPRITE_FILE = "D:/projectBTL/bananakong/image/CHAR/kong_run.png";
 const int KONGRUN_CLIPS[][4] = {
-    {   0, 0, 200, 167},  // Frame 1
-    { 200, 0, 200, 167},  // Frame 2
-    { 400, 0, 200, 167},  // Frame 3
-    { 600, 0, 200, 167},  // Frame 4
-    { 800, 0, 200, 167},  // Frame 5
-    {1000, 0, 200, 167},  // Frame 6
-    {1200, 0, 200, 167},  // Frame 7
-    {1400, 0, 200, 167},  // Frame 8
-    {1600, 0, 200, 167},  // Frame 9
-    {1800, 0, 200, 167},  // Frame 10
-    {2000, 0, 200, 167},  // Frame 11
-    {2200, 0, 200, 167},  // Frame 12
-    {2400, 0, 200, 167}   // Frame 13
+    {   0, 0, 200, 149},  // Frame 1
+    { 200, 0, 200, 149},  // Frame 2
+    { 400, 0, 200, 149},  // Frame 3
+    { 600, 0, 200, 149},  // Frame 4
+    { 800, 0, 200, 149},  // Frame 5
+    {1000, 0, 200, 149},  // Frame 6
+    {1200, 0, 200, 149},  // Frame 7
+    {1400, 0, 200, 149},  // Frame 8
+    {1600, 0, 200, 149},  // Frame 9
+    {1800, 0, 200, 149},  // Frame 10
+    {2000, 0, 200, 149},  // Frame 11
+    {2200, 0, 200, 149},  // Frame 12
+    {2400, 0, 200, 149}   // Frame 13
 };
 const int KONGRUN_FRAMES = sizeof(KONGRUN_CLIPS)/sizeof(int)/4;
 
