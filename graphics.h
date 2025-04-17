@@ -68,13 +68,14 @@ class Graphics {
 public:
     Graphics(SDL_Renderer* renderer);
     ~Graphics();
-
     SDL_Texture* loadTexture(const char* filename);
     void renderTexture(SDL_Texture* texture, int x, int y);
     void render(int x, int y, const Sprite& sprite);
     void prepareScene();
     void presentScene();
     void render(const ScrollingBackground& bgr);
+    // Thêm phương thức getRenderer
+    SDL_Renderer* getRenderer() const { return renderer; } // Trả về renderer
 
 private:
     SDL_Renderer* renderer;
