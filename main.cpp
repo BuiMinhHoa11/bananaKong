@@ -69,7 +69,7 @@ int main(int argc, char* argv[]) {
     std::map<ObstacleType, SDL_Texture*> obstacleTextures;
     obstacleTextures[ObstacleType::ROCK] = graphics.loadTexture("D:/projectBTL/bananakong/image/ITEM_BACK/daHeo.png");
     obstacleTextures[ObstacleType::SPIKE] = graphics.loadTexture("D:/projectBTL/bananakong/image/ITEM_BACK/cot.png");
-    obstacleTextures[ObstacleType::HOUSE] = graphics.loadTexture("D:/projectBTL/bananakong/image/ITEM_BACK/house.png");
+    obstacleTextures[ObstacleType::PLANE] = graphics.loadTexture("D:/projectBTL/bananakong/image/ITEM_BACK/plane.png");
     for (const auto& [type, tex] : obstacleTextures) {
         if (tex == nullptr) SDL_Log("Failed to load obstacle texture!");
     }
