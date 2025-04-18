@@ -235,7 +235,7 @@ void ObstacleManager::spawn() {
                 obs.rect.y = 750;
                 break;
 
-            case ObstacleType::HOUSE:
+            case ObstacleType::PLANE:
                 obs.rect.w = 270;
                 obs.rect.h = 133;
                 obs.rect.y = 755;
@@ -251,24 +251,24 @@ SDL_Rect ObstacleManager::adjustCollisionBox(const SDL_Rect& obsBox, ObstacleTyp
 
     switch (type) {
         case ObstacleType::ROCK:
-            adjustedBox.x += static_cast<int>(adjustedBox.w * 0.15);
-            adjustedBox.y += static_cast<int>(adjustedBox.h * 0.1);
-            adjustedBox.w -= static_cast<int>(adjustedBox.w * 0.3);
-            adjustedBox.h -= static_cast<int>(adjustedBox.h * 0.2);
+            //adjustedBox.x += 25;
+            //adjustedBox.w = 159; // 209 - mỗi bên 25= 209-25-25
+            adjustedBox.y += 50;
+            adjustedBox.h = 103;
             break;
 
         case ObstacleType::SPIKE:
-            adjustedBox.x += static_cast<int>(adjustedBox.w * 0.25);
-            adjustedBox.y += static_cast<int>(adjustedBox.h * 0.3);
-            adjustedBox.w -= static_cast<int>(adjustedBox.w * 0.5);
-            adjustedBox.h -= static_cast<int>(adjustedBox.h * 0.5);
+            adjustedBox.x += 10;
+            adjustedBox.w = 60;
+            adjustedBox.y += 23;
+            adjustedBox.h = 90;
             break;
 
-        case ObstacleType::HOUSE:
-            adjustedBox.x += 45;
-            adjustedBox.w = 180;
-            adjustedBox.y += 10;
-            adjustedBox.h = 120;
+        case ObstacleType::PLANE:
+            adjustedBox.x += 25;
+            adjustedBox.w = 230;
+            adjustedBox.y += 30;
+            adjustedBox.h = 100;
             break;
     }
 
