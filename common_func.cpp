@@ -40,3 +40,23 @@ void waitUntilKeyPressed() {
         SDL_Delay(100);
     }
 }
+
+void initTTF() {
+    if (TTF_Init() == -1) {
+        std::cerr << "TTF_Init Error: " << TTF_GetError() << std::endl;
+        exit(1);
+    }
+}
+
+SDL_Texture* createTextTexture(SDL_Renderer* renderer, const char* text, TTF_Font* font, SDL_Color color, int& width, int& height) {
+    SDL_Surface* surface = TTF_RenderText_Solid(font, text, color);
+    if (!surface) {
+        SDL_Log("TTF_RenderText_Solid Error: %s", TTF_GetError());
+        return nullptr;
+    }
+    SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
+    width = surface->w;
+    height = surface->h;
+    SDL_FreeSurface(surface);
+    return texture;
+}
