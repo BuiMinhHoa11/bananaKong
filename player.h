@@ -44,7 +44,7 @@ public:
     ~Player();
 
     void init(SDL_Texture* runTexture, SDL_Texture* slideTex = nullptr);
-    void update(float deltaTime, const std::vector<Obstacle>& obstacles);
+    void update(float deltaTime, const std::vector<SDL_Rect>& platforms);
     void render(Graphics* graphics);
     void renderDebugCollision(Graphics* graphics);
     void renderCircularCollision(Graphics* graphics); // Vẽ hình tròn va chạm
