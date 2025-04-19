@@ -2,6 +2,7 @@
 #include "graphics.h"
 #include "obstacle.h"
 #include "player.h"
+#include "platform.h"
 
 enum GameState { MENU, PLAYING, GAME_OVER };
 
@@ -75,6 +76,26 @@ int main(int argc, char* argv[]) {
     }
     ObstacleManager obstacleManager(obstacleTextures);
 
+
+        // Khởi tạo texture cho platform
+    map<PlatformType, SDL_Texture*> platformTextures;
+    platformTextures[PlatformType::GRASS_BIG] = graphics.loadTexture("D:/projectBTL/bananakong/image/PLATFORM/grass_big.png");
+    platformTextures[PlatformType::GRASS_MID] = graphics.loadTexture("D:/projectBTL/bananakong/image/PLATFORM/grass_mid.png");
+    platformTextures[PlatformType::GRASS_SUPERBIG] = graphics.loadTexture("D:/projectBTL/bananakong/image/PLATFORM/grass_superbig.png");
+    platformTextures[PlatformType::LAND_MID] = graphics.loadTexture("D:/projectBTL/bananakong/image/PLATFORM/land_mid.png");
+    platformTextures[PlatformType::LAND_SMALL] = graphics.loadTexture("D:/projectBTL/bananakong/image/PLATFORM/land_small.png");
+    platformTextures[PlatformType::VINE] = graphics.loadTexture("D:/projectBTL/bananakong/image/PLATFORM/vine.png");
+
+    // Kiểm tra tải texture
+    for (const auto& [type, tex] : platformTextures) {
+        if (tex == nullptr) SDL_Log("Failed to load platform texture!");
+    }
+
+    // Khởi tạo PlatformManager
+    PlatformManager platformManager(platformTextures);
+
+
+
     bool quit = false;
     SDL_Event e;
 
@@ -115,6 +136,7 @@ int main(int argc, char* argv[]) {
                     kong.setPosition(120, 755);
                     kong.setOnGround(true);
                     obstacleManager = ObstacleManager(obstacleTextures);
+                    platformManager.clear();
                     gameState = PLAYING;
                 }
             }
@@ -139,11 +161,26 @@ int main(int argc, char* argv[]) {
             }
 
             // Cập nhật nhân vật và chướng ngại vật
-            kong.update(deltaTime, obstacleManager.getObstacles());
+            // Cập nhật hàm update của player để kết hợp platform
+            // Chuyển từ:
+            // kong.update(deltaTime, obstacleManager.getObstacles());
+            // thành:
+            vector<SDL_Rect> allPlatforms;
+            // Thêm obstacles làm platform
+            for (const auto& obs : obstacleManager.getObstacles()) {
+                allPlatforms.push_back(obs.rect);
+            }
+            // Thêm platforms thực sự
+            for (const auto& platform : platformManager.getPlatforms()) {
+                allPlatforms.push_back(platform.rect);
+            }
+            kong.update(deltaTime, allPlatforms);
+
             backgroundSky.scroll(2 * gameSpeedFactor);
             background.scroll(5 * gameSpeedFactor);
             leafTop.scroll(15 * gameSpeedFactor);
             obstacleManager.update(deltaTime);
+            platformManager.update(deltaTime);
 
             // Kiểm tra va chạm với chướng ngại vật (dùng khung tròn)
             SDL_Point center = kong.getCollisionCenter();
@@ -164,7 +201,7 @@ int main(int argc, char* argv[]) {
 
         // Vẽ khung va chạm của chướng ngại vật
         obstacleManager.renderDebugCollision(&graphics);
-
+        platformManager.render(&graphics);
         // Vẽ Kong (bao gồm khung va chạm nếu showCollision = true)
         kong.render(&graphics);
 
@@ -179,7 +216,7 @@ int main(int argc, char* argv[]) {
 
         // Vẽ màn hình game over
         if (gameState == GAME_OVER) {
-            std::string gameOverText = "Game Over! Score: " + std::to_string(score) + " Press R to play!";
+            std::string gameOverText = "Game Over! Score: " + std::to_string(score) + " Press R to restart!!";
             SDL_Texture* gameOverTexture = createTextTexture(renderer, gameOverText.c_str(), font, white, textW, textH);
             if (gameOverTexture) {
                 graphics.renderTexture(gameOverTexture, SCREEN_WIDTH / 2 - textW / 2, SCREEN_HEIGHT / 2 - textH / 2);
@@ -197,6 +234,9 @@ int main(int argc, char* argv[]) {
 
     SDL_DestroyTexture(kongrunTexture);
     SDL_DestroyTexture(kongslideTexture);
+    for (auto& [type, tex] : platformTextures) {
+        SDL_DestroyTexture(tex);
+    }
     for (auto& [type, tex] : obstacleTextures) {
         SDL_DestroyTexture(tex);
     }
