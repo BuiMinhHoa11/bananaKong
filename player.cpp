@@ -42,30 +42,28 @@ void Player::init(SDL_Texture* runTexture, SDL_Texture* slideTex) {
     slideSprite.frameDelayMax = 3; // Tốc độ animation trượt
 }
 
-void Player::update(float deltaTime, const vector<Obstacle>& obstacles) {
+void Player::update(float deltaTime, const vector<SDL_Rect>& platforms) {
     // Áp dụng trọng lực
     velocityY += gravity * deltaTime;
 
     // Cập nhật vị trí theo chiều dọc
     y += velocityY * deltaTime;
 
-    // Biến để kiểm tra xem nhân vật có đứng trên bất kỳ chướng ngại vật nào không
+    // Biến để kiểm tra xem nhân vật có đứng trên bất kỳ nền tảng nào không
     bool onAnyGround = false;
 
-    // Kiểm tra va chạm với tất cả các chướng ngại vật
-    for (const auto& obstacle : obstacles) {
-        if (checkPlatformCollision(obstacle.rect)) {
+    // Kiểm tra va chạm với tất cả các nền tảng
+    for (const auto& platform : platforms) {
+        if (checkPlatformCollision(platform)) {
             onAnyGround = true;
             break;
         }
     }
 
-    // XÓA BỎ phần làm thay đổi vị trí x dựa trên platformSpeed
-
     // Đảm bảo x luôn giữ nguyên ở vị trí cố định
     x = 150; // Hoặc giá trị ban đầu của x (150 trong constructor)
 
-    // Kiểm tra va chạm với mặt đất cơ bản (nếu không đứng trên chướng ngại vật nào)
+    // Kiểm tra va chạm với mặt đất cơ bản (nếu không đứng trên nền tảng nào)
     if (!onAnyGround && y > 755) {
         y = 755;
         velocityY = 0;
