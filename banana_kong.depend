@@ -1,0 +1,123 @@
+# depslib dependency file v1.0
+1745141585 source:d:\codeblocks\projects\banana_kong\common_func.cpp
+	"common_func.h"
+
+1745141585 d:\codeblocks\projects\banana_kong\common_func.h
+	<bits/stdc++.h>
+	<SDL.h>
+	<SDL_image.h>
+	<SDL_mixer.h>
+	<SDL_ttf.h>
+
+1745141585 source:d:\codeblocks\projects\banana_kong\graphics.cpp
+	"graphics.h"
+
+1745141585 d:\codeblocks\projects\banana_kong\graphics.h
+	"common_func.h"
+
+1745141585 source:d:\codeblocks\projects\banana_kong\main.cpp
+	"common_func.h"
+	"graphics.h"
+	"obstacle.h"
+	"player.h"
+	"platform.h"
+
+1745141585 d:\codeblocks\projects\banana_kong\obstacle.h
+	<vector>
+	<map>
+	"graphics.h"
+
+1745141585 d:\codeblocks\projects\banana_kong\player.h
+	"common_func.h"
+	"graphics.h"
+	<vector>
+	<map>
+
+1745141585 d:\codeblocks\projects\banana_kong\platform.h
+	"obstacle.h"
+	"common_func.h"
+	"graphics.h"
+	<vector>
+	<map>
+	"obstacle.h"
+	"common_func.h"
+	"graphics.h"
+	<vector>
+	<map>
+
+1745141585 source:d:\codeblocks\projects\banana_kong\obstacle.cpp
+	"obstacle.h"
+	"platform.h"
+
+1745141585 source:d:\codeblocks\projects\banana_kong\platform.cpp
+	"platform.h"
+	"player.h"
+
+1745141585 source:d:\codeblocks\projects\banana_kong\platform_patterns.cpp
+	"platform.h"
+
+1745141585 source:d:\codeblocks\projects\banana_kong\player.cpp
+	"player.h"
+	"obstacle.h"
+
+1745141585 source:d:\projectbtl\bananakong\common_func.cpp
+	"common_func.h"
+
+1745141585 d:\projectbtl\bananakong\common_func.h
+	<bits/stdc++.h>
+	<SDL.h>
+	<SDL_image.h>
+	<SDL_mixer.h>
+	<SDL_ttf.h>
+
+1745141585 source:d:\projectbtl\bananakong\graphics.cpp
+	"graphics.h"
+
+1745141585 d:\projectbtl\bananakong\graphics.h
+	"common_func.h"
+
+1745141585 source:d:\projectbtl\bananakong\main.cpp
+	"common_func.h"
+	"graphics.h"
+	"obstacle.h"
+	"player.h"
+	"platform.h"
+
+1745141585 d:\projectbtl\bananakong\obstacle.h
+	<vector>
+	<map>
+	"graphics.h"
+
+1745141585 d:\projectbtl\bananakong\player.h
+	"common_func.h"
+	"graphics.h"
+	<vector>
+	<map>
+
+1745141585 d:\projectbtl\bananakong\platform.h
+	"obstacle.h"
+	"common_func.h"
+	"graphics.h"
+	<vector>
+	<map>
+	"obstacle.h"
+	"common_func.h"
+	"graphics.h"
+	<vector>
+	<map>
+
+1745141585 source:d:\projectbtl\bananakong\obstacle.cpp
+	"obstacle.h"
+	"platform.h"
+
+1745141585 source:d:\projectbtl\bananakong\platform.cpp
+	"platform.h"
+	"player.h"
+
+1745141585 source:d:\projectbtl\bananakong\platform_patterns.cpp
+	"platform.h"
+
+1745141585 source:d:\projectbtl\bananakong\player.cpp
+	"player.h"
+	"obstacle.h"
+
