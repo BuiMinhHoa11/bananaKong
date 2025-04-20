@@ -1,6 +1,5 @@
-// platform.cpp
 #include "platform.h"
-#include <algorithm>
+#include "player.h"
 
 Platform::Platform(SDL_Texture* tex, PlatformType t, int x, int y) {
     texture = tex;
@@ -22,35 +21,27 @@ Platform::Platform(SDL_Texture* tex, PlatformType t, int x, int y) {
             rect.h = 34;
             break;
         case PlatformType::LAND_MID:
-            rect.w = 895;
-            rect.h = 160;
+            rect.w = 867;
+            rect.h = 155;
             break;
         case PlatformType::LAND_SMALL:
-            rect.w = 774;
-            rect.h = 160;
+            rect.w = 750;
+            rect.h = 159;
             break;
         case PlatformType::VINE:
             rect.w = 697;
             rect.h = 487;
             break;
     }
-    rect.x = x;
 
-    // Thiết lập vị trí y dựa trên loại platform
-    if (type == PlatformType::VINE) {
-        rect.y = 0; // Vine bắt đầu từ trên cùng của màn hình
-    } else if (type == PlatformType::LAND_MID || type == PlatformType::LAND_SMALL) {
-        rect.y = 725;
-    } else {
-        // Các loại grass: mép dưới ở y = 755 - 167 (chiều cao Kong)
-        rect.y = 500;
-    }
+    rect.x = x;
+    rect.y = y;
 }
 
 PlatformManager::PlatformManager(std::map<PlatformType, SDL_Texture*> textures) {
     platformTextures = textures;
-    scrollSpeed = 5.0f; // Tốc độ mặc định, có thể điều chỉnh
-    spawnDelay = 1500; // 1.5 giây giữa mỗi lần sinh platform
+    scrollSpeed = 5.0f; // Tốc độ mặc định
+    spawnDelay = 9000; // 3 giây giữa mỗi lần sinh platform
     spawnTimer = 0;
 }
 
@@ -81,24 +72,180 @@ void PlatformManager::update(float deltaTime) {
     }
 }
 
+// Kiểm tra xem tại vị trí (x, y) có nền đất không
+bool PlatformManager::hasLandPlatformAt(int x, int y, int tolerance) const {
+    for (const auto& platform : platforms) {
+        if (platform.active &&
+            (platform.type == PlatformType::LAND_MID || platform.type == PlatformType::LAND_SMALL)) {
+            // Kiểm tra xem điểm (x, y) có nằm trên platform không
+            if (x >= platform.rect.x && x <= platform.rect.x + platform.rect.w &&
+                y >= platform.rect.y - tolerance && y <= platform.rect.y + tolerance) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+// Kiểm tra xem tại vị trí (x, y) có nền cỏ không
+bool PlatformManager::hasGrassPlatformAt(int x, int y, int tolerance) const {
+    for (const auto& platform : platforms) {
+        if (platform.active &&
+            (platform.type == PlatformType::GRASS_BIG ||
+             platform.type == PlatformType::GRASS_MID ||
+             platform.type == PlatformType::GRASS_SUPERBIG)) {
+            // Kiểm tra xem điểm (x, y) có nằm trên platform không
+            if (x >= platform.rect.x && x <= platform.rect.x + platform.rect.w &&
+                y >= platform.rect.y - tolerance && y <= platform.rect.y + tolerance) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+// Tìm vị trí y hợp lệ cho nền cỏ theo logic
+int PlatformManager::findValidYForGrass(int x, int kongHeight) const {
+    const int GROUND_LEVEL = 730; // Mực nước biển/mặt đất
+    vector<int> validPositions;
+
+    // Trường hợp 1: Cao hơn nhân vật khỉ so với mặt đất
+    validPositions.push_back(GROUND_LEVEL);
+
+    // Trường hợp 2: Cao hơn nhân vật khỉ + nền đất
+    for (const auto& platform : platforms) {
+        if (platform.active &&
+            (platform.type == PlatformType::LAND_MID || platform.type == PlatformType::LAND_SMALL)) {
+            // Kiểm tra xem platform đất có gần vị trí x không
+            if (x >= platform.rect.x - 20 && x <= platform.rect.x + platform.rect.w + 20) {
+                validPositions.push_back(platform.rect.y - kongHeight);
+            }
+        }
+    }
+
+    // Trường hợp 3: Cao hơn nhân vật khỉ + nền cỏ
+    for (const auto& platform : platforms) {
+        if (platform.active &&
+            (platform.type == PlatformType::GRASS_BIG ||
+             platform.type == PlatformType::GRASS_MID ||
+             platform.type == PlatformType::GRASS_SUPERBIG)) {
+            // Kiểm tra xem platform cỏ có gần vị trí x không
+            if (x >= platform.rect.x - 20 && x <= platform.rect.x + platform.rect.w + 20) {
+                // Trường hợp 3a: Cao hơn khỉ + cỏ + khỉ
+                validPositions.push_back(platform.rect.y - kongHeight - kongHeight);
+
+                // Trường hợp 3b: Cao hơn land + khỉ + cỏ + khỉ
+                // Kiểm tra nếu có nền đất phía dưới nền cỏ
+                for (const auto& landPlatform : platforms) {
+                    if (landPlatform.active &&
+                        (landPlatform.type == PlatformType::LAND_MID || landPlatform.type == PlatformType::LAND_SMALL)) {
+                        if (platform.rect.y == landPlatform.rect.y - kongHeight - platform.rect.h) {
+                            validPositions.push_back(platform.rect.y - kongHeight - kongHeight);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // Nếu không tìm thấy vị trí hợp lệ, sử dụng vị trí mặc định
+    if (validPositions.empty()) {
+        return GROUND_LEVEL; // Vị trí mặc định nếu không tìm thấy vị trí hợp lệ
+    }
+
+    // Chọn ngẫu nhiên một trong các vị trí hợp lệ
+    return validPositions[rand() % validPositions.size()];
+}
+
+// Kiểm tra vị trí hợp lệ cho chướng ngại vật
+bool PlatformManager::isValidPositionForObstacle(int x, int y, int width, int height) const {
+    const int GROUND_LEVEL = 730; // Mực nước biển/mặt đất
+
+    // Kiểm tra vị trí trên mặt đất
+    if (y + height == GROUND_LEVEL) {
+        return true;
+    }
+
+    // Kiểm tra vị trí trên nền cỏ
+    for (const auto& platform : platforms) {
+        if (platform.active &&
+            (platform.type == PlatformType::GRASS_BIG ||
+             platform.type == PlatformType::GRASS_MID ||
+             platform.type == PlatformType::GRASS_SUPERBIG)) {
+            // Kiểm tra xem chướng ngại vật có nằm hoàn toàn trên platform không
+            if (x >= platform.rect.x && x + width <= platform.rect.x + platform.rect.w &&
+                y + height == platform.rect.y) {
+                return true;
+            }
+        }
+    }
+
+    // Kiểm tra vị trí trên nền đất
+    for (const auto& platform : platforms) {
+        if (platform.active &&
+            (platform.type == PlatformType::LAND_MID || platform.type == PlatformType::LAND_SMALL)) {
+            // Kiểm tra xem chướng ngại vật có nằm hoàn toàn trên platform không
+            if (x >= platform.rect.x && x + width <= platform.rect.x + platform.rect.w &&
+                y + height == platform.rect.y) {
+                return true;
+            }
+        }
+    }
+
+    // Kiểm tra vị trí trên mặt đất đằng sau nền đất
+    for (const auto& platform : platforms) {
+        if (platform.active &&
+            (platform.type == PlatformType::LAND_MID || platform.type == PlatformType::LAND_SMALL)) {
+            // Kiểm tra xem chướng ngại vật có nằm trước platform không
+            if (x < platform.rect.x && x + width >= platform.rect.x &&
+                y + height == GROUND_LEVEL) {
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
 void PlatformManager::spawnPlatform() {
-    // Chọn ngẫu nhiên loại platform để sinh
-    std::vector<PlatformType> types = {
-        PlatformType::GRASS_BIG, PlatformType::GRASS_MID,
-        PlatformType::GRASS_SUPERBIG, PlatformType::LAND_MID,
-        PlatformType::LAND_SMALL, PlatformType::VINE
+    const int GROUND_LEVEL = 730; // Mực nước biển/mặt đất
+    const int KONG_HEIGHT = 149; // Chiều cao của nhân vật khỉ
+
+    // Xác định các loại platform có thể được tạo
+    std::vector<PlatformType> grassTypes = {
+        PlatformType::GRASS_BIG, PlatformType::GRASS_MID, PlatformType::GRASS_SUPERBIG
     };
 
-    PlatformType randomType = types[rand() % types.size()];
+    std::vector<PlatformType> landTypes = {
+        PlatformType::LAND_MID, PlatformType::LAND_SMALL
+    };
 
-    // Chỉ sinh platform nếu có texture tương ứng
+    // Chọn ngẫu nhiên giữa nền đất và nền cỏ (80% cỏ, 20% đất)
+    bool spawnGrass = (rand() % 100) < 50; //80
+
+    // Chọn ngẫu nhiên một loại platform
+    PlatformType randomType;
+    if (spawnGrass) {
+        randomType = grassTypes[rand() % grassTypes.size()];
+    } else {
+        randomType = landTypes[rand() % landTypes.size()];
+    }
+
+    // Kiểm tra xem có texture tương ứng không
     if (platformTextures.find(randomType) != platformTextures.end()) {
-        Platform newPlatform(
-            platformTextures[randomType],
-            randomType,
-            SCREEN_WIDTH, // Bắt đầu từ mép phải màn hình
-            0 // Y sẽ được tính trong constructor của Platform
-        );
+        int xPos = SCREEN_WIDTH; // Bắt đầu từ mép phải màn hình
+        int yPos;
+
+        // Tính toán vị trí y tùy thuộc vào loại platform
+        if (randomType == PlatformType::LAND_MID || randomType == PlatformType::LAND_SMALL) {
+            yPos = GROUND_LEVEL; // Land platform nằm trên mặt đất
+        } else {
+            // Tìm vị trí y hợp lệ cho nền cỏ theo logic
+            yPos = findValidYForGrass(xPos, KONG_HEIGHT);
+        }
+
+        // Tạo platform mới
+        Platform newPlatform(platformTextures[randomType], randomType, xPos, yPos);
 
         // Kiểm tra khoảng cách với platform cuối cùng để tránh chồng chéo
         bool canSpawn = true;
