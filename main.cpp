@@ -195,13 +195,14 @@ int main(int argc, char* argv[]) {
         graphics.render(backgroundSky);
         graphics.render(background);
         graphics.render(leafTop);
+        platformManager.render(&graphics);
+        //vẽ chướng ngại vật
         for (const auto& obs : obstacleManager.getObstacles()) {
             graphics.renderTexture(obs.texture, obs.rect.x, obs.rect.y);
         }
 
         // Vẽ khung va chạm của chướng ngại vật
         obstacleManager.renderDebugCollision(&graphics);
-        platformManager.render(&graphics);
         // Vẽ Kong (bao gồm khung va chạm nếu showCollision = true)
         kong.render(&graphics);
 
