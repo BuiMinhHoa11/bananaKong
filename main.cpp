@@ -76,9 +76,8 @@ int main(int argc, char* argv[]) {
     }
     ObstacleManager obstacleManager(obstacleTextures);
 
-
-        // Khởi tạo texture cho platform
-    map<PlatformType, SDL_Texture*> platformTextures;
+    // Khởi tạo texture cho platform
+    std::map<PlatformType, SDL_Texture*> platformTextures;
     platformTextures[PlatformType::GRASS_BIG] = graphics.loadTexture("D:/projectBTL/bananakong/image/PLATFORM/grass_big.png");
     platformTextures[PlatformType::GRASS_MID] = graphics.loadTexture("D:/projectBTL/bananakong/image/PLATFORM/grass_mid.png");
     platformTextures[PlatformType::GRASS_SUPERBIG] = graphics.loadTexture("D:/projectBTL/bananakong/image/PLATFORM/grass_superbig.png");
@@ -91,10 +90,8 @@ int main(int argc, char* argv[]) {
         if (tex == nullptr) SDL_Log("Failed to load platform texture!");
     }
 
-    // Khởi tạo PlatformManager
-    PlatformManager platformManager(platformTextures);
-
-
+    // Khởi tạo PlatformManager với cả platformTextures và obstacleManager
+    PlatformManager platformManager(platformTextures, obstacleManager);
 
     bool quit = false;
     SDL_Event e;
@@ -161,10 +158,6 @@ int main(int argc, char* argv[]) {
             }
 
             // Cập nhật nhân vật và chướng ngại vật
-            // Cập nhật hàm update của player để kết hợp platform
-            // Chuyển từ:
-            // kong.update(deltaTime, obstacleManager.getObstacles());
-            // thành:
             vector<SDL_Rect> allPlatforms;
             // Thêm obstacles làm platform
             for (const auto& obs : obstacleManager.getObstacles()) {
@@ -196,7 +189,7 @@ int main(int argc, char* argv[]) {
         graphics.render(background);
         graphics.render(leafTop);
         platformManager.render(&graphics);
-        //vẽ chướng ngại vật
+        // Vẽ chướng ngại vật
         for (const auto& obs : obstacleManager.getObstacles()) {
             graphics.renderTexture(obs.texture, obs.rect.x, obs.rect.y);
         }
