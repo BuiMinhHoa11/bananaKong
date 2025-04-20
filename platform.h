@@ -199,12 +199,12 @@ public:
 #include <map>
 
 enum class PlatformType {
-    GRASS_BIG,       // 538x80
-    GRASS_MID,       // 310x80
-    GRASS_SUPERBIG,  // 1003x80
-    LAND_MID,        // 898x176
-    LAND_SMALL,      // 827x176
-    VINE             // 697x500
+    GRASS_BIG,
+    GRASS_MID,
+    GRASS_SUPERBIG,
+    LAND_MID,
+    LAND_SMALL,
+    VINE
 };
 
 struct Platform {
@@ -218,21 +218,28 @@ struct Platform {
 
 class PlatformManager {
 private:
-    std::map<PlatformType, SDL_Texture*> platformTextures;
-    std::vector<Platform> platforms;
+    map<PlatformType, SDL_Texture*> platformTextures;
+    vector<Platform> platforms;
     float scrollSpeed; // Tốc độ di chuyển của platform
     int spawnDelay;  // Thời gian giữa mỗi lần sinh platform
     int spawnTimer;  // Đếm thời gian để sinh platform tiếp theo
+    // Thêm các phương thức mới
+    bool hasLandPlatformAt(int x, int y, int tolerance = 5) const;
+    bool hasGrassPlatformAt(int x, int y, int tolerance = 5) const;
+    int findValidYForGrass(int x, int kongHeight) const;
+
 
 public:
-    PlatformManager(std::map<PlatformType, SDL_Texture*> textures);
+    PlatformManager(map<PlatformType, SDL_Texture*> textures);
     void update(float deltaTime);
     void spawnPlatform();
     void render(Graphics* graphics);
     void renderDebugCollision(Graphics* graphics, const Platform& platform);
-    const std::vector<Platform>& getPlatforms() const;
+    const vector<Platform>& getPlatforms() const;
     void setScrollSpeed(float speed);
     void clear();
+    // Thêm phương thức kiểm tra vị trí hợp lệ cho chướng ngại vật
+    bool isValidPositionForObstacle(int x, int y, int width, int height) const;
 };
 
 #endif // PLATFORM_H_
