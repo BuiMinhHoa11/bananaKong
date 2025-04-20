@@ -1,4 +1,3 @@
-
 #ifndef COMMON_FUNC__H_
 #define COMMON_FUNC__H_
 
