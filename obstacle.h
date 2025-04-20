@@ -1,5 +1,3 @@
-
-
 #ifndef OBSTACLE_H
 #define OBSTACLE_H
 #include <vector>
@@ -37,8 +35,7 @@ private:
     float minSpawnInterval;
     float difficulty;
     float getRandomSpawnInterval() const;
-    ObstacleType getRandomObstacleType() const;
-    float getRandomSpeed() const;
+
     int getNumberToSpawn() const;
     int getRandomXOffset(int index) const;
     SDL_Rect adjustCollisionBox(const SDL_Rect& obsBox, ObstacleType type) const;
@@ -55,8 +52,17 @@ public:
 
     // Thay đổi kiểu tham số để nhận hình tròn thay vì SDL_Rect
     bool checkCollision(int centerX, int centerY, int radius) const;
-
     void renderDebugCollision(Graphics* graphics) const;
+
+    ObstacleType getRandomObstacleType() const;
+    float getRandomSpeed() const;
+    SDL_Texture* getTextureForType(ObstacleType type) const {
+        auto it = textureMap.find(type);
+        return (it != textureMap.end()) ? it->second : nullptr;
+    }
+    void addObstacle(const Obstacle& obstacle) {
+        obstacles.push_back(obstacle);
+    }
 };
 
 #endif
