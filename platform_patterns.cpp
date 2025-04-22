@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <random>
 
+// Các hàm khác trong platform.cpp (giữ nguyên, không thay đổi)
 void PlatformManager::spawnPlatformPattern() {
     int roll = rand() % 100;
     int patternType;
@@ -148,8 +149,11 @@ void PlatformManager::spawnLadderType3() {
         Platform tier3Platform(platformTextures.at(grassType), grassType, xPos + 200, tier3Y);
         platforms.push_back(tier3Platform);
 
+        // Sử dụng std::shuffle thay vì std::random_shuffle
         std::vector<int> tiers = {0, 1, 2};
-        std::random_shuffle(tiers.begin(), tiers.end());
+        std::random_device rd;
+        std::mt19937 g(rd());
+        std::shuffle(tiers.begin(), tiers.end(), g);
 
         for (int i = 0; i < 2; i++) {
             ObstacleType obstacleType = obstacleManager.getRandomObstacleType();
