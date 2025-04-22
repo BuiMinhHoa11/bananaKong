@@ -8,10 +8,9 @@ enum GameState { MENU, PLAYING, GAME_OVER };
 
 int main(int argc, char* argv[]) {
     initSDL(window, renderer);
-    initTTF(); // Khởi tạo SDL_ttf
+    initTTF();
     Graphics graphics(renderer);
 
-    // Tải font
     TTF_Font* font = TTF_OpenFont("D:/projectBTL/bananakong/font/Drawing_Kids.ttf", 24);
     if (!font) {
         SDL_Log("Failed to load font: %s", TTF_GetError());
@@ -19,7 +18,6 @@ int main(int argc, char* argv[]) {
     }
     SDL_Color white = {255, 255, 255, 255};
 
-    // Nền lớp bottom
     ScrollingBackground backgroundSky;
     SDL_Texture* skyTexture = graphics.loadTexture("D:/projectBTL/bananakong/image/ITEM_BACK/skymany.png");
     if (skyTexture == NULL) {
@@ -29,7 +27,6 @@ int main(int argc, char* argv[]) {
     }
     backgroundSky.setTexture(skyTexture);
 
-    // Nền lớp middle
     ScrollingBackground background;
     SDL_Texture* backgroundTexture = graphics.loadTexture("D:/projectBTL/bananakong/image/ITEM_BACK/ground1.png");
     if (backgroundTexture == NULL) {
@@ -39,7 +36,6 @@ int main(int argc, char* argv[]) {
     }
     background.setTexture(backgroundTexture);
 
-    // Nền lớp top
     ScrollingBackground leafTop;
     SDL_Texture* leafTopTexture = graphics.loadTexture("D:/projectBTL/bananakong/image/ITEM_BACK/leafTop.png");
     if (leafTopTexture == NULL) {
@@ -49,7 +45,6 @@ int main(int argc, char* argv[]) {
     }
     leafTop.setTexture(leafTopTexture);
 
-    // Khởi tạo nhân vật Player
     Player kong;
     SDL_Texture* kongrunTexture = graphics.loadTexture(KONGRUN_SPRITE_FILE);
     SDL_Texture* kongslideTexture = graphics.loadTexture("D:/projectBTL/bananakong/image/CHAR/kong_slide.png");
@@ -66,7 +61,6 @@ int main(int argc, char* argv[]) {
     kong.init(kongrunTexture, kongslideTexture);
     kong.setPosition(120, 755);
 
-    // Chướng ngại vật
     std::map<ObstacleType, SDL_Texture*> obstacleTextures;
     obstacleTextures[ObstacleType::ROCK] = graphics.loadTexture("D:/projectBTL/bananakong/image/ITEM_BACK/daHeo.png");
     obstacleTextures[ObstacleType::SPIKE] = graphics.loadTexture("D:/projectBTL/bananakong/image/ITEM_BACK/cot.png");
@@ -76,7 +70,6 @@ int main(int argc, char* argv[]) {
     }
     ObstacleManager obstacleManager(obstacleTextures);
 
-    // Khởi tạo texture cho platform
     std::map<PlatformType, SDL_Texture*> platformTextures;
     platformTextures[PlatformType::GRASS_BIG] = graphics.loadTexture("D:/projectBTL/bananakong/image/PLATFORM/grass_big.png");
     platformTextures[PlatformType::GRASS_MID] = graphics.loadTexture("D:/projectBTL/bananakong/image/PLATFORM/grass_mid.png");
@@ -85,28 +78,23 @@ int main(int argc, char* argv[]) {
     platformTextures[PlatformType::LAND_SMALL] = graphics.loadTexture("D:/projectBTL/bananakong/image/PLATFORM/land_small.png");
     platformTextures[PlatformType::VINE] = graphics.loadTexture("D:/projectBTL/bananakong/image/PLATFORM/vine.png");
 
-    // Kiểm tra tải texture
     for (const auto& [type, tex] : platformTextures) {
         if (tex == nullptr) SDL_Log("Failed to load platform texture!");
     }
 
-    // Khởi tạo PlatformManager với cả platformTextures và obstacleManager
     PlatformManager platformManager(platformTextures, obstacleManager);
 
     bool quit = false;
     SDL_Event e;
 
-    // Đo thời gian
     Uint32 lastFrameTime = SDL_GetTicks();
-    float gameSpeedFactor = 0.5f; // 0.5 = 50% tốc độ ban đầu
+    float gameSpeedFactor = 0.5f;
 
-    // Game over và khởi động lại
-    GameState gameState = MENU; // Bắt đầu ở menu
+    GameState gameState = MENU;
     int score = 0;
     float scoreTimer = 0.0f;
 
     while (!quit) {
-        // Xử lý events
         while (SDL_PollEvent(&e) != 0) {
             if (e.type == SDL_QUIT) {
                 quit = true;
@@ -122,17 +110,16 @@ int main(int argc, char* argv[]) {
                     if (e.key.keysym.sym == SDLK_s && kong.isOnGround()) {
                         kong.slide();
                     }
-                    if (e.key.keysym.sym == SDLK_c) { // Phím C để bật/tắt khung va chạm
+                    if (e.key.keysym.sym == SDLK_c) {
                         kong.toggleCollisionDisplay();
                     }
                 }
                 if (gameState == GAME_OVER && e.key.keysym.sym == SDLK_r) {
-                    // Reset game
                     score = 0;
                     scoreTimer = 0.0f;
                     kong.setPosition(120, 755);
                     kong.setOnGround(true);
-                    obstacleManager = ObstacleManager(obstacleTextures);
+                    obstacleManager.clear();
                     platformManager.clear();
                     gameState = PLAYING;
                 }
@@ -144,12 +131,10 @@ int main(int argc, char* argv[]) {
             }
         }
 
-        // Tính toán deltaTime
         Uint32 currentTime = SDL_GetTicks();
         float deltaTime = (currentTime - lastFrameTime) / 1000.0f;
         lastFrameTime = currentTime;
 
-        // Chỉ cập nhật chuyển động nếu game đã bắt đầu
         if (gameState == PLAYING) {
             scoreTimer += deltaTime;
             if (scoreTimer >= 1.0f) {
@@ -157,15 +142,18 @@ int main(int argc, char* argv[]) {
                 scoreTimer -= 1.0f;
             }
 
-            // Cập nhật nhân vật và chướng ngại vật
+            obstacleManager.setDifficulty(platformManager.getDifficulty());
+
             vector<SDL_Rect> allPlatforms;
-            // Thêm obstacles làm platform
-            for (const auto& obs : obstacleManager.getObstacles()) {
-                allPlatforms.push_back(obs.rect);
-            }
             // Thêm platforms thực sự
             for (const auto& platform : platformManager.getPlatforms()) {
                 allPlatforms.push_back(platform.rect);
+            }
+            // Thêm obstacles có thể đứng lên
+            for (const auto& obs : obstacleManager.getObstacles()) {
+                if (obs.isPlatform) {
+                    allPlatforms.push_back(obs.rect);
+                }
             }
             kong.update(deltaTime, allPlatforms);
 
@@ -175,7 +163,6 @@ int main(int argc, char* argv[]) {
             obstacleManager.update(deltaTime);
             platformManager.update(deltaTime);
 
-            // Kiểm tra va chạm với chướng ngại vật (dùng khung tròn)
             SDL_Point center = kong.getCollisionCenter();
             int radius = kong.getCollisionRadius();
             if (obstacleManager.checkCollision(center.x, center.y, radius)) {
@@ -183,23 +170,17 @@ int main(int argc, char* argv[]) {
             }
         }
 
-        // Render
         graphics.prepareScene();
         graphics.render(backgroundSky);
         graphics.render(background);
         graphics.render(leafTop);
         platformManager.render(&graphics);
-        // Vẽ chướng ngại vật
         for (const auto& obs : obstacleManager.getObstacles()) {
             graphics.renderTexture(obs.texture, obs.rect.x, obs.rect.y);
         }
-
-        // Vẽ khung va chạm của chướng ngại vật
         obstacleManager.renderDebugCollision(&graphics);
-        // Vẽ Kong (bao gồm khung va chạm nếu showCollision = true)
         kong.render(&graphics);
 
-        // Vẽ điểm
         std::string scoreText = "Score: " + std::to_string(score);
         int textW, textH;
         SDL_Texture* scoreTexture = createTextTexture(renderer, scoreText.c_str(), font, white, textW, textH);
@@ -208,7 +189,6 @@ int main(int argc, char* argv[]) {
             SDL_DestroyTexture(scoreTexture);
         }
 
-        // Vẽ màn hình game over
         if (gameState == GAME_OVER) {
             std::string gameOverText = "Game Over! Score: " + std::to_string(score) + " Press R to restart!!";
             SDL_Texture* gameOverTexture = createTextTexture(renderer, gameOverText.c_str(), font, white, textW, textH);
@@ -219,10 +199,9 @@ int main(int argc, char* argv[]) {
         }
 
         graphics.presentScene();
-        SDL_Delay(16); // Khoảng 60 FPS
+        SDL_Delay(16);
     }
 
-    // Dọn dẹp
     TTF_CloseFont(font);
     TTF_Quit();
 
