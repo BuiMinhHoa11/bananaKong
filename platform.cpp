@@ -1,5 +1,8 @@
 #include "platform.h"
-#include "player.h"
+#include <ctime>
+#include <cstdlib>
+#include <iostream>
+#include <algorithm>
 
 Platform::Platform(SDL_Texture* tex, PlatformType t, int x, int y) {
     texture = tex;
@@ -12,7 +15,7 @@ Platform::Platform(SDL_Texture* tex, PlatformType t, int x, int y) {
             rect.h = 38;
             break;
         case PlatformType::GRASS_MID:
-            rect.w = 282;
+            rect.w = 614;
             rect.h = 34;
             break;
         case PlatformType::GRASS_SUPERBIG:
@@ -41,11 +44,13 @@ PlatformManager::PlatformManager(std::map<PlatformType, SDL_Texture*> textures, 
     : obstacleManager(obsManager) {
     platformTextures = textures;
     scrollSpeed = 5.0f;
-    spawnDelay = 9000;
+    spawnDelay = 12000;
     spawnTimer = 0;
     difficulty = 1.0f;
     difficultyTimer = 0;
-    difficultyIncreaseInterval = 20000;
+    difficultyIncreaseInterval = 30000;
+    minPlatformDistance = SCREEN_WIDTH / 2;
+    initialPlatformDistance = SCREEN_WIDTH * 8;
     srand(static_cast<unsigned>(time(nullptr)));
 }
 
@@ -64,54 +69,80 @@ void PlatformManager::update(float deltaTime) {
     );
 
     spawnTimer += static_cast<int>(deltaTime * 1000);
-    if (spawnTimer >= spawnDelay) {
+    if (spawnTimer >= spawnDelay && canSpawnPlatform()) {
         spawnPlatformPattern();
         spawnTimer = 0;
     }
 
     difficultyTimer += deltaTime * 1000;
     if (difficultyTimer >= difficultyIncreaseInterval) {
-        increaseDifficulty(1.0f);
+        increaseDifficulty(0.2f);
         difficultyTimer = 0;
     }
+}
+
+bool PlatformManager::canSpawnPlatform() const {
+    if (platforms.empty()) {
+        return true;
+    }
+
+    int furthestX = 0;
+    for (const auto& platform : platforms) {
+        int platformRight = platform.rect.x + platform.rect.w;
+        if (platformRight > furthestX) {
+            furthestX = platformRight;
+        }
+    }
+
+    float t = (difficulty - 1.0f) / 9.0f;
+    float requiredDistance = initialPlatformDistance - (initialPlatformDistance - minPlatformDistance) * t;
+    if (requiredDistance < minPlatformDistance) {
+        requiredDistance = minPlatformDistance;
+    }
+
+    return (SCREEN_WIDTH - furthestX) >= requiredDistance;
+}
+
+void PlatformManager::increaseDifficulty(float amount) {
+    difficulty += amount;
+    if (difficulty > 10.0f) {
+        difficulty = 10.0f;
+    }
+
+    float t = (difficulty - 1.0f) / 9.0f;
+    scrollSpeed = 5.0f + t * 4.0f;
+    spawnDelay = static_cast<int>(12000 - t * 7000);
+    if (spawnDelay < 5000) {
+        spawnDelay = 5000;
+    }
+
+    std::cout << "Difficulty increased to: " << difficulty
+              << ", Speed: " << scrollSpeed
+              << ", Spawn Delay: " << spawnDelay << std::endl;
 }
 
 int PlatformManager::findValidYForGrass(int x, int kongHeight) const {
     std::vector<int> validPositions;
 
-    validPositions.push_back(GROUND_LEVEL);
+    validPositions.push_back(GROUND_LEVEL - kongHeight);
 
     for (const auto& platform : platforms) {
-        if (platform.active &&
-            (platform.type == PlatformType::LAND_MID || platform.type == PlatformType::LAND_SMALL)) {
+        if (platform.active && (platform.type == PlatformType::LAND_MID || platform.type == PlatformType::LAND_SMALL)) {
             if (x >= platform.rect.x - 20 && x <= platform.rect.x + platform.rect.w + 20) {
-                validPositions.push_back(platform.rect.y - kongHeight);
+                int landHeight = (platform.type == PlatformType::LAND_MID) ? 155 : 159;
+                validPositions.push_back(platform.rect.y - landHeight - kongHeight);
             }
         }
     }
 
     for (const auto& platform : platforms) {
-        if (platform.active &&
-            (platform.type == PlatformType::GRASS_BIG ||
-             platform.type == PlatformType::GRASS_MID ||
-             platform.type == PlatformType::GRASS_SUPERBIG)) {
+        if (platform.active && (platform.type == PlatformType::GRASS_BIG ||
+                               platform.type == PlatformType::GRASS_MID ||
+                               platform.type == PlatformType::GRASS_SUPERBIG)) {
             if (x >= platform.rect.x - 20 && x <= platform.rect.x + platform.rect.w + 20) {
-                validPositions.push_back(platform.rect.y - kongHeight - kongHeight);
-
-                for (const auto& landPlatform : platforms) {
-                    if (landPlatform.active &&
-                        (landPlatform.type == PlatformType::LAND_MID || landPlatform.type == PlatformType::LAND_SMALL)) {
-                        if (platform.rect.y == landPlatform.rect.y - kongHeight - platform.rect.h) {
-                            validPositions.push_back(platform.rect.y - kongHeight - kongHeight);
-                        }
-                    }
-                }
+                validPositions.push_back(platform.rect.y - kongHeight - 34);
             }
         }
-    }
-
-    if (validPositions.empty()) {
-        return GROUND_LEVEL;
     }
 
     return validPositions[rand() % validPositions.size()];
@@ -129,64 +160,24 @@ bool PlatformManager::isValidPositionForObstacle(int x, int y, int width, int he
         }
     }
 
+    for (const auto& platform : platforms) {
+        if (platform.active && (platform.type == PlatformType::GRASS_BIG ||
+                               platform.type == PlatformType::GRASS_MID ||
+                               platform.type == PlatformType::GRASS_SUPERBIG ||
+                               platform.type == PlatformType::LAND_MID ||
+                               platform.type == PlatformType::LAND_SMALL)) {
+            if (x >= platform.rect.x && x + width <= platform.rect.x + platform.rect.w &&
+                y + height == platform.rect.y) {
+                return true;
+            }
+        }
+    }
+
     if (y + height == GROUND_LEVEL) {
         return true;
     }
 
-    for (const auto& platform : platforms) {
-        if (platform.active &&
-            (platform.type == PlatformType::GRASS_BIG ||
-             platform.type == PlatformType::GRASS_MID ||
-             platform.type == PlatformType::GRASS_SUPERBIG)) {
-            if (x >= platform.rect.x && x + width <= platform.rect.x + platform.rect.w &&
-                y + height == platform.rect.y) {
-                return true;
-            }
-        }
-    }
-
-    for (const auto& platform : platforms) {
-        if (platform.active &&
-            (platform.type == PlatformType::LAND_MID || platform.type == PlatformType::LAND_SMALL)) {
-            if (x >= platform.rect.x && x + width <= platform.rect.x + platform.rect.w &&
-                y + height == platform.rect.y) {
-                return true;
-            }
-        }
-    }
-
-    for (const auto& platform : platforms) {
-        if (platform.active &&
-            (platform.type == PlatformType::LAND_MID || platform.type == PlatformType::LAND_SMALL)) {
-            if (x < platform.rect.x && x + width >= platform.rect.x &&
-                y + height == GROUND_LEVEL) {
-                return true;
-            }
-        }
-    }
-
     return false;
-}
-
-void PlatformManager::increaseDifficulty(float amount) {
-    difficulty += amount;
-    if (difficulty > 10.0f) {
-        difficulty = 10.0f;
-    }
-
-    scrollSpeed = 5.0f + (difficulty - 1.0f) * 0.8f;
-    spawnDelay = static_cast<int>(9000 - (difficulty - 1.0f) * 800);
-    if (spawnDelay < 5000) {
-        spawnDelay = 5000;
-    }
-
-    std::cout << "Difficulty increased to: " << difficulty
-              << ", Speed: " << scrollSpeed
-              << ", Spawn Delay: " << spawnDelay << std::endl;
-}
-
-float PlatformManager::getDifficulty() const {
-    return difficulty;
 }
 
 void PlatformManager::render(Graphics* graphics) {
@@ -217,4 +208,8 @@ void PlatformManager::setScrollSpeed(float speed) {
 
 void PlatformManager::clear() {
     platforms.clear();
+}
+
+float PlatformManager::getDifficulty() const {
+    return difficulty;
 }
