@@ -44,6 +44,8 @@
 		<Unit filename="platform_patterns.cpp" />
 		<Unit filename="player.cpp" />
 		<Unit filename="player.h" />
+		<Unit filename="speed_manager.cpp" />
+		<Unit filename="speed_manager.h" />
 		<Extensions>
 			<lib_finder disable_auto="1" />
 		</Extensions>
