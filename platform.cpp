@@ -43,14 +43,14 @@ Platform::Platform(SDL_Texture* tex, PlatformType t, int x, int y) {
 PlatformManager::PlatformManager(std::map<PlatformType, SDL_Texture*> textures, ObstacleManager& obsManager)
     : obstacleManager(obsManager) {
     platformTextures = textures;
-    scrollSpeed = 5.0f;
-    spawnDelay = 12000;
+    scrollSpeed = 4.0f;
+    spawnDelay = 8000; //cứ mỗi 8 giây, một nền tảng mới sẽ được tạo
     spawnTimer = 0;
     difficulty = 1.0f;
     difficultyTimer = 0;
-    difficultyIncreaseInterval = 30000;
-    minPlatformDistance = SCREEN_WIDTH / 2;
-    initialPlatformDistance = SCREEN_WIDTH * 8;
+    difficultyIncreaseInterval = 25000;
+    minPlatformDistance = SCREEN_WIDTH / 3.75;
+    initialPlatformDistance = SCREEN_WIDTH * 4.5;
     srand(static_cast<unsigned>(time(nullptr)));
 }
 
@@ -76,7 +76,7 @@ void PlatformManager::update(float deltaTime) {
 
     difficultyTimer += deltaTime * 1000;
     if (difficultyTimer >= difficultyIncreaseInterval) {
-        increaseDifficulty(0.2f);
+        increaseDifficulty(0.5f);
         difficultyTimer = 0;
     }
 }
@@ -94,7 +94,7 @@ bool PlatformManager::canSpawnPlatform() const {
         }
     }
 
-    float t = (difficulty - 1.0f) / 9.0f;
+    float t = (difficulty - 1.0f) / 10.0f;
     float requiredDistance = initialPlatformDistance - (initialPlatformDistance - minPlatformDistance) * t;
     if (requiredDistance < minPlatformDistance) {
         requiredDistance = minPlatformDistance;
@@ -109,9 +109,9 @@ void PlatformManager::increaseDifficulty(float amount) {
         difficulty = 10.0f;
     }
 
-    float t = (difficulty - 1.0f) / 9.0f;
-    scrollSpeed = 5.0f + t * 4.0f;
-    spawnDelay = static_cast<int>(12000 - t * 7000);
+    float t = (difficulty - 1.0f) / 10.0f;
+    scrollSpeed = 4.0f + t * 6.0f;
+    spawnDelay = static_cast<int>(8000 - t * 5000);
     if (spawnDelay < 5000) {
         spawnDelay = 5000;
     }
