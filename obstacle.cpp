@@ -48,15 +48,15 @@ SDL_Rect ObstacleManager::adjustCollisionBox(const SDL_Rect& obsBox, ObstacleTyp
     switch (type) {
         case ObstacleType::ROCK:
             adjusted.x += 10;
-            adjusted.w = 200;
+            adjusted.w = 180;
             adjusted.y += 50;
-            adjusted.h = 90;
+            adjusted.h = 80;
             break;
         case ObstacleType::SPIKE:
             adjusted.x += 16;
             adjusted.w = 30;
             adjusted.y += 23;
-            adjusted.h = 90;
+            adjusted.h = 100;
             break;
         case ObstacleType::PLANE:
             adjusted.x += 25;
