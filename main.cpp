@@ -88,7 +88,7 @@ int main(int argc, char* argv[]) {
     SDL_Event e;
 
     Uint32 lastFrameTime = SDL_GetTicks();
-    float gameSpeedFactor = 0.5f;
+    float animationUpdateTimer = 0.0f; // Timer để cập nhật tốc độ animation của kong
 
     GameState gameState = MENU;
     int score = 0;
@@ -145,11 +145,9 @@ int main(int argc, char* argv[]) {
             obstacleManager.setDifficulty(platformManager.getDifficulty());
 
             vector<SDL_Rect> allPlatforms;
-            // Thêm platforms thực sự
             for (const auto& platform : platformManager.getPlatforms()) {
                 allPlatforms.push_back(platform.rect);
             }
-            // Thêm obstacles có thể đứng lên
             for (const auto& obs : obstacleManager.getObstacles()) {
                 if (obs.isPlatform) {
                     allPlatforms.push_back(obs.rect);
@@ -157,9 +155,24 @@ int main(int argc, char* argv[]) {
             }
             kong.update(deltaTime, allPlatforms);
 
-            backgroundSky.scroll(2 * gameSpeedFactor);
-            background.scroll(5 * gameSpeedFactor);
-            leafTop.scroll(15 * gameSpeedFactor);
+            // Lấy scrollSpeed từ PlatformManager
+            float scrollSpeed = platformManager.getScrollSpeed();
+            // Đồng bộ tốc độ của các thành phần nền với scrollSpeed
+            backgroundSky.scroll(static_cast<int>(scrollSpeed * 0.4f)); // Nền trời di chuyển chậm hơn
+            background.scroll(static_cast<int>(scrollSpeed * 1.0f));    // Nền đất di chuyển cùng tốc độ với nền tảng
+            leafTop.scroll(static_cast<int>(scrollSpeed * 3.0f));      // Lá phía trên di chuyển nhanh hơn
+
+            // Cập nhật tốc độ animation của kong dựa trên độ khó
+            animationUpdateTimer += deltaTime;
+            if (animationUpdateTimer >= 1.0f) { // Cập nhật mỗi giây
+                float difficulty = platformManager.getDifficulty();
+                // Tốc độ animation tăng (frameDelayMax giảm) khi độ khó tăng
+                int newFrameDelayMax = static_cast<int>(3.0f - (difficulty - 1.0f) * 0.2f);
+                if (newFrameDelayMax < 1) newFrameDelayMax = 1; // Đảm bảo không nhỏ hơn 1
+                kong.setAnimationSpeed(newFrameDelayMax);
+                animationUpdateTimer = 0.0f;
+            }
+
             obstacleManager.update(deltaTime);
             platformManager.update(deltaTime);
 
