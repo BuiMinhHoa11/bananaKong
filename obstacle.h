@@ -30,27 +30,18 @@ class ObstacleManager {
 private:
     std::vector<Obstacle> obstacles;
     std::map<ObstacleType, SDL_Texture*> textureMap;
-    float timeSinceLastSpawn;
-    float baseSpawnInterval;
-    float minSpawnInterval;
     float difficulty;
-    float getRandomSpawnInterval() const;
-
-    int getNumberToSpawn() const;
-    int getRandomXOffset(int index) const;
     SDL_Rect adjustCollisionBox(const SDL_Rect& obsBox, ObstacleType type) const;
 
 public:
     ObstacleManager(const std::map<ObstacleType, SDL_Texture*>& textures);
     ~ObstacleManager();
     void update(float deltaTime);
-    void spawn();
     const std::vector<Obstacle>& getObstacles() const { return obstacles; }
     void clear() { obstacles.clear(); }
     void setDifficulty(float difficulty) { this->difficulty = difficulty; }
     float getDifficulty() const { return difficulty; }
 
-    // Thay đổi kiểu tham số để nhận hình tròn thay vì SDL_Rect
     bool checkCollision(int centerX, int centerY, int radius) const;
     void renderDebugCollision(Graphics* graphics) const;
 
@@ -65,4 +56,4 @@ public:
     }
 };
 
-#endif
+#endif //OBSTACLE__H_
