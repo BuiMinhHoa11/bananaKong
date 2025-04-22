@@ -76,7 +76,7 @@
 1745309291 d:\projectbtl\bananakong\graphics.h
 	"common_func.h"
 
-1745308421 source:d:\projectbtl\bananakong\main.cpp
+1745333103 source:d:\projectbtl\bananakong\main.cpp
 	"common_func.h"
 	"graphics.h"
 	"obstacle.h"
@@ -88,20 +88,20 @@
 	<map>
 	"graphics.h"
 
-1745308013 d:\projectbtl\bananakong\player.h
+1745333103 d:\projectbtl\bananakong\player.h
 	"common_func.h"
 	"graphics.h"
 	<vector>
 	<map>
 
-1745309043 d:\projectbtl\bananakong\platform.h
+1745333103 d:\projectbtl\bananakong\platform.h
 	<SDL.h>
 	<map>
 	<vector>
 	"obstacle.h"
 	"common_func.h"
 
-1745309186 source:d:\projectbtl\bananakong\obstacle.cpp
+1745310002 source:d:\projectbtl\bananakong\obstacle.cpp
 	"obstacle.h"
 	<cstdlib>
 
