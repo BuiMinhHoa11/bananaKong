@@ -2,7 +2,7 @@
 #include "obstacle.h"
 
 Player::Player() {
-    x = 150; // Vị trí bắt đầu phù hợp với game
+    x = 400; // Vị trí bắt đầu phù hợp với game
     y = 755;
     velocityX = 0;
     velocityY = 0;
@@ -61,7 +61,7 @@ void Player::update(float deltaTime, const vector<SDL_Rect>& platforms) {
     }
 
     // Đảm bảo x luôn giữ nguyên ở vị trí cố định
-    x = 150; // Hoặc giá trị ban đầu của x (150 trong constructor)
+    x = 400; // Hoặc giá trị ban đầu của x (150 trong constructor)
 
     // Kiểm tra va chạm với mặt đất cơ bản (nếu không đứng trên nền tảng nào)
     if (!onAnyGround && y > 755) {
@@ -249,7 +249,7 @@ bool Player::checkPlatformCollision(const SDL_Rect& obstacle) {
     int playerRadius = getCollisionRadius();
 
     // Chỉ kiểm tra va chạm khi đang rơi xuống
-    if (velocityY > 0) {
+    if (velocityY >= 0) {
         // Tính toán điểm gần nhất từ hình tròn đến hình chữ nhật
         int closestX = std::max(obstacle.x, std::min(playerCenter.x, obstacle.x + obstacle.w));
         int closestY = std::max(obstacle.y, std::min(playerCenter.y, obstacle.y + obstacle.h));
