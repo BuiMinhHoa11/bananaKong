@@ -41,6 +41,7 @@ public:
     const std::vector<Platform>& getPlatforms() const;
     ObstacleManager& getObstacleManager() { return obstacleManager; }
     const std::map<PlatformType, SDL_Texture*>& getPlatformTextures() const { return platformTextures; }
+    float getScrollSpeed() const { return scrollSpeed; }
 
     void spawnPlatformPattern();
     PlatformType getRandomGrassType() const;
