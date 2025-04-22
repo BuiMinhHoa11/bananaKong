@@ -1,210 +1,129 @@
 #include "platform.h"
+#include <cstdlib>
+#include <vector>
+#include <algorithm>
+#include <random>
 
 void PlatformManager::spawnPlatformPattern() {
-    int patternRoll = rand() % 100;
-    PlatformPattern pattern;
+    int roll = rand() % 100;
+    int patternType;
 
-    if (difficulty < 2.0f) { // Mức dễ
-        if (patternRoll < 25) pattern = PlatformPattern::SINGLE;        // 25%
-        else if (patternRoll < 40) pattern = PlatformPattern::STAIR_UP; // 15%
-        else if (patternRoll < 60) pattern = PlatformPattern::PARALLEL; // 20%
-        else if (patternRoll < 70) pattern = PlatformPattern::LAND_OBSTACLE; // 30%
-        else pattern = PlatformPattern::BARREL;                        // 30%
-    } else if (difficulty < 5.0f) { // Mức trung bình
-        if (patternRoll < 20) pattern = PlatformPattern::SINGLE;        // 20%
-        else if (patternRoll < 30) pattern = PlatformPattern::STAIR_UP; // 10%
-        else if (patternRoll < 50) pattern = PlatformPattern::PARALLEL; // 20%
-        else if (patternRoll < 70) pattern = PlatformPattern::LAND_OBSTACLE; // 40%
-        else if (patternRoll < 90) pattern = PlatformPattern::GAP;      // 20%
-        else pattern = PlatformPattern::BARREL;                        // 10%
-    } else { // Mức khó
-        if (patternRoll < 20) pattern = PlatformPattern::SINGLE;        // 20%
-        else if (patternRoll < 30) pattern = PlatformPattern::STAIR_UP; // 10%
-        else if (patternRoll < 50) pattern = PlatformPattern::PARALLEL; // 20%
-        else if (patternRoll < 70) pattern = PlatformPattern::LAND_OBSTACLE; // 20%
-        else if (patternRoll < 90) pattern = PlatformPattern::GAP;      // 20%
-        else pattern = PlatformPattern::BARREL;                        // 10%
+    if (difficulty < 3.0f) {
+        if (roll < 40) patternType = 1;
+        else if (roll < 80) patternType = 4;
+        else patternType = 2;
+    } else if (difficulty < 7.0f) {
+        if (roll < 30) patternType = 2;
+        else if (roll < 60) patternType = 5;
+        else if (roll < 80) patternType = 4;
+        else patternType = 6;
+    } else {
+        if (roll < 45) patternType = 6;
+        else if (roll < 75) patternType = 3;
+        else if (roll < 95) patternType = 5;
+        else patternType = 2;
     }
 
-    switch (pattern) {
-        case PlatformPattern::SINGLE: spawnSinglePlatform(); break;
-        case PlatformPattern::STAIR_UP: spawnStairUpPattern(); break;
-        case PlatformPattern::PARALLEL: spawnParallelPattern(); break;
-        case PlatformPattern::GAP: spawnGapPattern(); break;
-        case PlatformPattern::BARREL: spawnBarrelPattern(obstacleManager); break;
-        case PlatformPattern::LAND_OBSTACLE: spawnLandObstaclePattern(obstacleManager); break;
+    switch (patternType) {
+        case 1: spawnLadderType1(); break;
+        case 2: spawnLadderType2(); break;
+        case 3: spawnLadderType3(); break;
+        case 4: spawnGapType1(); break;
+        case 5: spawnGapType2(); break;
+        case 6: spawnGapType3(); break;
     }
 }
 
-void PlatformManager::spawnSinglePlatform() {
+PlatformType PlatformManager::getRandomGrassType() const {
     std::vector<PlatformType> grassTypes = {
         PlatformType::GRASS_BIG, PlatformType::GRASS_MID, PlatformType::GRASS_SUPERBIG
     };
-    std::vector<PlatformType> landTypes = {
-        PlatformType::LAND_MID, PlatformType::LAND_SMALL
-    };
-
-    bool spawnGrass = (rand() % 100) < 20;
-    PlatformType randomType = spawnGrass ? grassTypes[rand() % grassTypes.size()] : landTypes[rand() % landTypes.size()];
-
-    if (platformTextures.find(randomType) != platformTextures.end()) {
-        int xPos = SCREEN_WIDTH;
-        int yPos;
-
-        if (randomType == PlatformType::LAND_MID || randomType == PlatformType::LAND_SMALL) {
-            yPos = GROUND_LEVEL;
-        } else {
-            yPos = findValidYForGrass(xPos, KONG_HEIGHT);
-        }
-
-        Platform newPlatform(platformTextures[randomType], randomType, xPos, yPos);
-        bool canSpawn = true;
-        if (!platforms.empty()) {
-            Platform& lastPlatform = platforms.back();
-            if (SCREEN_WIDTH - (lastPlatform.rect.x + lastPlatform.rect.w) < 300) {
-                canSpawn = false;
-            }
-        }
-
-        if (canSpawn) {
-            platforms.push_back(newPlatform);
-        }
-    }
+    return grassTypes[rand() % grassTypes.size()];
 }
 
-void PlatformManager::spawnLandObstaclePattern(ObstacleManager& obstacleManager) {
-    std::vector<PlatformType> landTypes = {
-        PlatformType::LAND_MID, PlatformType::LAND_SMALL
-    };
-    PlatformType landType = landTypes[rand() % landTypes.size()];
-
-    if (platformTextures.find(landType) == platformTextures.end()) {
-        std::cerr << "Error: Texture for " << static_cast<int>(landType) << " not found!" << std::endl;
-        return;
-    }
-
+void PlatformManager::spawnLadderType1() {
+    PlatformType grassType = getRandomGrassType();
     int xPos = SCREEN_WIDTH;
-    int yPos = GROUND_LEVEL;
+    int yPos = GROUND_LEVEL - KONG_HEIGHT;
 
-    bool canSpawn = true;
-    if (!platforms.empty()) {
-        Platform& lastPlatform = platforms.back();
-        if (SCREEN_WIDTH - (lastPlatform.rect.x + lastPlatform.rect.w) < 300) {
-            canSpawn = false;
-        }
-    }
+    if (platformTextures.find(grassType) != platformTextures.end()) {
+        Platform grassPlatform(platformTextures.at(grassType), grassType, xPos, yPos);
+        platforms.push_back(grassPlatform);
 
-    if (!canSpawn) {
-        return;
-    }
+        if (rand() % 100 < 70) {
+            bool spawnAbove = (rand() % 100 < 50);
+            ObstacleType obstacleType = obstacleManager.getRandomObstacleType();
+            SDL_Texture* obstacleTexture = obstacleManager.getTextureForType(obstacleType);
 
-    Platform landPlatform(platformTextures[landType], landType, xPos, yPos);
-    platforms.push_back(landPlatform);
+            if (obstacleTexture) {
+                int obstacleWidth = (obstacleType == ObstacleType::PLANE) ? 270 :
+                                    (obstacleType == ObstacleType::ROCK) ? 209 : 106;
+                int obstacleHeight = 133;
+                int obstacleX = xPos + 50 + (rand() % (grassPlatform.rect.w - obstacleWidth - 100));
+                int obstacleY = spawnAbove ? yPos - obstacleHeight : GROUND_LEVEL - obstacleHeight;
 
-    ObstacleType obstacleType = obstacleManager.getRandomObstacleType();
-    SDL_Texture* obstacleTexture = obstacleManager.getTextureForType(obstacleType);
-
-    if (obstacleTexture) {
-        Obstacle newObstacle;
-        newObstacle.type = obstacleType;
-        newObstacle.rect.w = (obstacleType == ObstacleType::PLANE) ? 270 :
-                             (obstacleType == ObstacleType::ROCK) ? 209 : 106;
-        newObstacle.rect.h = 133;
-        newObstacle.rect.x = xPos + 50 + (rand() % (landPlatform.rect.w - newObstacle.rect.w - 100));
-        newObstacle.rect.y = 755 - newObstacle.rect.h;
-
-        if (isValidPositionForObstacle(newObstacle.rect.x, newObstacle.rect.y, newObstacle.rect.w, newObstacle.rect.h)) {
-            newObstacle.texture = obstacleTexture;
-            newObstacle.speed = obstacleManager.getRandomSpeed();
-            newObstacle.isPlatform = false;
-            obstacleManager.addObstacle(newObstacle);
-        }
-    }
-}
-
-void PlatformManager::spawnBarrelPattern(ObstacleManager& obstacleManager) {
-    bool useLand = (rand() % 100) < 60;
-    int numLayers = (rand() % 2) + 1;
-
-    PlatformType baseType;
-    if (useLand) {
-        baseType = (rand() % 2 == 0) ? PlatformType::LAND_MID : PlatformType::LAND_SMALL;
-    } else {
-        baseType = (numLayers == 1) ? PlatformType::GRASS_MID
-                                   : ((rand() % 2 == 0) ? PlatformType::GRASS_SUPERBIG : PlatformType::GRASS_BIG);
-    }
-
-    if (platformTextures.find(baseType) == platformTextures.end()) {
-        std::cerr << "Error: Texture for " << static_cast<int>(baseType) << " not found!" << std::endl;
-        return;
-    }
-
-    int xPos = SCREEN_WIDTH;
-    int yPos = useLand ? GROUND_LEVEL : findValidYForGrass(xPos, KONG_HEIGHT);
-
-    bool canSpawn = true;
-    if (!platforms.empty()) {
-        Platform& lastPlatform = platforms.back();
-        if (SCREEN_WIDTH - (lastPlatform.rect.x + lastPlatform.rect.w) < 300) {
-            canSpawn = false;
-        }
-    }
-
-    if (!canSpawn) {
-        return;
-    }
-
-    Platform basePlatform(platformTextures[baseType], baseType, xPos, yPos);
-    platforms.push_back(basePlatform);
-
-    if (rand() % 100 < 30) {
-        ObstacleType obstacleType = obstacleManager.getRandomObstacleType();
-        SDL_Texture* obstacleTexture = obstacleManager.getTextureForType(obstacleType);
-
-        if (obstacleTexture) {
-            Obstacle newObstacle;
-            newObstacle.type = obstacleType;
-            newObstacle.rect.w = (obstacleType == ObstacleType::PLANE) ? 270 :
-                                 (obstacleType == ObstacleType::ROCK) ? 209 : 106;
-            newObstacle.rect.h = 133;
-            newObstacle.rect.x = xPos + 50 + (rand() % (basePlatform.rect.w - newObstacle.rect.w - 100));
-            newObstacle.rect.y = yPos - newObstacle.rect.h;
-
-            if (isValidPositionForObstacle(newObstacle.rect.x, newObstacle.rect.y, newObstacle.rect.w, newObstacle.rect.h)) {
-                newObstacle.texture = obstacleTexture;
-                newObstacle.speed = obstacleManager.getRandomSpeed();
-                newObstacle.isPlatform = false;
-                obstacleManager.addObstacle(newObstacle);
-            }
-        }
-    }
-
-    if (numLayers == 2 && !useLand) {
-        PlatformType upperType = PlatformType::GRASS_MID;
-        int upperYPos = yPos - KONG_HEIGHT - 34;
-
-        if (platformTextures.find(upperType) != platformTextures.end()) {
-            Platform upperPlatform(platformTextures[upperType], upperType, xPos + 100, upperYPos);
-            platforms.push_back(upperPlatform);
-
-            if (rand() % 100 < 50) {
-                ObstacleType obstacleType = obstacleManager.getRandomObstacleType();
-                SDL_Texture* obstacleTexture = obstacleManager.getTextureForType(obstacleType);
-
-                if (obstacleTexture) {
+                if (isValidPositionForObstacle(obstacleX, obstacleY, obstacleWidth, obstacleHeight)) {
                     Obstacle newObstacle;
                     newObstacle.type = obstacleType;
-                    newObstacle.rect.w = (obstacleType == ObstacleType::PLANE) ? 270 :
-                                         (obstacleType == ObstacleType::ROCK) ? 209 : 106;
-                    newObstacle.rect.h = 133;
-                    newObstacle.rect.x = xPos + 150 + (rand() % (upperPlatform.rect.w - newObstacle.rect.w - 100));
-                    newObstacle.rect.y = upperYPos - newObstacle.rect.h;
+                    newObstacle.rect = {obstacleX, obstacleY, obstacleWidth, obstacleHeight};
+                    newObstacle.texture = obstacleTexture;
+                    newObstacle.speed = scrollSpeed / 5.0f;
+                    newObstacle.isPlatform = false;
+                    obstacleManager.addObstacle(newObstacle);
+                }
+            }
+        }
+    }
+}
 
-                    if (isValidPositionForObstacle(newObstacle.rect.x, newObstacle.rect.y, newObstacle.rect.w, newObstacle.rect.h)) {
-                        newObstacle.texture = obstacleTexture;
-                        newObstacle.speed = obstacleManager.getRandomSpeed();
-                        newObstacle.isPlatform = false;
-                        obstacleManager.addObstacle(newObstacle);
+void PlatformManager::spawnLadderType2() {
+    PlatformType grassType1 = getRandomGrassType();
+    PlatformType grassType2 = getRandomGrassType();
+    int xPos = SCREEN_WIDTH;
+    int tier1Y = GROUND_LEVEL - KONG_HEIGHT;
+    int tier2Y = tier1Y - KONG_HEIGHT - 34;
+
+    if (platformTextures.find(grassType1) != platformTextures.end()) {
+        Platform tier1Platform(platformTextures.at(grassType1), grassType1, xPos, tier1Y);
+        platforms.push_back(tier1Platform);
+
+        if (platformTextures.find(grassType2) != platformTextures.end()) {
+            Platform tier2Platform(platformTextures.at(grassType2), grassType2, xPos + 100, tier2Y);
+            platforms.push_back(tier2Platform);
+
+            if (rand() % 100 < 80) {
+                int numObstacles = (rand() % 100 < 30) ? 2 : 1;
+                for (int i = 0; i < numObstacles; i++) {
+                    ObstacleType obstacleType = obstacleManager.getRandomObstacleType();
+                    SDL_Texture* obstacleTexture = obstacleManager.getTextureForType(obstacleType);
+
+                    if (obstacleTexture) {
+                        int obstacleWidth = (obstacleType == ObstacleType::PLANE) ? 270 :
+                                            (obstacleType == ObstacleType::ROCK) ? 209 : 106;
+                        int obstacleHeight = 133;
+                        int obstacleX, obstacleY;
+
+                        int position = rand() % 3;
+                        if (position == 0 || (i == 1 && numObstacles == 2)) {
+                            obstacleX = xPos + 50 + (rand() % (tier1Platform.rect.w - obstacleWidth - 100));
+                            obstacleY = GROUND_LEVEL - obstacleHeight;
+                        } else if (position == 1) {
+                            obstacleX = xPos + 50 + (rand() % (tier1Platform.rect.w - obstacleWidth - 100));
+                            obstacleY = tier1Y - obstacleHeight;
+                        } else {
+                            obstacleX = xPos + 150 + (rand() % (tier2Platform.rect.w - obstacleWidth - 100));
+                            obstacleY = tier2Y - obstacleHeight;
+                        }
+
+                        if (isValidPositionForObstacle(obstacleX, obstacleY, obstacleWidth, obstacleHeight)) {
+                            Obstacle newObstacle;
+                            newObstacle.type = obstacleType;
+                            newObstacle.rect = {obstacleX, obstacleY, obstacleWidth, obstacleHeight};
+                            newObstacle.texture = obstacleTexture;
+                            newObstacle.speed = scrollSpeed / 5.0f;
+                            newObstacle.isPlatform = false;
+                            obstacleManager.addObstacle(newObstacle);
+                        }
                     }
                 }
             }
@@ -212,66 +131,223 @@ void PlatformManager::spawnBarrelPattern(ObstacleManager& obstacleManager) {
     }
 }
 
-void PlatformManager::spawnStairUpPattern() {
-    const int NUM_STEPS = 3 + (rand() % 2);
-
-    std::vector<PlatformType> grassTypes = {
-        PlatformType::GRASS_BIG, PlatformType::GRASS_MID, PlatformType::GRASS_SUPERBIG
-    };
-    PlatformType grassType = grassTypes[rand() % grassTypes.size()];
-
+void PlatformManager::spawnLadderType3() {
+    PlatformType grassType = getRandomGrassType();
     int xPos = SCREEN_WIDTH;
-    int yPos = GROUND_LEVEL;
-    int stepWidth = 230;
-    int stepHeight = KONG_HEIGHT;
+    int tier1Y = 739;
+    int tier2Y = 590;
+    int tier3Y = 441;
 
-    for (int i = 0; i < NUM_STEPS; i++) {
-        if (platformTextures.find(grassType) != platformTextures.end()) {
-            Platform newPlatform(platformTextures[grassType], grassType, xPos, yPos);
-            platforms.push_back(newPlatform);
+    if (platformTextures.find(grassType) != platformTextures.end()) {
+        Platform tier1Platform(platformTextures.at(grassType), grassType, xPos, tier1Y);
+        platforms.push_back(tier1Platform);
+
+        Platform tier2Platform(platformTextures.at(grassType), grassType, xPos + 100, tier2Y);
+        platforms.push_back(tier2Platform);
+
+        Platform tier3Platform(platformTextures.at(grassType), grassType, xPos + 200, tier3Y);
+        platforms.push_back(tier3Platform);
+
+        std::vector<int> tiers = {0, 1, 2};
+        std::random_shuffle(tiers.begin(), tiers.end());
+
+        for (int i = 0; i < 2; i++) {
+            ObstacleType obstacleType = obstacleManager.getRandomObstacleType();
+            SDL_Texture* obstacleTexture = obstacleManager.getTextureForType(obstacleType);
+
+            if (obstacleTexture) {
+                int obstacleWidth = (obstacleType == ObstacleType::PLANE) ? 270 :
+                                    (obstacleType == ObstacleType::ROCK) ? 209 : 106;
+                int obstacleHeight = 133;
+                int obstacleX, obstacleY;
+
+                int tier = tiers[i];
+                if (tier == 0) {
+                    obstacleX = xPos + 50 + (rand() % (tier1Platform.rect.w - obstacleWidth - 100));
+                    obstacleY = tier1Y - obstacleHeight;
+                } else if (tier == 1) {
+                    obstacleX = xPos + 150 + (rand() % (tier2Platform.rect.w - obstacleWidth - 100));
+                    obstacleY = tier2Y - obstacleHeight;
+                } else {
+                    obstacleX = xPos + 250 + (rand() % (tier3Platform.rect.w - obstacleWidth - 100));
+                    obstacleY = tier3Y - obstacleHeight;
+                }
+
+                if (isValidPositionForObstacle(obstacleX, obstacleY, obstacleWidth, obstacleHeight)) {
+                    Obstacle newObstacle;
+                    newObstacle.type = obstacleType;
+                    newObstacle.rect = {obstacleX, obstacleY, obstacleWidth, obstacleHeight};
+                    newObstacle.texture = obstacleTexture;
+                    newObstacle.speed = scrollSpeed / 5.0f;
+                    newObstacle.isPlatform = false;
+                    obstacleManager.addObstacle(newObstacle);
+                }
+            }
         }
-        xPos += stepWidth;
-        yPos -= stepHeight;
     }
 }
 
-void PlatformManager::spawnParallelPattern() {
-    std::vector<PlatformType> grassTypes = {
-        PlatformType::GRASS_BIG, PlatformType::GRASS_MID, PlatformType::GRASS_SUPERBIG
-    };
-    PlatformType grassType = grassTypes[rand() % grassTypes.size()];
-
+void PlatformManager::spawnGapType1() {
+    PlatformType landType = (rand() % 2 == 0) ? PlatformType::LAND_MID : PlatformType::LAND_SMALL;
     int xPos = SCREEN_WIDTH;
-    int baseY = GROUND_LEVEL;
-    int platformDistance = 280;
+    int landHeight = (landType == PlatformType::LAND_MID) ? 155 : 159;
+    int yPos = GROUND_LEVEL - landHeight;
 
-    if (platformTextures.find(grassType) != platformTextures.end()) {
-        Platform firstPlatform(platformTextures[grassType], grassType, xPos, baseY);
-        platforms.push_back(firstPlatform);
-        Platform secondPlatform(platformTextures[grassType], grassType, xPos + platformDistance, baseY - KONG_HEIGHT);
-        platforms.push_back(secondPlatform);
-        Platform thirdPlatform(platformTextures[grassType], grassType, xPos + platformDistance * 2, baseY - KONG_HEIGHT * 2);
-        platforms.push_back(thirdPlatform);
+    if (platformTextures.find(landType) != platformTextures.end()) {
+        Platform landPlatform(platformTextures.at(landType), landType, xPos, yPos);
+        platforms.push_back(landPlatform);
+
+        if (rand() % 100 < 70) {
+            bool spawnAbove = (rand() % 100 < 50);
+            ObstacleType obstacleType = obstacleManager.getRandomObstacleType();
+            SDL_Texture* obstacleTexture = obstacleManager.getTextureForType(obstacleType);
+
+            if (obstacleTexture) {
+                int obstacleWidth = (obstacleType == ObstacleType::PLANE) ? 270 :
+                                    (obstacleType == ObstacleType::ROCK) ? 209 : 106;
+                int obstacleHeight = 133;
+                int obstacleX = xPos + 50 + (rand() % (landPlatform.rect.w - obstacleWidth - 100));
+                int obstacleY = spawnAbove ? yPos - obstacleHeight : GROUND_LEVEL - obstacleHeight;
+
+                if (isValidPositionForObstacle(obstacleX, obstacleY, obstacleWidth, obstacleHeight)) {
+                    Obstacle newObstacle;
+                    newObstacle.type = obstacleType;
+                    newObstacle.rect = {obstacleX, obstacleY, obstacleWidth, obstacleHeight};
+                    newObstacle.texture = obstacleTexture;
+                    newObstacle.speed = scrollSpeed / 5.0f;
+                    newObstacle.isPlatform = false;
+                    obstacleManager.addObstacle(newObstacle);
+                }
+            }
+        }
     }
 }
 
-void PlatformManager::spawnGapPattern() {
-    const int NUM_PLATFORMS = 3;
-
-    std::vector<PlatformType> grassTypes = {
-        PlatformType::GRASS_BIG, PlatformType::GRASS_MID, PlatformType::GRASS_SUPERBIG
-    };
-    PlatformType grassType = grassTypes[rand() % grassTypes.size()];
-
+void PlatformManager::spawnGapType2() {
+    PlatformType landType = (rand() % 2 == 0) ? PlatformType::LAND_MID : PlatformType::LAND_SMALL;
+    PlatformType grassType = getRandomGrassType();
     int xPos = SCREEN_WIDTH;
-    int yPos = GROUND_LEVEL;
-    int gapSize = 200 + (rand() % 100);
+    int landHeight = (landType == PlatformType::LAND_MID) ? 155 : 159;
+    int landY = GROUND_LEVEL - landHeight;
+    int grassY = landY - landHeight - KONG_HEIGHT;
 
-    if (platformTextures.find(grassType) != platformTextures.end()) {
-        for (int i = 0; i < NUM_PLATFORMS; i++) {
-            Platform newPlatform(platformTextures[grassType], grassType, xPos, yPos);
-            platforms.push_back(newPlatform);
-            xPos += 350 + gapSize;
+    if (platformTextures.find(landType) != platformTextures.end()) {
+        Platform landPlatform(platformTextures.at(landType), landType, xPos, landY);
+        platforms.push_back(landPlatform);
+
+        if (platformTextures.find(grassType) != platformTextures.end()) {
+            Platform grassPlatform(platformTextures.at(grassType), grassType, xPos + 100, grassY);
+            platforms.push_back(grassPlatform);
+
+            if (rand() % 100 < 80) {
+                int numObstacles = (rand() % 100 < 30) ? 2 : 1;
+                for (int i = 0; i < numObstacles; i++) {
+                    ObstacleType obstacleType = obstacleManager.getRandomObstacleType();
+                    SDL_Texture* obstacleTexture = obstacleManager.getTextureForType(obstacleType);
+
+                    if (obstacleTexture) {
+                        int obstacleWidth = (obstacleType == ObstacleType::PLANE) ? 270 :
+                                            (obstacleType == ObstacleType::ROCK) ? 209 : 106;
+                        int obstacleHeight = 133;
+                        int obstacleX, obstacleY;
+
+                        int position = rand() % 3;
+                        if (position == 0 || (i == 1 && numObstacles == 2)) {
+                            obstacleX = xPos + 50 + (rand() % (landPlatform.rect.w - obstacleWidth - 100));
+                            obstacleY = GROUND_LEVEL - obstacleHeight;
+                        } else if (position == 1) {
+                            obstacleX = xPos + 50 + (rand() % (landPlatform.rect.w - obstacleWidth - 100));
+                            obstacleY = landY - obstacleHeight;
+                        } else {
+                            obstacleX = xPos + 150 + (rand() % (grassPlatform.rect.w - obstacleWidth - 100));
+                            obstacleY = grassY - obstacleHeight;
+                        }
+
+                        if (isValidPositionForObstacle(obstacleX, obstacleY, obstacleWidth, obstacleHeight)) {
+                            Obstacle newObstacle;
+                            newObstacle.type = obstacleType;
+                            newObstacle.rect = {obstacleX, obstacleY, obstacleWidth, obstacleHeight};
+                            newObstacle.texture = obstacleTexture;
+                            newObstacle.speed = scrollSpeed / 5.0f;
+                            newObstacle.isPlatform = false;
+                            obstacleManager.addObstacle(newObstacle);
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+void PlatformManager::spawnGapType3() {
+    PlatformType landType = (rand() % 2 == 0) ? PlatformType::LAND_MID : PlatformType::LAND_SMALL;
+    PlatformType grassType1 = getRandomGrassType();
+    PlatformType grassType2 = getRandomGrassType();
+    int xPos = SCREEN_WIDTH;
+    int landHeight = (landType == PlatformType::LAND_MID) ? 155 : 159;
+    int landY = GROUND_LEVEL - landHeight;
+    int tier1Y = landY - landHeight - KONG_HEIGHT;
+    int tier2Y = tier1Y - KONG_HEIGHT - 34;
+
+    if (platformTextures.find(landType) != platformTextures.end()) {
+        Platform landPlatform(platformTextures.at(landType), landType, xPos, landY);
+        platforms.push_back(landPlatform);
+
+        if (platformTextures.find(grassType1) != platformTextures.end()) {
+            Platform tier1Platform(platformTextures.at(grassType1), grassType1, xPos + 100, tier1Y);
+            platforms.push_back(tier1Platform);
+
+            if (platformTextures.find(grassType2) != platformTextures.end()) {
+                Platform tier2Platform(platformTextures.at(grassType2), grassType2, xPos + 200, tier2Y);
+                platforms.push_back(tier2Platform);
+
+                if (rand() % 100 < 90) {
+                    int numObstacles = (rand() % 100 < 50) ? 2 : 1;
+                    std::vector<int> positions = {0, 1, 2, 3};
+
+                    // Sử dụng std::shuffle thay vì std::random_shuffle
+                    std::random_device rd;
+                    std::mt19937 g(rd());
+                    std::shuffle(positions.begin(), positions.end(), g);
+
+                    for (int i = 0; i < numObstacles; i++) {
+                        ObstacleType obstacleType = obstacleManager.getRandomObstacleType();
+                        SDL_Texture* obstacleTexture = obstacleManager.getTextureForType(obstacleType);
+
+                        if (obstacleTexture) {
+                            int obstacleWidth = (obstacleType == ObstacleType::PLANE) ? 270 :
+                                                (obstacleType == ObstacleType::ROCK) ? 209 : 106;
+                            int obstacleHeight = 133;
+                            int obstacleX, obstacleY;
+
+                            int pos = positions[i];
+                            if (pos == 0) {
+                                obstacleX = xPos + 50 + (rand() % (landPlatform.rect.w - obstacleWidth - 100));
+                                obstacleY = GROUND_LEVEL - obstacleHeight;
+                            } else if (pos == 1) {
+                                obstacleX = xPos + 50 + (rand() % (landPlatform.rect.w - obstacleWidth - 100));
+                                obstacleY = landY - obstacleHeight;
+                            } else if (pos == 2) {
+                                obstacleX = xPos + 150 + (rand() % (tier1Platform.rect.w - obstacleWidth - 100));
+                                obstacleY = tier1Y - obstacleHeight;
+                            } else {
+                                obstacleX = xPos + 250 + (rand() % (tier2Platform.rect.w - obstacleWidth - 100));
+                                obstacleY = tier2Y - obstacleHeight;
+                            }
+
+                            if (isValidPositionForObstacle(obstacleX, obstacleY, obstacleWidth, obstacleHeight)) {
+                                Obstacle newObstacle;
+                                newObstacle.type = obstacleType;
+                                newObstacle.rect = {obstacleX, obstacleY, obstacleWidth, obstacleHeight};
+                                newObstacle.texture = obstacleTexture;
+                                newObstacle.speed = scrollSpeed / 5.0f;
+                                newObstacle.isPlatform = false;
+                                obstacleManager.addObstacle(newObstacle);
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }
