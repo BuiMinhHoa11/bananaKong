@@ -81,4 +81,4 @@ private:
     SDL_Renderer* renderer;
 };
 
-#endif // GRAPHICS_H_
+#endif // GRAPHICS__H_
