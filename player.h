@@ -74,6 +74,11 @@ public:
     // Phương thức để bật/tắt hiển thị khung va chạm
     void toggleCollisionDisplay();
     bool isCollisionDisplayed() const { return showCollision; }
+
+    void setAnimationSpeed(int speed) {
+        sprite.setAnimationSpeed(speed);
+        slideSprite.setAnimationSpeed(speed);
+    }
 };
 
 #endif // PLAYER_H_
