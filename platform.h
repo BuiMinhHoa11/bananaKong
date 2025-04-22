@@ -1,15 +1,14 @@
-#ifndef PLATFORM_H_
-#define PLATFORM_H_
+#ifndef PLATFORM_H
+#define PLATFORM_H
 
+#include <SDL.h>
+#include <map>
+#include <vector>
 #include "obstacle.h"
 #include "common_func.h"
-#include "graphics.h"
-#include <vector>
-#include <map>
 
-// Định nghĩa GROUND_LEVEL và KONG_HEIGHT
-const int GROUND_LEVEL = 730;
-const int KONG_HEIGHT = 149;
+const int GROUND_LEVEL = 888;
+const int KONG_HEIGHT = 150;
 
 enum class PlatformType {
     GRASS_BIG,
@@ -20,58 +19,56 @@ enum class PlatformType {
     VINE
 };
 
-enum class PlatformPattern {
-    SINGLE,      // Platform đơn lẻ
-    STAIR_UP,    // Các platform xếp như cầu thang đi lên
-    PARALLEL,    // Nhiều platform song song
-    GAP,         // Các platform có khoảng cách (để nhảy)
-    BARREL,      // Platform có chướng ngại vật
-    LAND_OBSTACLE // Platform đất với chướng ngại vật
-};
+class Graphics;
 
-struct Platform {
-    SDL_Rect rect;
+class Platform {
+public:
+    Platform(SDL_Texture* tex, PlatformType t, int x, int y);
     SDL_Texture* texture;
     PlatformType type;
-    bool active; // Để biết nền tảng có hiển thị trên màn hình không
-
-    Platform(SDL_Texture* tex, PlatformType t, int x, int y);
+    SDL_Rect rect;
+    bool active;
 };
 
 class PlatformManager {
-private:
-    std::map<PlatformType, SDL_Texture*> platformTextures;
-    std::vector<Platform> platforms;
-    float difficulty;
-    float scrollSpeed; // Tốc độ di chuyển của platform
-    int spawnDelay;  // Thời gian giữa mỗi lần sinh platform
-    int spawnTimer;  // Đếm thời gian để sinh platform tiếp theo
-    ObstacleManager& obstacleManager;
-    // Giữ lại các phương thức cần thiết
-    int findValidYForGrass(int x, int kongHeight) const;
-
 public:
     PlatformManager(std::map<PlatformType, SDL_Texture*> textures, ObstacleManager& obsManager);
     void update(float deltaTime);
     void render(Graphics* graphics);
-    void renderDebugCollision(Graphics* graphics, const Platform& platform);
-    const std::vector<Platform>& getPlatforms() const;
-    void setScrollSpeed(float speed);
     void clear();
-    bool isValidPositionForObstacle(int x, int y, int width, int height) const;
+    void setScrollSpeed(float speed);
+    float getDifficulty() const;
+    const std::vector<Platform>& getPlatforms() const;
+    ObstacleManager& getObstacleManager() { return obstacleManager; }
+    const std::map<PlatformType, SDL_Texture*>& getPlatformTextures() const { return platformTextures; }
 
     void spawnPlatformPattern();
-    void spawnSinglePlatform();
-    void spawnStairUpPattern();
-    void spawnParallelPattern();
-    void spawnGapPattern();
-    void spawnBarrelPattern(ObstacleManager& obstacleManager);
-    void spawnLandObstaclePattern(ObstacleManager& obstacleManager); // Hàm mới
+    PlatformType getRandomGrassType() const;
+    void spawnLadderType1();
+    void spawnLadderType2();
+    void spawnLadderType3();
+    void spawnGapType1();
+    void spawnGapType2();
+    void spawnGapType3();
 
-    void increaseDifficulty(float amount);
-    float getDifficulty() const;
+private:
+    std::map<PlatformType, SDL_Texture*> platformTextures;
+    std::vector<Platform> platforms;
+    ObstacleManager& obstacleManager;
+    float scrollSpeed;
+    int spawnDelay;
+    int spawnTimer;
+    float difficulty;
     float difficultyTimer;
-    float difficultyIncreaseInterval;
+    int difficultyIncreaseInterval;
+    int minPlatformDistance;
+    int initialPlatformDistance;
+
+    bool canSpawnPlatform() const;
+    void increaseDifficulty(float amount);
+    int findValidYForGrass(int x, int kongHeight) const;
+    bool isValidPositionForObstacle(int x, int y, int width, int height) const;
+    void renderDebugCollision(Graphics* graphics, const Platform& platform);
 };
 
-#endif // PLATFORM_H_
+#endif
