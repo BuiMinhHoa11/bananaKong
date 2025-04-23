@@ -26,17 +26,35 @@ bool ObstacleManager::checkCollision(int centerX, int centerY, int radius) const
         SDL_Rect collisionBox = adjustCollisionBox(obstacle.rect, obstacle.type);
         int obsCenterX = collisionBox.x + collisionBox.w / 2;
         int obsCenterY = collisionBox.y + collisionBox.h / 2;
-        int distX = abs(centerX - obsCenterX);
-        int distY = abs(centerY - obsCenterY);
+        int distX = centerX - obsCenterX;
+        int distY = centerY - obsCenterY;
 
-        if (distX > (collisionBox.w / 2 + radius)) continue;
-        if (distY > (collisionBox.h / 2 + radius)) continue;
+        // Kiểm tra nếu Kong ở phía trên chướng ngại vật (cho phép đứng lên)
+        if (obstacle.isPlatform) {
+            // Tính toán vị trí chân của Kong
+            int kongBottomY = centerY + radius;
+            int obstacleTopY = collisionBox.y;
 
-        if (distX <= (collisionBox.w / 2)) return true;
-        if (distY <= (collisionBox.h / 2)) return true;
+            // Nếu chân của Kong ở trên đỉnh chướng ngại vật và không va chạm từ các phía khác
+            if (kongBottomY >= obstacleTopY && kongBottomY <= obstacleTopY + 10 && // Chân của Kong gần đỉnh chướng ngại vật
+                abs(distX) <= (collisionBox.w / 2 + radius) && // Trong phạm vi chiều ngang của chướng ngại vật
+                distY < 0) { // Kong ở phía trên
+                continue; // Không gây GAME_OVER, cho phép đứng lên
+            }
+        }
 
-        int cornerDistSq = pow(distX - collisionBox.w / 2, 2) +
-                          pow(distY - collisionBox.h / 2, 2);
+        // Kiểm tra va chạm thông thường (gây GAME_OVER nếu va chạm từ các phía khác)
+        int absDistX = abs(distX);
+        int absDistY = abs(distY);
+
+        if (absDistX > (collisionBox.w / 2 + radius)) continue;
+        if (absDistY > (collisionBox.h / 2 + radius)) continue;
+
+        if (absDistX <= (collisionBox.w / 2)) return true;
+        if (absDistY <= (collisionBox.h / 2)) return true;
+
+        int cornerDistSq = pow(absDistX - collisionBox.w / 2, 2) +
+                          pow(absDistY - collisionBox.h / 2, 2);
 
         if (cornerDistSq <= pow(radius, 2)) return true;
     }
