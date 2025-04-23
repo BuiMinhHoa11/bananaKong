@@ -4,16 +4,21 @@
 #include <algorithm>
 #include <random>
 
-// Các hàm khác trong platform.cpp (giữ nguyên, không thay đổi)
 void PlatformManager::spawnPlatformPattern() {
     int roll = rand() % 100;
     int patternType;
 
-    if (difficulty < 3.0f) {
+    if (difficulty <= 2.0f) {
         if (roll < 40) patternType = 1;
         else if (roll < 80) patternType = 4;
         else patternType = 2;
-    } else if (difficulty < 7.0f) {
+    } else if (difficulty <= 4.5f) {
+        if (roll < 20) patternType = 5;
+        else if (roll < 40) patternType = 4;
+        else if (roll < 60) patternType = 2;
+        else if (roll < 80) patternType = 3;
+        else patternType = 6;
+    } else if (difficulty <= 7.0f) {
         if (roll < 30) patternType = 2;
         else if (roll < 60) patternType = 5;
         else if (roll < 80) patternType = 4;
@@ -69,7 +74,7 @@ void PlatformManager::spawnLadderType1() {
                     newObstacle.rect = {obstacleX, obstacleY, obstacleWidth, obstacleHeight};
                     newObstacle.texture = obstacleTexture;
                     newObstacle.speed = scrollSpeed / 5.0f;
-                    newObstacle.isPlatform = false;
+                    newObstacle.isPlatform = true; // Cho phép đi lên
                     obstacleManager.addObstacle(newObstacle);
                 }
             }
@@ -122,7 +127,7 @@ void PlatformManager::spawnLadderType2() {
                             newObstacle.rect = {obstacleX, obstacleY, obstacleWidth, obstacleHeight};
                             newObstacle.texture = obstacleTexture;
                             newObstacle.speed = scrollSpeed / 5.0f;
-                            newObstacle.isPlatform = false;
+                            newObstacle.isPlatform = true; // Cho phép đi lên
                             obstacleManager.addObstacle(newObstacle);
                         }
                     }
@@ -149,7 +154,6 @@ void PlatformManager::spawnLadderType3() {
         Platform tier3Platform(platformTextures.at(grassType), grassType, xPos + 200, tier3Y);
         platforms.push_back(tier3Platform);
 
-        // Sử dụng std::shuffle thay vì std::random_shuffle
         std::vector<int> tiers = {0, 1, 2};
         std::random_device rd;
         std::mt19937 g(rd());
@@ -183,7 +187,7 @@ void PlatformManager::spawnLadderType3() {
                     newObstacle.rect = {obstacleX, obstacleY, obstacleWidth, obstacleHeight};
                     newObstacle.texture = obstacleTexture;
                     newObstacle.speed = scrollSpeed / 5.0f;
-                    newObstacle.isPlatform = false;
+                    newObstacle.isPlatform = true; // Cho phép đi lên
                     obstacleManager.addObstacle(newObstacle);
                 }
             }
@@ -219,7 +223,7 @@ void PlatformManager::spawnGapType1() {
                     newObstacle.rect = {obstacleX, obstacleY, obstacleWidth, obstacleHeight};
                     newObstacle.texture = obstacleTexture;
                     newObstacle.speed = scrollSpeed / 5.0f;
-                    newObstacle.isPlatform = false;
+                    newObstacle.isPlatform = true; // Cho phép đi lên
                     obstacleManager.addObstacle(newObstacle);
                 }
             }
@@ -233,7 +237,7 @@ void PlatformManager::spawnGapType2() {
     int xPos = SCREEN_WIDTH;
     int landHeight = (landType == PlatformType::LAND_MID) ? 155 : 159;
     int landY = GROUND_LEVEL - landHeight;
-    int grassY = landY - landHeight - KONG_HEIGHT;
+    int grassY = landY - KONG_HEIGHT;
 
     if (platformTextures.find(landType) != platformTextures.end()) {
         Platform landPlatform(platformTextures.at(landType), landType, xPos, landY);
@@ -273,7 +277,7 @@ void PlatformManager::spawnGapType2() {
                             newObstacle.rect = {obstacleX, obstacleY, obstacleWidth, obstacleHeight};
                             newObstacle.texture = obstacleTexture;
                             newObstacle.speed = scrollSpeed / 5.0f;
-                            newObstacle.isPlatform = false;
+                            newObstacle.isPlatform = true; // Cho phép đi lên
                             obstacleManager.addObstacle(newObstacle);
                         }
                     }
@@ -290,7 +294,7 @@ void PlatformManager::spawnGapType3() {
     int xPos = SCREEN_WIDTH;
     int landHeight = (landType == PlatformType::LAND_MID) ? 155 : 159;
     int landY = GROUND_LEVEL - landHeight;
-    int tier1Y = landY - landHeight - KONG_HEIGHT;
+    int tier1Y = landY - KONG_HEIGHT;
     int tier2Y = tier1Y - KONG_HEIGHT - 34;
 
     if (platformTextures.find(landType) != platformTextures.end()) {
@@ -309,7 +313,6 @@ void PlatformManager::spawnGapType3() {
                     int numObstacles = (rand() % 100 < 50) ? 2 : 1;
                     std::vector<int> positions = {0, 1, 2, 3};
 
-                    // Sử dụng std::shuffle thay vì std::random_shuffle
                     std::random_device rd;
                     std::mt19937 g(rd());
                     std::shuffle(positions.begin(), positions.end(), g);
@@ -345,7 +348,7 @@ void PlatformManager::spawnGapType3() {
                                 newObstacle.rect = {obstacleX, obstacleY, obstacleWidth, obstacleHeight};
                                 newObstacle.texture = obstacleTexture;
                                 newObstacle.speed = scrollSpeed / 5.0f;
-                                newObstacle.isPlatform = false;
+                                newObstacle.isPlatform = true; // Cho phép đi lên
                                 obstacleManager.addObstacle(newObstacle);
                             }
                         }
