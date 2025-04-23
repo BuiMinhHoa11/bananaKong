@@ -60,66 +60,65 @@
 	"player.h"
 	"obstacle.h"
 
-1745182907 source:d:\projectbtl\bananakong\common_func.cpp
+1745339859 source:d:\projectbtl\bananakong\common_func.cpp
 	"common_func.h"
 
-1745182907 d:\projectbtl\bananakong\common_func.h
+1745339859 d:\projectbtl\bananakong\common_func.h
 	<bits/stdc++.h>
 	<SDL.h>
 	<SDL_image.h>
 	<SDL_mixer.h>
 	<SDL_ttf.h>
 
-1745182907 source:d:\projectbtl\bananakong\graphics.cpp
+1745339859 source:d:\projectbtl\bananakong\graphics.cpp
 	"graphics.h"
 
-1745309291 d:\projectbtl\bananakong\graphics.h
+1745339859 d:\projectbtl\bananakong\graphics.h
 	"common_func.h"
 
-1745333103 source:d:\projectbtl\bananakong\main.cpp
+1745339859 source:d:\projectbtl\bananakong\main.cpp
 	"common_func.h"
 	"graphics.h"
 	"obstacle.h"
 	"player.h"
 	"platform.h"
 
-1745309271 d:\projectbtl\bananakong\obstacle.h
+1745339859 d:\projectbtl\bananakong\obstacle.h
 	<vector>
 	<map>
 	"graphics.h"
 
-1745333103 d:\projectbtl\bananakong\player.h
+1745339859 d:\projectbtl\bananakong\player.h
 	"common_func.h"
 	"graphics.h"
 	<vector>
 	<map>
 
-1745333103 d:\projectbtl\bananakong\platform.h
+1745339859 d:\projectbtl\bananakong\platform.h
 	<SDL.h>
 	<map>
 	<vector>
 	"obstacle.h"
 	"common_func.h"
 
-1745310002 source:d:\projectbtl\bananakong\obstacle.cpp
+1745403757 source:d:\projectbtl\bananakong\obstacle.cpp
 	"obstacle.h"
 	<cstdlib>
 
-1745309130 source:d:\projectbtl\bananakong\platform.cpp
+1745339859 source:d:\projectbtl\bananakong\platform.cpp
 	"platform.h"
 	<ctime>
 	<cstdlib>
 	<iostream>
 	<algorithm>
 
-1745309512 source:d:\projectbtl\bananakong\platform_patterns.cpp
-	"platform.h"
+1745338756 source:d:\projectbtl\bananakong\platform_patterns.cpp
 	<cstdlib>
 	<vector>
 	<algorithm>
 	<random>
 
-1745309663 source:d:\projectbtl\bananakong\player.cpp
+1745339859 source:d:\projectbtl\bananakong\player.cpp
 	"player.h"
 	"obstacle.h"
 
