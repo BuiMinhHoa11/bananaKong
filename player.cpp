@@ -1,28 +1,40 @@
 #include "player.h"
 #include "obstacle.h"
+#include "platform.h"
+#include "common_func.h"
+#include <algorithm>
+
+const float VALID_Y_POSITIONS[] = {
+    739.0f, 590.0f, 441.0f, // Từ spawnLadderType3
+    GROUND_LEVEL - KONG_HEIGHT, // Từ spawnLadderType1, spawnLadderType2, spawnGapType2, spawnGapType3
+    GROUND_LEVEL - KONG_HEIGHT * 2 , // Từ spawnLadderType2, spawnGapType3
+    GROUND_LEVEL - 155, // Từ spawnGapType1 (LAND_MID)
+    GROUND_LEVEL - 159, // Từ spawnGapType1 (LAND_SMALL)
+    GROUND_LEVEL - 155 - KONG_HEIGHT, // Từ spawnGapType2, spawnGapType3
+    GROUND_LEVEL - 155 - KONG_HEIGHT * 2 // Từ spawnGapType3
+};
 
 Player::Player() {
     x = 400;
-    y = 755;
+    y = KONG_DRAW_Y_START;
     velocityX = 0;
     velocityY = 0;
     gravity = 2000.0f;
     jumpForce = -800.0f;
     width = 200;
-    height = 167;
+    height = KONG_HEIGHT;;
     onGround = true;
+    isClimbingDown = false;
     state = RUNNING;
     collisionRadius = 45;
     showCollision = true;
 }
 
-Player::~Player() {
-}
+Player::~Player() {}
 
 void Player::init(SDL_Texture* runTexture) {
-    runSprite.texture = runTexture; // Đổi tên từ sprite thành runSprite
+    runSprite.texture = runTexture;
 
-    // Khởi tạo clip cho sprite chạy
     for (int i = 0; i < KONGRUN_FRAMES; i++) {
         SDL_Rect clip;
         clip.x = KONGRUN_CLIPS[i][0];
@@ -34,7 +46,7 @@ void Player::init(SDL_Texture* runTexture) {
     runSprite.frameDelayMax = 4;
 }
 
-void Player::update(float deltaTime, const std::vector<SDL_Rect>& platforms) {
+void Player::update(float deltaTime, const std::vector<SDL_Rect>& platforms, PlatformManager& platformManager) {
     velocityY += gravity * deltaTime;
     y += velocityY * deltaTime;
 
@@ -48,30 +60,73 @@ void Player::update(float deltaTime, const std::vector<SDL_Rect>& platforms) {
 
     x = 400;
 
-    if (!onAnyGround && y > 755) {
-        y = 755;
+    if (!onAnyGround && y > KONG_DRAW_Y_START) {
+        y = KONG_DRAW_Y_START;
         velocityY = 0;
         onAnyGround = true;
     }
 
     onGround = onAnyGround;
 
-    if (!onGround) {
+    if (onGround) {
+        state = RUNNING;
+        isClimbingDown = false;
+    } else {
         if (velocityY < 0) {
             state = JUMPING;
         } else {
             state = FALLING;
         }
-    } else {
-        state = RUNNING;
     }
 
-    runSprite.tick(); // Đổi tên từ sprite thành runSprite
+    runSprite.tick();
 }
 
-void Player::render(Graphics* graphics) {
-    graphics->render(x, y, runSprite); // Đổi tên từ sprite thành runSprite
+void Player::climbDown(PlatformManager& platformManager) {
+    if (!onGround || isClimbingDown) {
+        return; // Không leo xuống nếu không trên platform hoặc đang leo xuống
+    }
 
+    const auto& platforms = platformManager.getPlatforms();
+    float currentY = y;
+    float targetY = KONG_DRAW_Y_START; // Mặc định là mặt đất
+    bool foundPlatform = false;
+
+    // Tìm platform gần nhất phía dưới nhân vật
+    for (const auto& platform : platforms) {
+        if (!platform.active) continue;
+        float platformY = platform.rect.y;
+        // Kiểm tra platform thấp hơn nhân vật và trong phạm vi hợp lệ
+        if (platformY > currentY + height &&
+            std::any_of(std::begin(VALID_Y_POSITIONS), std::end(VALID_Y_POSITIONS),
+                        [platformY](float validY) { return std::abs(platformY - validY) < 5.0f; })) {
+            if (!foundPlatform || platformY < targetY) {
+                targetY = platformY;
+                foundPlatform = true;
+            }
+        }
+    }
+
+    if (foundPlatform) {
+        // Di chuyển xuống platform mục tiêu
+        velocityY = 300.0f; // Tốc độ rơi kiểm soát
+        isClimbingDown = true;
+        onGround = false;
+        state = FALLING;
+        // Điều chỉnh vị trí y để đứng trên platform
+        y = targetY - height + (getCollisionCenter().y - y - collisionRadius);
+    } else if (currentY < KONG_DRAW_Y_START - 5) {
+        // Rơi xuống mặt đất nếu không có platform
+        velocityY = 300.0f;
+        isClimbingDown = true;
+        onGround = false;
+        state = FALLING;
+    }
+}
+
+// Các phương thức khác giữ nguyên như code gốc
+void Player::render(Graphics* graphics) {
+    graphics->render(x, y, runSprite);
     if (showCollision) {
         renderDebugCollision(graphics);
     }
@@ -127,7 +182,7 @@ SDL_Point Player::getCollisionCenter() const {
 }
 
 int Player::getCollisionRadius() const {
-    return collisionRadius; // Xóa logic điều chỉnh bán kính cho SLIDING
+    return collisionRadius;
 }
 
 bool Player::checkCircularCollision(const SDL_Point& otherCenter, int otherRadius) const {
@@ -156,7 +211,7 @@ SDL_Rect Player::getCollisionBox() const {
     box.y = static_cast<int>(y) + paddingY;
     box.w = static_cast<int>(width) - (paddingX * 2);
     box.h = static_cast<int>(height) - (paddingY * 2);
-    return box; // Xóa logic điều chỉnh hộp va chạm cho SLIDING
+    return box;
 }
 
 bool Player::checkPlatformCollision(const SDL_Rect& obstacle) {
