@@ -1,3 +1,4 @@
+//platform_patterns.cpp
 #include "platform.h"
 #include <cstdlib>
 #include <vector>
@@ -65,7 +66,7 @@ void PlatformManager::spawnLadderType1() {
                 int obstacleWidth = (obstacleType == ObstacleType::PLANE) ? 270 :
                                     (obstacleType == ObstacleType::ROCK) ? 209 : 106;
                 int obstacleHeight = 133;
-                int obstacleX = xPos + 50 + (rand() % (grassPlatform.rect.w - obstacleWidth - 100));
+                int obstacleX = xPos + 200 + (rand() % (grassPlatform.rect.w - obstacleWidth - 100));
                 int obstacleY = spawnAbove ? yPos - obstacleHeight : GROUND_LEVEL - obstacleHeight;
 
                 if (isValidPositionForObstacle(obstacleX, obstacleY, obstacleWidth, obstacleHeight)) {
@@ -111,13 +112,13 @@ void PlatformManager::spawnLadderType2() {
 
                         int position = rand() % 3;
                         if (position == 0 || (i == 1 && numObstacles == 2)) {
-                            obstacleX = xPos + 50 + (rand() % (tier1Platform.rect.w - obstacleWidth - 100));
+                            obstacleX = xPos + 400 + (rand() % (tier1Platform.rect.w - obstacleWidth - 100));
                             obstacleY = GROUND_LEVEL - obstacleHeight;
                         } else if (position == 1) {
-                            obstacleX = xPos + 50 + (rand() % (tier1Platform.rect.w - obstacleWidth - 100));
+                            obstacleX = xPos + 400 + (rand() % (tier1Platform.rect.w - obstacleWidth - 100));
                             obstacleY = tier1Y - obstacleHeight;
                         } else {
-                            obstacleX = xPos + 150 + (rand() % (tier2Platform.rect.w - obstacleWidth - 100));
+                            obstacleX = xPos + 450 + (rand() % (tier2Platform.rect.w - obstacleWidth - 100));
                             obstacleY = tier2Y - obstacleHeight;
                         }
 
@@ -148,10 +149,10 @@ void PlatformManager::spawnLadderType3() {
         Platform tier1Platform(platformTextures.at(grassType), grassType, xPos, tier1Y);
         platforms.push_back(tier1Platform);
 
-        Platform tier2Platform(platformTextures.at(grassType), grassType, xPos + 100, tier2Y);
+        Platform tier2Platform(platformTextures.at(grassType), grassType, xPos + 200, tier2Y);
         platforms.push_back(tier2Platform);
 
-        Platform tier3Platform(platformTextures.at(grassType), grassType, xPos + 200, tier3Y);
+        Platform tier3Platform(platformTextures.at(grassType), grassType, xPos + 300, tier3Y);
         platforms.push_back(tier3Platform);
 
         std::vector<int> tiers = {0, 1, 2};
@@ -171,13 +172,13 @@ void PlatformManager::spawnLadderType3() {
 
                 int tier = tiers[i];
                 if (tier == 0) {
-                    obstacleX = xPos + 50 + (rand() % (tier1Platform.rect.w - obstacleWidth - 100));
+                    obstacleX = xPos + 200 + (rand() % (tier1Platform.rect.w - obstacleWidth - 100));
                     obstacleY = tier1Y - obstacleHeight;
                 } else if (tier == 1) {
-                    obstacleX = xPos + 150 + (rand() % (tier2Platform.rect.w - obstacleWidth - 100));
+                    obstacleX = xPos + 350 + (rand() % (tier2Platform.rect.w - obstacleWidth - 100));
                     obstacleY = tier2Y - obstacleHeight;
                 } else {
-                    obstacleX = xPos + 250 + (rand() % (tier3Platform.rect.w - obstacleWidth - 100));
+                    obstacleX = xPos + 650 + (rand() % (tier3Platform.rect.w - obstacleWidth - 100));
                     obstacleY = tier3Y - obstacleHeight;
                 }
 
@@ -214,7 +215,7 @@ void PlatformManager::spawnGapType1() {
                 int obstacleWidth = (obstacleType == ObstacleType::PLANE) ? 270 :
                                     (obstacleType == ObstacleType::ROCK) ? 209 : 106;
                 int obstacleHeight = 133;
-                int obstacleX = xPos + 50 + (rand() % (landPlatform.rect.w - obstacleWidth - 100));
+                int obstacleX = xPos + 350 + (rand() % (landPlatform.rect.w - obstacleWidth - 100));
                 int obstacleY = spawnAbove ? yPos - obstacleHeight : GROUND_LEVEL - obstacleHeight;
 
                 if (isValidPositionForObstacle(obstacleX, obstacleY, obstacleWidth, obstacleHeight)) {
@@ -261,13 +262,13 @@ void PlatformManager::spawnGapType2() {
 
                         int position = rand() % 3;
                         if (position == 0 || (i == 1 && numObstacles == 2)) {
-                            obstacleX = xPos + 50 + (rand() % (landPlatform.rect.w - obstacleWidth - 100));
+                            obstacleX = xPos + 100 + (rand() % (landPlatform.rect.w - obstacleWidth - 100));
                             obstacleY = GROUND_LEVEL - obstacleHeight;
                         } else if (position == 1) {
-                            obstacleX = xPos + 50 + (rand() % (landPlatform.rect.w - obstacleWidth - 100));
+                            obstacleX = xPos + 200 + (rand() % (landPlatform.rect.w - obstacleWidth - 100));
                             obstacleY = landY - obstacleHeight;
                         } else {
-                            obstacleX = xPos + 150 + (rand() % (grassPlatform.rect.w - obstacleWidth - 100));
+                            obstacleX = xPos + 300 + (rand() % (grassPlatform.rect.w - obstacleWidth - 100));
                             obstacleY = grassY - obstacleHeight;
                         }
 
@@ -329,16 +330,16 @@ void PlatformManager::spawnGapType3() {
 
                             int pos = positions[i];
                             if (pos == 0) {
-                                obstacleX = xPos + 50 + (rand() % (landPlatform.rect.w - obstacleWidth - 100));
+                                obstacleX = xPos + 100 + (rand() % (landPlatform.rect.w - obstacleWidth - 100));
                                 obstacleY = GROUND_LEVEL - obstacleHeight;
                             } else if (pos == 1) {
-                                obstacleX = xPos + 50 + (rand() % (landPlatform.rect.w - obstacleWidth - 100));
+                                obstacleX = xPos + 100 + (rand() % (landPlatform.rect.w - obstacleWidth - 100));
                                 obstacleY = landY - obstacleHeight;
                             } else if (pos == 2) {
-                                obstacleX = xPos + 150 + (rand() % (tier1Platform.rect.w - obstacleWidth - 100));
+                                obstacleX = xPos + 350 + (rand() % (tier1Platform.rect.w - obstacleWidth - 100));
                                 obstacleY = tier1Y - obstacleHeight;
                             } else {
-                                obstacleX = xPos + 250 + (rand() % (tier2Platform.rect.w - obstacleWidth - 100));
+                                obstacleX = xPos + 500 + (rand() % (tier2Platform.rect.w - obstacleWidth - 100));
                                 obstacleY = tier2Y - obstacleHeight;
                             }
 
