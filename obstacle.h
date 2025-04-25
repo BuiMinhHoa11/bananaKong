@@ -17,7 +17,7 @@ struct Obstacle {
     SDL_Rect rect;
     SDL_Texture* texture;
     bool isPlatform;
-    float speed; // Added speed member
+    float speed;
 };
 
 class ObstacleManager {
