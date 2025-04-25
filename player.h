@@ -13,8 +13,7 @@ enum PlayerState {
     IDLE,
     RUNNING,
     JUMPING,
-    FALLING,
-    SLIDING
+    FALLING
 };
 
 class Player {
@@ -26,42 +25,30 @@ private:
     float jumpForce;
     int width, height;
     bool onGround;
-    Sprite sprite; // Sprite chạy hiện có
-    Sprite slideSprite; // Sprite mới cho trượt
-    SDL_Texture* slideTexture; // Texture cho trượt
-
-    // Thêm phương thức kiểm tra va chạm với nền
-    bool checkPlatformCollision(const SDL_Rect& obstacle);
-
-    // Thêm thuộc tính cho hình tròn va chạm
-    int collisionRadius; // Bán kính hình tròn va chạm
-
-    // Biến cờ để bật/tắt hiển thị khung va chạm
+    Sprite runSprite; // Đổi tên từ sprite thành runSprite
+    int collisionRadius;
     bool showCollision;
+
+    bool checkPlatformCollision(const SDL_Rect& obstacle);
 
 public:
     Player();
     ~Player();
 
-    void init(SDL_Texture* runTexture, SDL_Texture* slideTex = nullptr);
+    void init(SDL_Texture* runTexture);
     void update(float deltaTime, const std::vector<SDL_Rect>& platforms);
     void render(Graphics* graphics);
     void renderDebugCollision(Graphics* graphics);
-    void renderCircularCollision(Graphics* graphics); // Vẽ hình tròn va chạm
+    void renderCircularCollision(Graphics* graphics);
 
     void jump();
-    void slide();
-    void stopSliding();
 
-    // Phương thức cho va chạm hình chữ nhật (giữ lại cho khả năng tương thích)
     SDL_Rect getCollisionBox() const;
+    SDL_Point getCollisionCenter() const;
+    int getCollisionRadius() const;
+    bool checkCircularCollision(const SDL_Point& otherCenter, int otherRadius) const;
 
-    // Phương thức mới cho va chạm hình tròn
-    SDL_Point getCollisionCenter() const; // Lấy tâm hình tròn va chạm
-    int getCollisionRadius() const; // Lấy bán kính hình tròn va chạm
-    bool checkCircularCollision(const SDL_Point& otherCenter, int otherRadius) const; // Kiểm tra va chạm hình tròn
-
-    void setCollisionRadius(int radius); // Thiết lập bán kính va chạm
+    void setCollisionRadius(int radius);
     void setOnGround(bool grounded);
     bool isOnGround() const { return onGround; }
 
@@ -71,13 +58,11 @@ public:
 
     PlayerState getState() const { return state; }
 
-    // Phương thức để bật/tắt hiển thị khung va chạm
     void toggleCollisionDisplay();
     bool isCollisionDisplayed() const { return showCollision; }
 
     void setAnimationSpeed(int speed) {
-        sprite.setAnimationSpeed(speed);
-        slideSprite.setAnimationSpeed(speed);
+        runSprite.setAnimationSpeed(speed);
     }
 };
 
