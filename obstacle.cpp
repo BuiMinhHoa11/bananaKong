@@ -10,9 +10,9 @@ ObstacleManager::~ObstacleManager() {
     obstacles.clear();
 }
 
-void ObstacleManager::update(float deltaTime) {
+void ObstacleManager::update(float deltaTime, float scrollSpeed) {
     for (auto it = obstacles.begin(); it != obstacles.end();) {
-        it->rect.x -= static_cast<int>(5.0f * it->speed);
+        it->rect.x -= static_cast<int>(scrollSpeed);
         if (it->rect.x + it->rect.w < 0) {
             it = obstacles.erase(it);
         } else {
@@ -31,19 +31,16 @@ bool ObstacleManager::checkCollision(int centerX, int centerY, int radius) const
 
         // Kiểm tra nếu Kong ở phía trên chướng ngại vật (cho phép đứng lên)
         if (obstacle.isPlatform) {
-            // Tính toán vị trí chân của Kong
             int kongBottomY = centerY + radius;
             int obstacleTopY = collisionBox.y;
 
-            // Nếu chân của Kong ở trên đỉnh chướng ngại vật và không va chạm từ các phía khác
-            if (kongBottomY >= obstacleTopY && kongBottomY <= obstacleTopY + 10 && // Chân của Kong gần đỉnh chướng ngại vật
-                abs(distX) <= (collisionBox.w / 2 + radius) && // Trong phạm vi chiều ngang của chướng ngại vật
-                distY < 0) { // Kong ở phía trên
-                continue; // Không gây GAME_OVER, cho phép đứng lên
+            if (kongBottomY >= obstacleTopY && kongBottomY <= obstacleTopY + 10 &&
+                abs(distX) <= (collisionBox.w / 2 + radius) &&
+                distY < 0) {
+                continue;
             }
         }
 
-        // Kiểm tra va chạm thông thường (gây GAME_OVER nếu va chạm từ các phía khác)
         int absDistX = abs(distX);
         int absDistY = abs(distY);
 
@@ -66,7 +63,7 @@ SDL_Rect ObstacleManager::adjustCollisionBox(const SDL_Rect& obsBox, ObstacleTyp
     switch (type) {
         case ObstacleType::ROCK:
             adjusted.x += 10;
-            adjusted.w = 180;
+            adjusted.w = 170;
             adjusted.y += 50;
             adjusted.h = 80;
             break;
@@ -108,6 +105,26 @@ ObstacleType ObstacleManager::getRandomObstacleType() const {
     }
 }
 
-float ObstacleManager::getRandomSpeed() const {
-    return 0.8f + (static_cast<float>(rand()) / RAND_MAX) * 0.4f;
+void ObstacleManager::addObstacle(const Obstacle& obstacle) {
+    obstacles.push_back(obstacle);
+}
+
+SDL_Texture* ObstacleManager::getTextureForType(ObstacleType type) const {
+    auto it = textureMap.find(type);
+    if (it != textureMap.end()) {
+        return it->second;
+    }
+    return nullptr;
+}
+
+void ObstacleManager::setDifficulty(float diff) {
+    difficulty = diff;
+}
+
+const std::vector<Obstacle>& ObstacleManager::getObstacles() const {
+    return obstacles;
+}
+
+void ObstacleManager::clear() {
+    obstacles.clear();
 }
