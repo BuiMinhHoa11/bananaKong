@@ -88,14 +88,14 @@ void PlatformManager::spawnLadderType2() {
     PlatformType grassType2 = getRandomGrassType();
     int xPos = SCREEN_WIDTH;
     int tier1Y = GROUND_LEVEL - KONG_HEIGHT;
-    int tier2Y = tier1Y - KONG_HEIGHT - 34;
+    int tier2Y = tier1Y - KONG_HEIGHT ;
 
     if (platformTextures.find(grassType1) != platformTextures.end()) {
         Platform tier1Platform(platformTextures.at(grassType1), grassType1, xPos, tier1Y);
         platforms.push_back(tier1Platform);
 
         if (platformTextures.find(grassType2) != platformTextures.end()) {
-            Platform tier2Platform(platformTextures.at(grassType2), grassType2, xPos + 100, tier2Y);
+            Platform tier2Platform(platformTextures.at(grassType2), grassType2, xPos + 200, tier2Y);
             platforms.push_back(tier2Platform);
 
             if (rand() % 100 < 80) {
@@ -152,7 +152,7 @@ void PlatformManager::spawnLadderType3() {
         Platform tier2Platform(platformTextures.at(grassType), grassType, xPos + 200, tier2Y);
         platforms.push_back(tier2Platform);
 
-        Platform tier3Platform(platformTextures.at(grassType), grassType, xPos + 300, tier3Y);
+        Platform tier3Platform(platformTextures.at(grassType), grassType, xPos + 400, tier3Y);
         platforms.push_back(tier3Platform);
 
         std::vector<int> tiers = {0, 1, 2};
@@ -245,7 +245,7 @@ void PlatformManager::spawnGapType2() {
         platforms.push_back(landPlatform);
 
         if (platformTextures.find(grassType) != platformTextures.end()) {
-            Platform grassPlatform(platformTextures.at(grassType), grassType, xPos + 100, grassY);
+            Platform grassPlatform(platformTextures.at(grassType), grassType, xPos + 200, grassY);
             platforms.push_back(grassPlatform);
 
             if (rand() % 100 < 80) {
@@ -296,18 +296,18 @@ void PlatformManager::spawnGapType3() {
     int landHeight = (landType == PlatformType::LAND_MID) ? 155 : 159;
     int landY = GROUND_LEVEL - landHeight;
     int tier1Y = landY - KONG_HEIGHT;
-    int tier2Y = tier1Y - KONG_HEIGHT - 34;
+    int tier2Y = tier1Y - KONG_HEIGHT ;
 
     if (platformTextures.find(landType) != platformTextures.end()) {
         Platform landPlatform(platformTextures.at(landType), landType, xPos, landY);
         platforms.push_back(landPlatform);
 
         if (platformTextures.find(grassType1) != platformTextures.end()) {
-            Platform tier1Platform(platformTextures.at(grassType1), grassType1, xPos + 100, tier1Y);
+            Platform tier1Platform(platformTextures.at(grassType1), grassType1, xPos + 200, tier1Y);
             platforms.push_back(tier1Platform);
 
             if (platformTextures.find(grassType2) != platformTextures.end()) {
-                Platform tier2Platform(platformTextures.at(grassType2), grassType2, xPos + 200, tier2Y);
+                Platform tier2Platform(platformTextures.at(grassType2), grassType2, xPos + 400, tier2Y);
                 platforms.push_back(tier2Platform);
 
                 if (rand() % 100 < 90) {
