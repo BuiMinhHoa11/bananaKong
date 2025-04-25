@@ -53,7 +53,7 @@ int main(int argc, char* argv[]) {
         SDL_Log("Kong run texture loaded successfully!");
     }
     kong.init(kongrunTexture);
-    kong.setPosition(400, 755);
+    kong.setPosition(400, KONG_DRAW_Y_START);
 
     std::map<ObstacleType, SDL_Texture*> obstacleTextures;
     obstacleTextures[ObstacleType::ROCK] = graphics.loadTexture("D:/projectBTL/bananakong/image/ITEM_BACK/daHeo.png");
@@ -100,6 +100,9 @@ int main(int argc, char* argv[]) {
                     if (e.key.keysym.sym == SDLK_SPACE && kong.isOnGround()) {
                         kong.jump();
                     }
+                    if (e.key.keysym.sym == SDLK_s) {
+                        kong.climbDown(platformManager); // Gọi climbDown với PlatformManager
+                    }
                     if (e.key.keysym.sym == SDLK_c) {
                         kong.toggleCollisionDisplay();
                     }
@@ -107,7 +110,7 @@ int main(int argc, char* argv[]) {
                 if (gameState == GAME_OVER && e.key.keysym.sym == SDLK_r) {
                     score = 0;
                     scoreTimer = 0.0f;
-                    kong.setPosition(400, 755);
+                    kong.setPosition(400, KONG_DRAW_Y_START);
                     kong.setOnGround(true);
                     obstacleManager.clear();
                     platformManager.clear();
@@ -127,13 +130,10 @@ int main(int argc, char* argv[]) {
                 scoreTimer -= 1.0f;
             }
 
-            // Update platformManager first to ensure scrollSpeed is up-to-date
             platformManager.update(deltaTime);
-
-            // Now update obstacleManager with the correct scrollSpeed
             float scrollSpeed = platformManager.getScrollSpeed();
             obstacleManager.setDifficulty(platformManager.getDifficulty());
-            obstacleManager.update(deltaTime, scrollSpeed); // Fixed: Pass both arguments
+            obstacleManager.update(deltaTime, scrollSpeed);
 
             std::vector<SDL_Rect> allPlatforms;
             for (const auto& platform : platformManager.getPlatforms()) {
@@ -144,7 +144,7 @@ int main(int argc, char* argv[]) {
                     allPlatforms.push_back(obs.rect);
                 }
             }
-            kong.update(deltaTime, allPlatforms);
+            kong.update(deltaTime, allPlatforms, platformManager); // Truyền PlatformManager
 
             backgroundSky.scroll(static_cast<int>(scrollSpeed * 0.4f));
             background.scroll(static_cast<int>(scrollSpeed * 1.0f));
