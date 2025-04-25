@@ -63,7 +63,7 @@
 1745339859 source:d:\projectbtl\bananakong\common_func.cpp
 	"common_func.h"
 
-1745339859 d:\projectbtl\bananakong\common_func.h
+1745575400 d:\projectbtl\bananakong\common_func.h
 	<bits/stdc++.h>
 	<SDL.h>
 	<SDL_image.h>
@@ -76,26 +76,26 @@
 1745566762 d:\projectbtl\bananakong\graphics.h
 	"common_func.h"
 
-1745563576 source:d:\projectbtl\bananakong\main.cpp
+1745574697 source:d:\projectbtl\bananakong\main.cpp
 	"common_func.h"
 	"graphics.h"
 	"obstacle.h"
 	"player.h"
 	"platform.h"
 
-1745434160 d:\projectbtl\bananakong\obstacle.h
+1745575997 d:\projectbtl\bananakong\obstacle.h
 	<SDL.h>
 	<vector>
 	<map>
 	"graphics.h"
 
-1745431808 d:\projectbtl\bananakong\player.h
+1745575132 d:\projectbtl\bananakong\player.h
 	"common_func.h"
 	"graphics.h"
 	<vector>
 	<map>
 
-1745572198 d:\projectbtl\bananakong\platform.h
+1745576020 d:\projectbtl\bananakong\platform.h
 	<SDL.h>
 	<map>
 	<vector>
@@ -106,23 +106,26 @@
 	"obstacle.h"
 	<cstdlib>
 
-1745570726 source:d:\projectbtl\bananakong\platform.cpp
+1745575997 source:d:\projectbtl\bananakong\platform.cpp
 	"platform.h"
 	<ctime>
 	<cstdlib>
 	<iostream>
 	<algorithm>
 
-1745568869 source:d:\projectbtl\bananakong\platform_patterns.cpp
+1745575591 source:d:\projectbtl\bananakong\platform_patterns.cpp
 	"platform.h"
 	<cstdlib>
 	<vector>
 	<algorithm>
 	<random>
 
-1745564388 source:d:\projectbtl\bananakong\player.cpp
+1745575997 source:d:\projectbtl\bananakong\player.cpp
 	"player.h"
 	"obstacle.h"
+	"platform.h"
+	"common_func.h"
+	<algorithm>
 
 1745182907 source:d:\projectbtl\bananakong\speed_manager.cpp
 
