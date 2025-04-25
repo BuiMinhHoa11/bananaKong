@@ -4,29 +4,19 @@
 #include "common_func.h"
 #include <algorithm>
 
-const float VALID_Y_POSITIONS[] = {
-    739.0f, 590.0f, 441.0f, // Từ spawnLadderType3
-    GROUND_LEVEL - KONG_HEIGHT, // Từ spawnLadderType1, spawnLadderType2, spawnGapType2, spawnGapType3
-    GROUND_LEVEL - KONG_HEIGHT * 2 , // Từ spawnLadderType2, spawnGapType3
-    GROUND_LEVEL - 155, // Từ spawnGapType1 (LAND_MID)
-    GROUND_LEVEL - 159, // Từ spawnGapType1 (LAND_SMALL)
-    GROUND_LEVEL - 155 - KONG_HEIGHT, // Từ spawnGapType2, spawnGapType3
-    GROUND_LEVEL - 155 - KONG_HEIGHT * 2 // Từ spawnGapType3
-};
-
 Player::Player() {
     x = 400;
-    y = KONG_DRAW_Y_START;
+    y = KONG_DRAW_Y_START; // Khởi tạo tại mặt đất: 738
     velocityX = 0;
     velocityY = 0;
     gravity = 2000.0f;
     jumpForce = -800.0f;
     width = 200;
-    height = KONG_HEIGHT;;
+    height = KONG_HEIGHT; // 150
     onGround = true;
     isClimbingDown = false;
     state = RUNNING;
-    collisionRadius = 45;
+    collisionRadius = 50;
     showCollision = true;
 }
 
@@ -61,7 +51,7 @@ void Player::update(float deltaTime, const std::vector<SDL_Rect>& platforms, Pla
     x = 400;
 
     if (!onAnyGround && y > KONG_DRAW_Y_START) {
-        y = KONG_DRAW_Y_START;
+        y = KONG_DRAW_Y_START; // Đặt tại mặt đất: 738
         velocityY = 0;
         onAnyGround = true;
     }
@@ -89,17 +79,15 @@ void Player::climbDown(PlatformManager& platformManager) {
 
     const auto& platforms = platformManager.getPlatforms();
     float currentY = y;
-    float targetY = KONG_DRAW_Y_START; // Mặc định là mặt đất
+    float targetY = KONG_DRAW_Y_START; // Mặc định là mặt đất: 738
     bool foundPlatform = false;
 
     // Tìm platform gần nhất phía dưới nhân vật
     for (const auto& platform : platforms) {
         if (!platform.active) continue;
         float platformY = platform.rect.y;
-        // Kiểm tra platform thấp hơn nhân vật và trong phạm vi hợp lệ
-        if (platformY > currentY + height &&
-            std::any_of(std::begin(VALID_Y_POSITIONS), std::end(VALID_Y_POSITIONS),
-                        [platformY](float validY) { return std::abs(platformY - validY) < 5.0f; })) {
+        // Kiểm tra platform thấp hơn đáy Kong và không thấp hơn mặt đất
+        if (platformY > currentY + height && platformY <= KONG_DRAW_Y_START) {
             if (!foundPlatform || platformY < targetY) {
                 targetY = platformY;
                 foundPlatform = true;
@@ -124,7 +112,6 @@ void Player::climbDown(PlatformManager& platformManager) {
     }
 }
 
-// Các phương thức khác giữ nguyên như code gốc
 void Player::render(Graphics* graphics) {
     graphics->render(x, y, runSprite);
     if (showCollision) {
