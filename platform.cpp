@@ -30,10 +30,6 @@ Platform::Platform(SDL_Texture* tex, PlatformType t, int x, int y) {
             rect.w = 750;
             rect.h = 159;
             break;
-        case PlatformType::VINE:
-            rect.w = 697;
-            rect.h = 487;
-            break;
     }
 
     rect.x = x;
