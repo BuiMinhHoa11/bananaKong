@@ -14,8 +14,12 @@ extern SDL_Renderer* renderer;
 
 const int SCREEN_WIDTH = 1500;
 const int SCREEN_HEIGHT = 963;
-const int SCREEN_BPP = 72;
+const int SCREEN_BPP = 32;
 const string WINDOW_TITLE = "BANANA KONG";
+
+const int GROUND_LEVEL = 888;
+const int KONG_HEIGHT = 150;
+const int KONG_DRAW_Y_START = 755;
 
 void initSDL(SDL_Window* &window, SDL_Renderer* &renderer);
 void logSDLError(ostream& os, const string &msg, bool fatal = false);
