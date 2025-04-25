@@ -7,8 +7,7 @@
 #include "obstacle.h"
 #include "common_func.h"
 
-const int GROUND_LEVEL = 888;
-const int KONG_HEIGHT = 150;
+
 
 enum class PlatformType {
     GRASS_BIG,
@@ -16,7 +15,6 @@ enum class PlatformType {
     GRASS_SUPERBIG,
     LAND_MID,
     LAND_SMALL,
-    VINE
 };
 
 class Graphics;
