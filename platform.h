@@ -57,13 +57,10 @@ private:
     std::vector<Platform> platforms;
     ObstacleManager& obstacleManager;
     float scrollSpeed;
-    int spawnDelay;
-    int spawnTimer;
+    float spawnTimer;
     float difficulty;
     float difficultyTimer;
     int difficultyIncreaseInterval;
-    int minPlatformDistance;
-    int initialPlatformDistance;
 
     bool canSpawnPlatform() const;
     void increaseDifficulty(float amount);
