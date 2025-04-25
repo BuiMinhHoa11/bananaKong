@@ -47,19 +47,13 @@ int main(int argc, char* argv[]) {
 
     Player kong;
     SDL_Texture* kongrunTexture = graphics.loadTexture(KONGRUN_SPRITE_FILE);
-    SDL_Texture* kongslideTexture = graphics.loadTexture("D:/projectBTL/bananakong/image/CHAR/kong_slide.png");
     if (kongrunTexture == NULL) {
         SDL_Log("Failed to load kong run texture!");
     } else {
         SDL_Log("Kong run texture loaded successfully!");
     }
-    if (kongslideTexture == NULL) {
-        SDL_Log("Failed to load kong slide texture!");
-    } else {
-        SDL_Log("Kong slide texture loaded successfully!");
-    }
-    kong.init(kongrunTexture, kongslideTexture);
-    kong.setPosition(120, 755);
+    kong.init(kongrunTexture);
+    kong.setPosition(400, 755);
 
     std::map<ObstacleType, SDL_Texture*> obstacleTextures;
     obstacleTextures[ObstacleType::ROCK] = graphics.loadTexture("D:/projectBTL/bananakong/image/ITEM_BACK/daHeo.png");
@@ -76,7 +70,6 @@ int main(int argc, char* argv[]) {
     platformTextures[PlatformType::GRASS_SUPERBIG] = graphics.loadTexture("D:/projectBTL/bananakong/image/PLATFORM/grass_superbig.png");
     platformTextures[PlatformType::LAND_MID] = graphics.loadTexture("D:/projectBTL/bananakong/image/PLATFORM/land_mid.png");
     platformTextures[PlatformType::LAND_SMALL] = graphics.loadTexture("D:/projectBTL/bananakong/image/PLATFORM/land_small.png");
-    platformTextures[PlatformType::VINE] = graphics.loadTexture("D:/projectBTL/bananakong/image/PLATFORM/vine.png");
 
     for (const auto& [type, tex] : platformTextures) {
         if (tex == nullptr) SDL_Log("Failed to load platform texture!");
@@ -88,7 +81,7 @@ int main(int argc, char* argv[]) {
     SDL_Event e;
 
     Uint32 lastFrameTime = SDL_GetTicks();
-    float animationUpdateTimer = 0.0f; // Timer để cập nhật tốc độ animation của kong
+    float animationUpdateTimer = 0.0f;
 
     GameState gameState = MENU;
     int score = 0;
@@ -107,9 +100,6 @@ int main(int argc, char* argv[]) {
                     if (e.key.keysym.sym == SDLK_SPACE && kong.isOnGround()) {
                         kong.jump();
                     }
-                    if (e.key.keysym.sym == SDLK_s && kong.isOnGround()) {
-                        kong.slide();
-                    }
                     if (e.key.keysym.sym == SDLK_c) {
                         kong.toggleCollisionDisplay();
                     }
@@ -117,16 +107,11 @@ int main(int argc, char* argv[]) {
                 if (gameState == GAME_OVER && e.key.keysym.sym == SDLK_r) {
                     score = 0;
                     scoreTimer = 0.0f;
-                    kong.setPosition(120, 755);
+                    kong.setPosition(400, 755);
                     kong.setOnGround(true);
                     obstacleManager.clear();
                     platformManager.clear();
                     gameState = PLAYING;
-                }
-            }
-            if (e.type == SDL_KEYUP) {
-                if (gameState == PLAYING && e.key.keysym.sym == SDLK_s) {
-                    kong.stopSliding();
                 }
             }
         }
@@ -142,9 +127,15 @@ int main(int argc, char* argv[]) {
                 scoreTimer -= 1.0f;
             }
 
-            obstacleManager.setDifficulty(platformManager.getDifficulty());
+            // Update platformManager first to ensure scrollSpeed is up-to-date
+            platformManager.update(deltaTime);
 
-            vector<SDL_Rect> allPlatforms;
+            // Now update obstacleManager with the correct scrollSpeed
+            float scrollSpeed = platformManager.getScrollSpeed();
+            obstacleManager.setDifficulty(platformManager.getDifficulty());
+            obstacleManager.update(deltaTime, scrollSpeed); // Fixed: Pass both arguments
+
+            std::vector<SDL_Rect> allPlatforms;
             for (const auto& platform : platformManager.getPlatforms()) {
                 allPlatforms.push_back(platform.rect);
             }
@@ -155,26 +146,18 @@ int main(int argc, char* argv[]) {
             }
             kong.update(deltaTime, allPlatforms);
 
-            // Lấy scrollSpeed từ PlatformManager
-            float scrollSpeed = platformManager.getScrollSpeed();
-            // Đồng bộ tốc độ của các thành phần nền với scrollSpeed
-            backgroundSky.scroll(static_cast<int>(scrollSpeed * 0.4f)); // Nền trời di chuyển chậm hơn
-            background.scroll(static_cast<int>(scrollSpeed * 1.0f));    // Nền đất di chuyển cùng tốc độ với nền tảng
-            leafTop.scroll(static_cast<int>(scrollSpeed * 3.0f));      // Lá phía trên di chuyển nhanh hơn
+            backgroundSky.scroll(static_cast<int>(scrollSpeed * 0.4f));
+            background.scroll(static_cast<int>(scrollSpeed * 1.0f));
+            leafTop.scroll(static_cast<int>(scrollSpeed * 2.5f));
 
-            // Cập nhật tốc độ animation của kong dựa trên độ khó
             animationUpdateTimer += deltaTime;
-            if (animationUpdateTimer >= 1.0f) { // Cập nhật mỗi giây
+            if (animationUpdateTimer >= 1.0f) {
                 float difficulty = platformManager.getDifficulty();
-                // Tốc độ animation tăng (frameDelayMax giảm) khi độ khó tăng
                 int newFrameDelayMax = static_cast<int>(3.0f - (difficulty - 1.0f) * 0.2f);
-                if (newFrameDelayMax < 1) newFrameDelayMax = 1; // Đảm bảo không nhỏ hơn 1
+                if (newFrameDelayMax < 1) newFrameDelayMax = 1;
                 kong.setAnimationSpeed(newFrameDelayMax);
                 animationUpdateTimer = 0.0f;
             }
-
-            obstacleManager.update(deltaTime);
-            platformManager.update(deltaTime);
 
             SDL_Point center = kong.getCollisionCenter();
             int radius = kong.getCollisionRadius();
@@ -203,7 +186,7 @@ int main(int argc, char* argv[]) {
         }
 
         if (gameState == GAME_OVER) {
-            std::string gameOverText = "Game Over! Score: " + std::to_string(score) + " Press R to restart!!";
+            std::string gameOverText = "Game Over! Score: " + std::to_string(score) + " Press R to recover!!";
             SDL_Texture* gameOverTexture = createTextTexture(renderer, gameOverText.c_str(), font, white, textW, textH);
             if (gameOverTexture) {
                 graphics.renderTexture(gameOverTexture, SCREEN_WIDTH / 2 - textW / 2, SCREEN_HEIGHT / 2 - textH / 2);
@@ -219,7 +202,6 @@ int main(int argc, char* argv[]) {
     TTF_Quit();
 
     SDL_DestroyTexture(kongrunTexture);
-    SDL_DestroyTexture(kongslideTexture);
     for (auto& [type, tex] : platformTextures) {
         SDL_DestroyTexture(tex);
     }
