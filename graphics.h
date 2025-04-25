@@ -33,7 +33,7 @@ struct Sprite {
     std::vector<SDL_Rect> clips;
     int currentFrame = 0;
     int frameDelay = 0;
-    int frameDelayMax = 5;
+    int frameDelayMax = 6;
 
     void init(SDL_Texture* _texture, int frames, const int _clips[][4]) {
         texture = _texture;
