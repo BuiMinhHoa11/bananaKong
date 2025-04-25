@@ -5,9 +5,8 @@
 #include <vector>
 #include <map>
 
-// Khai báo tiền định nghĩa
-struct Obstacle;
-enum class ObstacleType;
+
+class PlatformManager;
 
 enum PlayerState {
     IDLE,
@@ -25,7 +24,8 @@ private:
     float jumpForce;
     int width, height;
     bool onGround;
-    Sprite runSprite; // Đổi tên từ sprite thành runSprite
+    bool isClimbingDown;
+    Sprite runSprite;
     int collisionRadius;
     bool showCollision;
 
@@ -36,12 +36,13 @@ public:
     ~Player();
 
     void init(SDL_Texture* runTexture);
-    void update(float deltaTime, const std::vector<SDL_Rect>& platforms);
+    void update(float deltaTime, const std::vector<SDL_Rect>& platforms, PlatformManager& platformManager); // Thêm PlatformManager
     void render(Graphics* graphics);
     void renderDebugCollision(Graphics* graphics);
     void renderCircularCollision(Graphics* graphics);
 
     void jump();
+    void climbDown(PlatformManager& platformManager); // Thêm tham số PlatformManager
 
     SDL_Rect getCollisionBox() const;
     SDL_Point getCollisionCenter() const;
