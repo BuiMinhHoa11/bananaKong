@@ -44,17 +44,17 @@ PlatformManager::PlatformManager(std::map<PlatformType, SDL_Texture*> textures, 
     : obstacleManager(obsManager) {
     platformTextures = textures;
     scrollSpeed = 4.0f;
-    spawnDelay = 8000; //cứ mỗi 8 giây, một nền tảng mới sẽ được tạo
-    spawnTimer = 0;
     difficulty = 1.0f;
     difficultyTimer = 0;
+    spawnTimer = 0.0f; // Biến để trì hoãn spawn platform đầu tiên
     difficultyIncreaseInterval = 25000;
-    minPlatformDistance = SCREEN_WIDTH / 3.75;
-    initialPlatformDistance = SCREEN_WIDTH * 4.5;
     srand(static_cast<unsigned>(time(nullptr)));
 }
 
 void PlatformManager::update(float deltaTime) {
+    // Cập nhật thời gian spawn
+    spawnTimer += deltaTime;
+
     for (auto& platform : platforms) {
         platform.rect.x -= static_cast<int>(scrollSpeed);
         if (platform.rect.x + platform.rect.w < 0) {
@@ -68,10 +68,9 @@ void PlatformManager::update(float deltaTime) {
         platforms.end()
     );
 
-    spawnTimer += static_cast<int>(deltaTime * 1000);
-    if (spawnTimer >= spawnDelay && canSpawnPlatform()) {
+    // Chỉ spawn platform khi spawnTimer đạt 5 giây
+    if (spawnTimer >= 5.0f && canSpawnPlatform()) {
         spawnPlatformPattern();
-        spawnTimer = 0;
     }
 
     difficultyTimer += deltaTime * 1000;
@@ -94,13 +93,12 @@ bool PlatformManager::canSpawnPlatform() const {
         }
     }
 
-    float t = (difficulty - 1.0f) / 10.0f;
-    float requiredDistance = initialPlatformDistance - (initialPlatformDistance - minPlatformDistance) * t;
-    if (requiredDistance < minPlatformDistance) {
-        requiredDistance = minPlatformDistance;
-    }
+    int distanceToRightEdge = SCREEN_WIDTH - furthestX;
+    float t = (difficulty - 1.0f) / 9.0f;
+    float minDistance = 700.0f - t * 400.0f;
+    if (minDistance < 300.0f) minDistance = 300.0f;
 
-    return (SCREEN_WIDTH - furthestX) >= requiredDistance;
+    return distanceToRightEdge >= minDistance;
 }
 
 void PlatformManager::increaseDifficulty(float amount) {
@@ -109,16 +107,15 @@ void PlatformManager::increaseDifficulty(float amount) {
         difficulty = 10.0f;
     }
 
-    float t = (difficulty - 1.0f) / 10.0f;
+    float t = (difficulty - 1.0f) / 9.0f;
     scrollSpeed = 4.0f + t * 6.0f;
-    spawnDelay = static_cast<int>(8000 - t * 5000);
-    if (spawnDelay < 5000) {
-        spawnDelay = 5000;
-    }
+    float minDistance = 700.0f - t * 400.0f;
+    if (minDistance < 300.0f) minDistance = 300.0f;
 
+    // Chỉ in thông báo khi độ khó tăng, bằng tiếng Anh
     std::cout << "Difficulty increased to: " << difficulty
-              << ", Speed: " << scrollSpeed
-              << ", Spawn Delay: " << spawnDelay << std::endl;
+              << ", Scroll Speed: " << scrollSpeed
+              << ", Min Distance: " << minDistance << std::endl;
 }
 
 int PlatformManager::findValidYForGrass(int x, int kongHeight) const {
