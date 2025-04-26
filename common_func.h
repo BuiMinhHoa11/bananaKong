@@ -17,9 +17,9 @@ const int SCREEN_HEIGHT = 963;
 const int SCREEN_BPP = 32;
 const string WINDOW_TITLE = "BANANA KONG";
 
-const int GROUND_LEVEL = 888;
+const int GROUND_LEVEL = 885;
 const int KONG_HEIGHT = 150;
-const int KONG_DRAW_Y_START = 755;
+const int KONG_DRAW_Y_START = GROUND_LEVEL - KONG_HEIGHT; // 888 - 150 = 738
 
 void initSDL(SDL_Window* &window, SDL_Renderer* &renderer);
 void logSDLError(ostream& os, const string &msg, bool fatal = false);
