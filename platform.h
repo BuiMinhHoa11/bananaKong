@@ -7,8 +7,6 @@
 #include "obstacle.h"
 #include "common_func.h"
 
-
-
 enum class PlatformType {
     GRASS_BIG,
     GRASS_MID,
