@@ -6,7 +6,7 @@
 
 Player::Player() {
     x = 400;
-    y = KONG_DRAW_Y_START; // Khởi tạo tại mặt đất: 738
+    y = GROUND_LEVEL - KONG_HEIGHT; // Khởi tạo tại mặt đất: 888 - 150 = 738
     velocityX = 0;
     velocityY = 0;
     gravity = 2000.0f;
@@ -37,9 +37,7 @@ void Player::init(SDL_Texture* runTexture) {
 }
 
 void Player::update(float deltaTime, const std::vector<SDL_Rect>& platforms, PlatformManager& platformManager) {
-    velocityY += gravity * deltaTime;
-    y += velocityY * deltaTime;
-
+    // Kiểm tra va chạm với platform
     bool onAnyGround = false;
     for (const auto& platform : platforms) {
         if (checkPlatformCollision(platform)) {
@@ -48,15 +46,25 @@ void Player::update(float deltaTime, const std::vector<SDL_Rect>& platforms, Pla
         }
     }
 
-    x = 400;
-
-    if (!onAnyGround && y > KONG_DRAW_Y_START) {
-        y = KONG_DRAW_Y_START; // Đặt tại mặt đất: 738
-        velocityY = 0;
-        onAnyGround = true;
+    // Cập nhật trạng thái onGround
+    if (!onAnyGround && y < GROUND_LEVEL - height - 5) {
+        onGround = false; // Không trên platform và chưa chạm mặt đất
     }
 
-    onGround = onAnyGround;
+    // Áp dụng trọng lực nếu không trên mặt đất hoặc platform
+    if (!onGround) {
+        velocityY += gravity * deltaTime;
+        y += velocityY * deltaTime;
+    }
+
+    x = 400;
+
+    // Đặt nhân vật về mặt đất thực tế nếu vượt quá GROUND_LEVEL
+    if (!onAnyGround && y > GROUND_LEVEL - height) {
+        y = GROUND_LEVEL - height; // Đáy sprite chạm y = 888
+        velocityY = 0;
+        onGround = true;
+    }
 
     if (onGround) {
         state = RUNNING;
@@ -79,37 +87,33 @@ void Player::climbDown(PlatformManager& platformManager) {
 
     const auto& platforms = platformManager.getPlatforms();
     float currentY = y;
-    float targetY = KONG_DRAW_Y_START; // Mặc định là mặt đất: 738
+    float targetY = GROUND_LEVEL; // Mặc định là mặt đất: y = 888
     bool foundPlatform = false;
 
     // Tìm platform gần nhất phía dưới nhân vật
     for (const auto& platform : platforms) {
         if (!platform.active) continue;
         float platformY = platform.rect.y;
-        // Kiểm tra platform thấp hơn đáy Kong và không thấp hơn mặt đất
-        if (platformY > currentY + height && platformY <= KONG_DRAW_Y_START) {
-            if (!foundPlatform || platformY < targetY) {
-                targetY = platformY;
-                foundPlatform = true;
+        // Kiểm tra platform thấp hơn đáy nhân vật
+        if (platformY > currentY + height) {
+            // Đảm bảo nhân vật có thể đứng trong phạm vi ngang của platform
+            if (x + width >= platform.rect.x && x <= platform.rect.x + platform.rect.w) {
+                if (!foundPlatform || platformY < targetY) {
+                    targetY = platformY;
+                    foundPlatform = true;
+                }
             }
         }
     }
 
-    if (foundPlatform) {
-        // Di chuyển xuống platform mục tiêu
-        velocityY = 300.0f; // Tốc độ rơi kiểm soát
-        isClimbingDown = true;
-        onGround = false;
-        state = FALLING;
-        // Điều chỉnh vị trí y để đứng trên platform
-        y = targetY - height + (getCollisionCenter().y - y - collisionRadius);
-    } else if (currentY < KONG_DRAW_Y_START - 5) {
-        // Rơi xuống mặt đất nếu không có platform
-        velocityY = 300.0f;
-        isClimbingDown = true;
-        onGround = false;
-        state = FALLING;
-    }
+    // Di chuyển xuống platform hoặc mặt đất
+    velocityY = 300.0f; // Tốc độ rơi kiểm soát
+    isClimbingDown = true;
+    onGround = false;
+    state = FALLING;
+
+    // Điều chỉnh vị trí y để đứng trên bề mặt mục tiêu
+    y = targetY - height; // Đáy sprite chạm targetY
 }
 
 void Player::render(Graphics* graphics) {
@@ -212,7 +216,7 @@ bool Player::checkPlatformCollision(const SDL_Rect& obstacle) {
         int distanceSquared = (deltaX * deltaX) + (deltaY * deltaY);
         if (distanceSquared <= (playerRadius * playerRadius)) {
             if (closestY <= obstacle.y + 15) {
-                y = obstacle.y - height + (playerCenter.y - y - playerRadius);
+                y = obstacle.y - height + (playerCenter.y - y - playerRadius); // Căn chỉnh mượt mà
                 velocityY = 0;
                 setOnGround(true);
                 return true;
