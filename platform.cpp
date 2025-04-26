@@ -11,16 +11,16 @@ Platform::Platform(SDL_Texture* tex, PlatformType t, int x, int y) {
 
     switch(type) {
         case PlatformType::GRASS_BIG:
-            rect.w = 498;
-            rect.h = 38;
+            rect.w = 590;
+            rect.h = 45;
             break;
         case PlatformType::GRASS_MID:
-            rect.w = 614;
-            rect.h = 34;
+            rect.w = 813;
+            rect.h = 45;
             break;
         case PlatformType::GRASS_SUPERBIG:
-            rect.w = 728;
-            rect.h = 34;
+            rect.w = 964;
+            rect.h = 45;
             break;
         case PlatformType::LAND_MID:
             rect.w = 867;
