@@ -5,14 +5,14 @@
 #include <vector>
 #include <map>
 
-
 class PlatformManager;
 
 enum PlayerState {
     IDLE,
     RUNNING,
     JUMPING,
-    FALLING
+    FALLING,
+    FLYING // Đổi từ FLY thành FLYING
 };
 
 class Player {
@@ -26,8 +26,10 @@ private:
     bool onGround;
     bool isClimbingDown;
     Sprite runSprite;
+    Sprite flySprite; // Sprite cho FLYING (1 frame)
     int collisionRadius;
     bool showCollision;
+    float flyStartY; // Lưu y khi bắt đầu FLYING
 
     bool checkPlatformCollision(const SDL_Rect& obstacle);
 
@@ -35,14 +37,16 @@ public:
     Player();
     ~Player();
 
-    void init(SDL_Texture* runTexture);
-    void update(float deltaTime, const std::vector<SDL_Rect>& platforms, PlatformManager& platformManager); // Thêm PlatformManager
+    void init(SDL_Texture* runTexture, SDL_Texture* flyTexture);
+    void update(float deltaTime, const std::vector<SDL_Rect>& platforms, PlatformManager& platformManager);
     void render(Graphics* graphics);
     void renderDebugCollision(Graphics* graphics);
     void renderCircularCollision(Graphics* graphics);
 
     void jump();
-    void climbDown(PlatformManager& platformManager); // Thêm tham số PlatformManager
+    void climbDown(PlatformManager& platformManager);
+    void startFly(); // Đổi tên hàm cho thống nhất
+    void stopFly();
 
     SDL_Rect getCollisionBox() const;
     SDL_Point getCollisionCenter() const;
