@@ -3,12 +3,14 @@
 
 #include "common_func.h"
 
-// Hằng số cho sprite của Kong
 extern const char* KONGRUN_SPRITE_FILE;
 extern const int KONGRUN_CLIPS[][4];
 extern const int KONGRUN_FRAMES;
 
-// Scrolling background
+extern const char* KONGFLY_SPRITE_FILE;
+extern const int KONGFLY_CLIPS[][4];
+extern const int KONGFLY_FRAMES;
+
 struct ScrollingBackground {
     SDL_Texture* texture;
     int scrollingOffset = 0;
@@ -27,7 +29,6 @@ struct ScrollingBackground {
     }
 };
 
-// Sprite cho animation
 struct Sprite {
     SDL_Texture* texture;
     std::vector<SDL_Rect> clips;
@@ -74,8 +75,7 @@ public:
     void prepareScene();
     void presentScene();
     void render(const ScrollingBackground& bgr);
-    // Thêm phương thức getRenderer
-    SDL_Renderer* getRenderer() const { return renderer; } // Trả về renderer
+    SDL_Renderer* getRenderer() const { return renderer; }
 
 private:
     SDL_Renderer* renderer;
