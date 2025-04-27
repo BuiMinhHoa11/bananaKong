@@ -6,25 +6,25 @@
 
 Player::Player() {
     x = 400;
-    y = GROUND_LEVEL - KONG_HEIGHT; // Khởi tạo tại mặt đất: 888 - 150 = 738
+    y = GROUND_LEVEL - KONG_HEIGHT; // 888 - 150 = 738
     velocityX = 0;
     velocityY = 0;
     gravity = 2000.0f;
-    jumpForce = -800.0f;
+    jumpForce = -916.0f;
     width = 200;
-    height = KONG_HEIGHT; // 150
+    height = KONG_HEIGHT;
     onGround = true;
     isClimbingDown = false;
     state = RUNNING;
     collisionRadius = 50;
     showCollision = true;
+    flyStartY = 0.0f;
 }
 
 Player::~Player() {}
 
-void Player::init(SDL_Texture* runTexture) {
+void Player::init(SDL_Texture* runTexture, SDL_Texture* flyTexture) {
     runSprite.texture = runTexture;
-
     for (int i = 0; i < KONGRUN_FRAMES; i++) {
         SDL_Rect clip;
         clip.x = KONGRUN_CLIPS[i][0];
@@ -34,10 +34,15 @@ void Player::init(SDL_Texture* runTexture) {
         runSprite.clips.push_back(clip);
     }
     runSprite.frameDelayMax = 4;
+
+    flySprite.texture = flyTexture;
+    SDL_Rect clip = {0, 0, 200, 149};
+    flySprite.clips.push_back(clip);
+    flySprite.frameDelayMax = 0;
+    flySprite.currentFrame = 0;
 }
 
 void Player::update(float deltaTime, const std::vector<SDL_Rect>& platforms, PlatformManager& platformManager) {
-    // Kiểm tra va chạm với platform
     bool onAnyGround = false;
     for (const auto& platform : platforms) {
         if (checkPlatformCollision(platform)) {
@@ -46,34 +51,49 @@ void Player::update(float deltaTime, const std::vector<SDL_Rect>& platforms, Pla
         }
     }
 
-    // Cập nhật trạng thái onGround
     if (!onAnyGround && y < GROUND_LEVEL - height - 5) {
-        onGround = false; // Không trên platform và chưa chạm mặt đất
+        onGround = false;
     }
 
-    // Áp dụng trọng lực nếu không trên mặt đất hoặc platform
     if (!onGround) {
-        velocityY += gravity * deltaTime;
-        y += velocityY * deltaTime;
+        if (state == FLYING) {
+            if (y < flyStartY - 210.0f) {
+                y = flyStartY - 210.0f;
+                velocityY = 100.0f;
+            } else if (velocityY < 0) {
+                velocityY += gravity * deltaTime * 0.5f;
+                y += velocityY * deltaTime;
+            } else {
+                velocityY = 150.0f;
+                y += velocityY * deltaTime;
+            }
+        } else {
+            velocityY += gravity * deltaTime;
+            y += velocityY * deltaTime;
+        }
     }
 
     x = 400;
 
-    // Đặt nhân vật về mặt đất thực tế nếu vượt quá GROUND_LEVEL
     if (!onAnyGround && y > GROUND_LEVEL - height) {
-        y = GROUND_LEVEL - height; // Đáy sprite chạm y = 888
+        y = GROUND_LEVEL - height;
         velocityY = 0;
         onGround = true;
+        if (state == FLYING) {
+            state = RUNNING;
+        }
     }
 
     if (onGround) {
         state = RUNNING;
         isClimbingDown = false;
     } else {
-        if (velocityY < 0) {
-            state = JUMPING;
-        } else {
-            state = FALLING;
+        if (state != FLYING) {
+            if (velocityY < 0) {
+                state = JUMPING;
+            } else {
+                state = FALLING;
+            }
         }
     }
 
@@ -82,21 +102,18 @@ void Player::update(float deltaTime, const std::vector<SDL_Rect>& platforms, Pla
 
 void Player::climbDown(PlatformManager& platformManager) {
     if (!onGround || isClimbingDown) {
-        return; // Không leo xuống nếu không trên platform hoặc đang leo xuống
+        return;
     }
 
     const auto& platforms = platformManager.getPlatforms();
     float currentY = y;
-    float targetY = GROUND_LEVEL; // Mặc định là mặt đất: y = 888
+    float targetY = GROUND_LEVEL;
     bool foundPlatform = false;
 
-    // Tìm platform gần nhất phía dưới nhân vật
     for (const auto& platform : platforms) {
         if (!platform.active) continue;
         float platformY = platform.rect.y;
-        // Kiểm tra platform thấp hơn đáy nhân vật
         if (platformY > currentY + height) {
-            // Đảm bảo nhân vật có thể đứng trong phạm vi ngang của platform
             if (x + width >= platform.rect.x && x <= platform.rect.x + platform.rect.w) {
                 if (!foundPlatform || platformY < targetY) {
                     targetY = platformY;
@@ -106,20 +123,79 @@ void Player::climbDown(PlatformManager& platformManager) {
         }
     }
 
-    // Di chuyển xuống platform hoặc mặt đất
-    velocityY = 300.0f; // Tốc độ rơi kiểm soát
+    velocityY = 300.0f;
     isClimbingDown = true;
     onGround = false;
     state = FALLING;
-
-    // Điều chỉnh vị trí y để đứng trên bề mặt mục tiêu
-    y = targetY - height; // Đáy sprite chạm targetY
+    y = targetY - height;
 }
 
 void Player::render(Graphics* graphics) {
-    graphics->render(x, y, runSprite);
+    if (state == FLYING) {
+        graphics->render(x, y, flySprite);
+    } else {
+        graphics->render(x, y, runSprite);
+    }
     if (showCollision) {
         renderDebugCollision(graphics);
+    }
+}
+
+void Player::startFly() {
+    if (state == JUMPING || state == FALLING) {
+        state = FLYING;
+        flyStartY = y;
+        if (velocityY < 0) {
+            velocityY *= 0.44f;
+        } else {
+            velocityY = -200.0f;
+        }
+    }
+}
+
+void Player::stopFly() {
+    if (state == FLYING) {
+        state = FALLING;
+        velocityY = 100.0f;
+    }
+}
+
+void Player::jump() {
+    if (onGround) {
+        velocityY = jumpForce;
+        onGround = false;
+        state = JUMPING;
+    }
+}
+
+bool Player::checkPlatformCollision(const SDL_Rect& obstacle) {
+    SDL_Point playerCenter = getCollisionCenter();
+    int playerRadius = getCollisionRadius();
+    if (velocityY >= 0 || state == FLYING) {
+        int closestX = std::max(obstacle.x, std::min(playerCenter.x, obstacle.x + obstacle.w));
+        int closestY = std::max(obstacle.y, std::min(playerCenter.y, obstacle.y + obstacle.h));
+        int deltaX = playerCenter.x - closestX;
+        int deltaY = playerCenter.y - closestY;
+        int distanceSquared = (deltaX * deltaX) + (deltaY * deltaY);
+        if (distanceSquared <= (playerRadius * playerRadius)) {
+            if (closestY <= obstacle.y + 15) {
+                y = obstacle.y - height + (playerCenter.y - y - playerRadius);
+                velocityY = 0;
+                setOnGround(true);
+                if (state == FLYING) {
+                    state = RUNNING;
+                }
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+void Player::setOnGround(bool grounded) {
+    onGround = grounded;
+    if (grounded && (state == JUMPING || state == FALLING || state == FLYING)) {
+        state = RUNNING;
     }
 }
 
@@ -186,14 +262,6 @@ bool Player::checkCircularCollision(const SDL_Point& otherCenter, int otherRadiu
     return distanceSquared <= (radiusSum * radiusSum);
 }
 
-void Player::jump() {
-    if (onGround) {
-        velocityY = jumpForce;
-        onGround = false;
-        state = JUMPING;
-    }
-}
-
 SDL_Rect Player::getCollisionBox() const {
     SDL_Rect box;
     int paddingX = static_cast<int>(width * 0.35);
@@ -203,34 +271,6 @@ SDL_Rect Player::getCollisionBox() const {
     box.w = static_cast<int>(width) - (paddingX * 2);
     box.h = static_cast<int>(height) - (paddingY * 2);
     return box;
-}
-
-bool Player::checkPlatformCollision(const SDL_Rect& obstacle) {
-    SDL_Point playerCenter = getCollisionCenter();
-    int playerRadius = getCollisionRadius();
-    if (velocityY >= 0) {
-        int closestX = std::max(obstacle.x, std::min(playerCenter.x, obstacle.x + obstacle.w));
-        int closestY = std::max(obstacle.y, std::min(playerCenter.y, obstacle.y + obstacle.h));
-        int deltaX = playerCenter.x - closestX;
-        int deltaY = playerCenter.y - closestY;
-        int distanceSquared = (deltaX * deltaX) + (deltaY * deltaY);
-        if (distanceSquared <= (playerRadius * playerRadius)) {
-            if (closestY <= obstacle.y + 15) {
-                y = obstacle.y - height + (playerCenter.y - y - playerRadius); // Căn chỉnh mượt mà
-                velocityY = 0;
-                setOnGround(true);
-                return true;
-            }
-        }
-    }
-    return false;
-}
-
-void Player::setOnGround(bool grounded) {
-    onGround = grounded;
-    if (grounded && (state == JUMPING || state == FALLING)) {
-        state = RUNNING;
-    }
 }
 
 void Player::setPosition(float newX, float newY) {
