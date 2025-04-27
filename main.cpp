@@ -52,7 +52,13 @@ int main(int argc, char* argv[]) {
     } else {
         SDL_Log("Kong run texture loaded successfully!");
     }
-    kong.init(kongrunTexture);
+    SDL_Texture* kongflyTexture = graphics.loadTexture(KONGFLY_SPRITE_FILE);
+    if (kongflyTexture == NULL) {
+        SDL_Log("Failed to load kong fly texture!");
+    } else {
+        SDL_Log("Kong fly texture loaded successfully!");
+    }
+    kong.init(kongrunTexture, kongflyTexture);
     kong.setPosition(400, KONG_DRAW_Y_START);
 
     std::map<ObstacleType, SDL_Texture*> obstacleTextures;
@@ -79,6 +85,7 @@ int main(int argc, char* argv[]) {
 
     bool quit = false;
     SDL_Event e;
+    bool isSpaceHeld = false;
 
     Uint32 lastFrameTime = SDL_GetTicks();
     float animationUpdateTimer = 0.0f;
@@ -97,11 +104,16 @@ int main(int argc, char* argv[]) {
             }
             if (e.type == SDL_KEYDOWN) {
                 if (gameState == PLAYING) {
-                    if (e.key.keysym.sym == SDLK_SPACE && kong.isOnGround()) {
-                        kong.jump();
+                    if (e.key.keysym.sym == SDLK_SPACE && !isSpaceHeld) {
+                        if (kong.isOnGround()) {
+                            kong.jump();
+                        } else {
+                            kong.startFly();
+                            isSpaceHeld = true;
+                        }
                     }
                     if (e.key.keysym.sym == SDLK_s) {
-                        kong.climbDown(platformManager); // Gọi climbDown với PlatformManager
+                        kong.climbDown(platformManager);
                     }
                     if (e.key.keysym.sym == SDLK_c) {
                         kong.toggleCollisionDisplay();
@@ -116,6 +128,10 @@ int main(int argc, char* argv[]) {
                     platformManager.clear();
                     gameState = PLAYING;
                 }
+            }
+            if (e.type == SDL_KEYUP && e.key.keysym.sym == SDLK_SPACE && gameState == PLAYING) {
+                isSpaceHeld = false;
+                kong.stopFly();
             }
         }
 
@@ -144,7 +160,7 @@ int main(int argc, char* argv[]) {
                     allPlatforms.push_back(obs.rect);
                 }
             }
-            kong.update(deltaTime, allPlatforms, platformManager); // Truyền PlatformManager
+            kong.update(deltaTime, allPlatforms, platformManager);
 
             backgroundSky.scroll(static_cast<int>(scrollSpeed * 0.4f));
             background.scroll(static_cast<int>(scrollSpeed * 1.0f));
@@ -162,7 +178,12 @@ int main(int argc, char* argv[]) {
             SDL_Point center = kong.getCollisionCenter();
             int radius = kong.getCollisionRadius();
             if (obstacleManager.checkCollision(center.x, center.y, radius)) {
-                gameState = GAME_OVER;
+                if (kong.getState() == FLYING) {
+                    kong.stopFly();
+                    kong.setOnGround(true);
+                } else {
+                    gameState = GAME_OVER;
+                }
             }
         }
 
@@ -202,6 +223,7 @@ int main(int argc, char* argv[]) {
     TTF_Quit();
 
     SDL_DestroyTexture(kongrunTexture);
+    SDL_DestroyTexture(kongflyTexture);
     for (auto& [type, tex] : platformTextures) {
         SDL_DestroyTexture(tex);
     }
