@@ -70,13 +70,13 @@
 	<SDL_mixer.h>
 	<SDL_ttf.h>
 
-1745339859 source:d:\projectbtl\bananakong\graphics.cpp
+1745654711 source:d:\projectbtl\bananakong\graphics.cpp
 	"graphics.h"
 
-1745566762 d:\projectbtl\bananakong\graphics.h
+1745654681 d:\projectbtl\bananakong\graphics.h
 	"common_func.h"
 
-1745604313 source:d:\projectbtl\bananakong\main.cpp
+1745654631 source:d:\projectbtl\bananakong\main.cpp
 	"common_func.h"
 	"graphics.h"
 	"obstacle.h"
@@ -89,7 +89,7 @@
 	<map>
 	"graphics.h"
 
-1745604313 d:\projectbtl\bananakong\player.h
+1745654632 d:\projectbtl\bananakong\player.h
 	"common_func.h"
 	"graphics.h"
 	<vector>
@@ -102,7 +102,7 @@
 	"obstacle.h"
 	"common_func.h"
 
-1745650739 source:d:\projectbtl\bananakong\obstacle.cpp
+1745756928 source:d:\projectbtl\bananakong\obstacle.cpp
 	"obstacle.h"
 	<cstdlib>
 
@@ -120,7 +120,7 @@
 	<algorithm>
 	<random>
 
-1745647382 source:d:\projectbtl\bananakong\player.cpp
+1745756833 source:d:\projectbtl\bananakong\player.cpp
 	"player.h"
 	"obstacle.h"
 	"platform.h"
