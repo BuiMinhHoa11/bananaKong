@@ -1,3 +1,4 @@
+
 #include "player.h"
 #include "obstacle.h"
 #include "platform.h"
@@ -6,7 +7,7 @@
 
 Player::Player() {
     x = 400;
-    y = GROUND_LEVEL - KONG_HEIGHT; // 888 - 150 = 738
+    y = KONG_DRAW_Y_START; //
     velocityX = 0;
     velocityY = 0;
     gravity = 2000.0f;
@@ -51,7 +52,7 @@ void Player::update(float deltaTime, const std::vector<SDL_Rect>& platforms, Pla
         }
     }
 
-    if (!onAnyGround && y < GROUND_LEVEL - height - 5) {
+    if (!onAnyGround && y < KONG_DRAW_Y_START - 5) {
         onGround = false;
     }
 
@@ -75,8 +76,8 @@ void Player::update(float deltaTime, const std::vector<SDL_Rect>& platforms, Pla
 
     x = 400;
 
-    if (!onAnyGround && y > GROUND_LEVEL - height) {
-        y = GROUND_LEVEL - height;
+    if (!onAnyGround && y > KONG_DRAW_Y_START) {
+        y = KONG_DRAW_Y_START;
         velocityY = 0;
         onGround = true;
         if (state == FLYING) {
