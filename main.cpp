@@ -3,6 +3,7 @@
 #include "obstacle.h"
 #include "player.h"
 #include "platform.h"
+#include "banana.h"
 
 enum GameState { MENU, PLAYING, GAME_OVER };
 
@@ -76,12 +77,20 @@ int main(int argc, char* argv[]) {
     platformTextures[PlatformType::GRASS_SUPERBIG] = graphics.loadTexture("D:/projectBTL/bananakong/image/PLATFORM/grass_superbig.png");
     platformTextures[PlatformType::LAND_MID] = graphics.loadTexture("D:/projectBTL/bananakong/image/PLATFORM/land_mid.png");
     platformTextures[PlatformType::LAND_SMALL] = graphics.loadTexture("D:/projectBTL/bananakong/image/PLATFORM/land_small.png");
-
     for (const auto& [type, tex] : platformTextures) {
         if (tex == nullptr) SDL_Log("Failed to load platform texture!");
     }
-
     PlatformManager platformManager(platformTextures, obstacleManager);
+
+    // Chỉ tải texture cho chuối thường
+    std::map<BananaType, SDL_Texture*> bananaTextures;
+    bananaTextures[BananaType::NORMAL] = graphics.loadTexture("D:/projectBTL/bananakong/image/ITEM_BACK/banana.png");
+    if (bananaTextures[BananaType::NORMAL] == nullptr) {
+        SDL_Log("Failed to load banana texture for type NORMAL!");
+    } else {
+        SDL_Log("Banana texture for type NORMAL loaded successfully!");
+    }
+    BananaManager bananaManager(bananaTextures, platformManager, obstacleManager); // Truyền thêm obstacleManager
 
     bool quit = false;
     SDL_Event e;
@@ -126,6 +135,7 @@ int main(int argc, char* argv[]) {
                     kong.setOnGround(true);
                     obstacleManager.clear();
                     platformManager.clear();
+                    bananaManager.clear();
                     gameState = PLAYING;
                 }
             }
@@ -150,6 +160,9 @@ int main(int argc, char* argv[]) {
             float scrollSpeed = platformManager.getScrollSpeed();
             obstacleManager.setDifficulty(platformManager.getDifficulty());
             obstacleManager.update(deltaTime, scrollSpeed);
+            bananaManager.setScrollSpeed(scrollSpeed);
+            bananaManager.setDifficultyFactor(platformManager.getDifficulty());
+            bananaManager.update(deltaTime);
 
             std::vector<SDL_Rect> allPlatforms;
             for (const auto& platform : platformManager.getPlatforms()) {
@@ -185,6 +198,16 @@ int main(int argc, char* argv[]) {
                     gameState = GAME_OVER;
                 }
             }
+
+            bool magnetActivated = false;
+            if (bananaManager.checkCollision(center.x, center.y, radius, score, magnetActivated)) {
+                // Không cần kiểm tra magnetActivated vì không còn chuối nam châm
+            }
+
+            // Debug collision rendering for bananas
+            if (kong.isCollisionDisplayed()) {
+                bananaManager.renderDebugCollision(graphics.getRenderer());
+            }
         }
 
         graphics.prepareScene();
@@ -196,6 +219,7 @@ int main(int argc, char* argv[]) {
             graphics.renderTexture(obs.texture, obs.rect.x, obs.rect.y);
         }
         obstacleManager.renderDebugCollision(&graphics);
+        bananaManager.render(graphics.getRenderer());
         kong.render(&graphics);
 
         std::string scoreText = "Score: " + std::to_string(score);
@@ -228,6 +252,9 @@ int main(int argc, char* argv[]) {
         SDL_DestroyTexture(tex);
     }
     for (auto& [type, tex] : obstacleTextures) {
+        SDL_DestroyTexture(tex);
+    }
+    for (auto& [type, tex] : bananaTextures) {
         SDL_DestroyTexture(tex);
     }
     SDL_DestroyTexture(leafTopTexture);
