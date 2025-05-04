@@ -60,67 +60,68 @@
 	"player.h"
 	"obstacle.h"
 
-1745339859 source:d:\projectbtl\bananakong\common_func.cpp
+1745762942 source:d:\projectbtl\bananakong\common_func.cpp
 	"common_func.h"
 
-1745650809 d:\projectbtl\bananakong\common_func.h
+1746344232 d:\projectbtl\bananakong\common_func.h
 	<bits/stdc++.h>
 	<SDL.h>
 	<SDL_image.h>
 	<SDL_mixer.h>
 	<SDL_ttf.h>
 
-1745654711 source:d:\projectbtl\bananakong\graphics.cpp
+1745762942 source:d:\projectbtl\bananakong\graphics.cpp
 	"graphics.h"
 
-1745654681 d:\projectbtl\bananakong\graphics.h
+1745762942 d:\projectbtl\bananakong\graphics.h
 	"common_func.h"
 
-1745654631 source:d:\projectbtl\bananakong\main.cpp
+1746205226 source:d:\projectbtl\bananakong\main.cpp
 	"common_func.h"
 	"graphics.h"
 	"obstacle.h"
 	"player.h"
 	"platform.h"
+	"banana.h"
 
-1745575997 d:\projectbtl\bananakong\obstacle.h
+1745762942 d:\projectbtl\bananakong\obstacle.h
 	<SDL.h>
 	<vector>
 	<map>
 	"graphics.h"
 
-1745654632 d:\projectbtl\bananakong\player.h
+1745762942 d:\projectbtl\bananakong\player.h
 	"common_func.h"
 	"graphics.h"
 	<vector>
 	<map>
 
-1745577856 d:\projectbtl\bananakong\platform.h
+1745762942 d:\projectbtl\bananakong\platform.h
 	<SDL.h>
 	<map>
 	<vector>
 	"obstacle.h"
 	"common_func.h"
 
-1745756928 source:d:\projectbtl\bananakong\obstacle.cpp
+1746161155 source:d:\projectbtl\bananakong\obstacle.cpp
 	"obstacle.h"
 	<cstdlib>
 
-1745578431 source:d:\projectbtl\bananakong\platform.cpp
+1745762942 source:d:\projectbtl\bananakong\platform.cpp
 	"platform.h"
 	<ctime>
 	<cstdlib>
 	<iostream>
 	<algorithm>
 
-1745575591 source:d:\projectbtl\bananakong\platform_patterns.cpp
+1745762942 source:d:\projectbtl\bananakong\platform_patterns.cpp
 	"platform.h"
 	<cstdlib>
 	<vector>
 	<algorithm>
 	<random>
 
-1745756833 source:d:\projectbtl\bananakong\player.cpp
+1746344179 source:d:\projectbtl\bananakong\player.cpp
 	"player.h"
 	"obstacle.h"
 	"platform.h"
@@ -130,4 +131,20 @@
 1745182907 source:d:\projectbtl\bananakong\speed_manager.cpp
 
 1745181746 d:\projectbtl\bananakong\speed_manager.h
+
+1746205333 source:d:\projectbtl\bananakong\banana.cpp
+	"banana.h"
+	<cmath>
+	<cstdlib>
+	<iostream>
+	<algorithm>
+	<ctime>
+	<set>
+
+1746205427 d:\projectbtl\bananakong\banana.h
+	"common_func.h"
+	"platform.h"
+	<map>
+	<vector>
+	<set>
 
