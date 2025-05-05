@@ -36,9 +36,13 @@
 		<Unit filename="banana.h" />
 		<Unit filename="common_func.cpp" />
 		<Unit filename="common_func.h" />
+		<Unit filename="gameloop.cpp" />
+		<Unit filename="gameloop.h" />
 		<Unit filename="graphics.cpp" />
 		<Unit filename="graphics.h" />
 		<Unit filename="main.cpp" />
+		<Unit filename="menu.cpp" />
+		<Unit filename="menu.h" />
 		<Unit filename="obstacle.cpp" />
 		<Unit filename="obstacle.h" />
 		<Unit filename="platform.cpp" />
