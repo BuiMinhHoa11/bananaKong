@@ -166,14 +166,14 @@ void Menu::render(Graphics& graphics, GameState gameState, bool& isPaused) {
                     SDL_DestroyTexture(countdownTexture);
                 }
             } else {
-                graphics.renderTexture(offTexture, 1447, 0); // Vẽ nút off sau khi đếm xong
+                graphics.renderTexture(offTexture, 1447, 5); // Vẽ nút off sau khi đếm xong
             }
         }
     }
     else if (gameState == MENU && menuVisible) {
         graphics.renderTexture(menuTexture, 0, 170);
         if (gameState == PLAYING) {
-            graphics.renderTexture(onTexture, 1447, 0); // Vẽ nút on khi ở PLAYING
+            graphics.renderTexture(onTexture, 1447, 5); // Vẽ nút on khi ở PLAYING
         }
     }
 }
