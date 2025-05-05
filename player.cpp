@@ -34,7 +34,7 @@ void Player::init(SDL_Texture* runTexture, SDL_Texture* flyTexture) {
         clip.h = KONGRUN_CLIPS[i][3];
         runSprite.clips.push_back(clip);
     }
-    runSprite.frameDelayMax = 4;
+    runSprite.frameDelayMax = 3;
 
     flySprite.texture = flyTexture;
     SDL_Rect clip = {0, 0, 200, 149};
