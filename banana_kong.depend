@@ -73,16 +73,18 @@
 1745762942 source:d:\projectbtl\bananakong\graphics.cpp
 	"graphics.h"
 
-1745762942 d:\projectbtl\bananakong\graphics.h
+1746409293 d:\projectbtl\bananakong\graphics.h
 	"common_func.h"
 
-1746205226 source:d:\projectbtl\bananakong\main.cpp
+1746409125 source:d:\projectbtl\bananakong\main.cpp
 	"common_func.h"
 	"graphics.h"
 	"obstacle.h"
 	"player.h"
 	"platform.h"
 	"banana.h"
+	"gameloop.h"
+	"menu.h"
 
 1745762942 d:\projectbtl\bananakong\obstacle.h
 	<SDL.h>
@@ -103,7 +105,7 @@
 	"obstacle.h"
 	"common_func.h"
 
-1746161155 source:d:\projectbtl\bananakong\obstacle.cpp
+1746368406 source:d:\projectbtl\bananakong\obstacle.cpp
 	"obstacle.h"
 	<cstdlib>
 
@@ -121,7 +123,7 @@
 	<algorithm>
 	<random>
 
-1746344179 source:d:\projectbtl\bananakong\player.cpp
+1746409495 source:d:\projectbtl\bananakong\player.cpp
 	"player.h"
 	"obstacle.h"
 	"platform.h"
@@ -132,7 +134,7 @@
 
 1745181746 d:\projectbtl\bananakong\speed_manager.h
 
-1746205333 source:d:\projectbtl\bananakong\banana.cpp
+1746350096 source:d:\projectbtl\bananakong\banana.cpp
 	"banana.h"
 	<cmath>
 	<cstdlib>
@@ -147,4 +149,25 @@
 	<map>
 	<vector>
 	<set>
+
+1746367647 source:d:\projectbtl\bananakong\gameloop.cpp
+	"gameloop.h"
+
+1746367647 d:\projectbtl\bananakong\gameloop.h
+	"common_func.h"
+	"graphics.h"
+	"obstacle.h"
+	"player.h"
+	"platform.h"
+	"banana.h"
+	"menu.h"
+
+1746408784 d:\projectbtl\bananakong\menu.h
+	<SDL.h>
+	"graphics.h"
+
+1746409125 source:d:\projectbtl\bananakong\menu.cpp
+	"menu.h"
+	"gameloop.h"
+	<SDL_ttf.h>
 
