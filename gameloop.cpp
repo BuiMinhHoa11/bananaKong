@@ -36,6 +36,7 @@ void GameLoop::handleEvents(SDL_Event& e, GameState& gameState) {
             currentBananas = 0;
             kong.setPosition(400, KONG_DRAW_Y_START);
             kong.setOnGround(true);
+            kong.setState(PlayerState::RUN); // Đặt lại trạng thái RUN
             obstacleManager.clear();
             platformManager.clear();
             bananaManager.clear();
@@ -92,10 +93,11 @@ void GameLoop::update(GameState& gameState, float deltaTime) {
         SDL_Point center = kong.getCollisionCenter();
         int radius = kong.getCollisionRadius();
         if (obstacleManager.checkCollision(center.x, center.y, radius)) {
-            if (kong.getState() == FLYING) {
+            if (kong.getState() == FLY) {
                 kong.stopFly();
                 kong.setOnGround(true);
             } else {
+                kong.setState(PlayerState::DIE); // Chuyển sang trạng thái DIE
                 gameState = GAME_OVER;
                 totalBananas += currentBananas;
                 if (currentBananas > bestBananas) bestBananas = currentBananas;
@@ -145,6 +147,7 @@ void GameLoop::reset() {
     currentBananas = 0;
     kong.setPosition(400, KONG_DRAW_Y_START);
     kong.setOnGround(true);
+    kong.setState(PlayerState::RUN); // Đặt lại trạng thái RUN
     obstacleManager.clear();
     platformManager.clear();
     bananaManager.clear();
