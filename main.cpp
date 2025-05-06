@@ -1,3 +1,4 @@
+#include "audio.h"
 #include "common_func.h"
 #include "graphics.h"
 #include "obstacle.h"
@@ -6,7 +7,6 @@
 #include "banana.h"
 #include "gameloop.h"
 #include "menu.h"
-#include "audio.h"
 
 int main(int argc, char* argv[]) {
     SDL_Window* window = nullptr;
@@ -15,7 +15,6 @@ int main(int argc, char* argv[]) {
     initTTF();
     Graphics graphics(renderer);
 
-    // Khởi tạo AudioManager
     AudioManager audioManager;
     if (!audioManager.init()) {
         SDL_Log("Failed to initialize audio: %s", Mix_GetError());
@@ -43,7 +42,7 @@ int main(int argc, char* argv[]) {
     SDL_Texture* leafTopTexture = graphics.loadTexture("D:/projectBTL/bananakong/image/ITEM_BACK/leafTop.png");
     leafTop.setTexture(leafTopTexture);
 
-    Player kong(audioManager); // Đã sửa từ Player kong;
+    Player kong(audioManager);
     SDL_Texture* kongrunTexture = graphics.loadTexture(KONGRUN_SPRITE_FILE);
     SDL_Texture* kongflyTexture = graphics.loadTexture(KONGFLY_SPRITE_FILE);
     SDL_Texture* kongdieTexture = graphics.loadTexture(KONGDIE_SPRITE_FILE);
@@ -66,7 +65,7 @@ int main(int argc, char* argv[]) {
 
     std::map<BananaType, SDL_Texture*> bananaTextures;
     bananaTextures[BananaType::NORMAL] = graphics.loadTexture("D:/projectBTL/bananakong/image/ITEM_BACK/banana.png");
-    BananaManager bananaManager(bananaTextures, platformManager, obstacleManager);
+    BananaManager bananaManager(bananaTextures, platformManager, obstacleManager, graphics); // Đảm bảo truyền graphics
 
     GameLoop gameLoop(graphics, kong, obstacleManager, platformManager, bananaManager, backgroundSky, background, leafTop, audioManager);
     Menu menu(graphics, gameLoop, audioManager);
@@ -77,7 +76,6 @@ int main(int argc, char* argv[]) {
     MenuState menuState = NONE;
     bool isPaused = false;
 
-    // Phát nhạc nền ban đầu
     audioManager.playMusic(MusicType::HOMEPLAY);
 
     Uint32 lastFrameTime = SDL_GetTicks();
@@ -96,14 +94,20 @@ int main(int argc, char* argv[]) {
             }
         }
 
-        // Cập nhật nhạc nền theo trạng thái game
         if (gameState == HOMEPLAY && !isPaused) {
             audioManager.playMusic(MusicType::HOMEPLAY);
         } else if (gameState == PLAYING && !isPaused) {
             audioManager.playMusic(MusicType::LOOP);
         } else if (gameState == GAME_OVER || isPaused) {
             audioManager.stopMusic();
+            if (gameState == GAME_OVER && menuState == NONE) {
+                menuState = REVIVE;
+                menu.startReviveCountdown();
+            }
         }
+
+        // Cập nhật trạng thái đếm ngược trước khi render
+        menu.updateReviveCountdown(gameState, menuState, isPaused);
 
         if (!isPaused && gameState == PLAYING) {
             gameLoop.update(gameState, deltaTime);
