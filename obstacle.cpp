@@ -1,5 +1,6 @@
 #include "obstacle.h"
 #include <cstdlib>
+#include <cmath>
 
 ObstacleManager::ObstacleManager(const std::map<ObstacleType, SDL_Texture*>& textures) {
     textureMap = textures;
@@ -127,4 +128,16 @@ const std::vector<Obstacle>& ObstacleManager::getObstacles() const {
 
 void ObstacleManager::clear() {
     obstacles.clear();
+}
+
+void ObstacleManager::removeObstaclesNear(int x, int range) { // Thêm triển khai phương thức
+    auto it = obstacles.begin();
+    while (it != obstacles.end()) {
+        int obstacleCenterX = it->rect.x + it->rect.w / 2;
+        if (abs(obstacleCenterX - x) <= range) {
+            it = obstacles.erase(it);
+        } else {
+            ++it;
+        }
+    }
 }
