@@ -8,6 +8,8 @@
 #include "menu.h"
 
 int main(int argc, char* argv[]) {
+    SDL_Window* window = nullptr;
+    SDL_Renderer* renderer = nullptr;
     initSDL(window, renderer);
     initTTF();
     Graphics graphics(renderer);
@@ -18,7 +20,6 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    // Khởi tạo background
     ScrollingBackground backgroundSky;
     SDL_Texture* skyTexture = graphics.loadTexture("D:/projectBTL/bananakong/image/ITEM_BACK/skymany.png");
     backgroundSky.setTexture(skyTexture);
@@ -31,15 +32,13 @@ int main(int argc, char* argv[]) {
     SDL_Texture* leafTopTexture = graphics.loadTexture("D:/projectBTL/bananakong/image/ITEM_BACK/leafTop.png");
     leafTop.setTexture(leafTopTexture);
 
-    // Khởi tạo nhân vật Kong
     Player kong;
     SDL_Texture* kongrunTexture = graphics.loadTexture(KONGRUN_SPRITE_FILE);
     SDL_Texture* kongflyTexture = graphics.loadTexture(KONGFLY_SPRITE_FILE);
-    SDL_Texture* kongdieTexture = graphics.loadTexture(KONGDIE_SPRITE_FILE); // Tải texture DIE
+    SDL_Texture* kongdieTexture = graphics.loadTexture(KONGDIE_SPRITE_FILE);
     kong.init(kongrunTexture, kongflyTexture, kongdieTexture);
     kong.setPosition(400, KONG_DRAW_Y_START);
 
-    // Khởi tạo các đối tượng trong game
     std::map<ObstacleType, SDL_Texture*> obstacleTextures;
     obstacleTextures[ObstacleType::ROCK] = graphics.loadTexture("D:/projectBTL/bananakong/image/ITEM_BACK/daHeo.png");
     obstacleTextures[ObstacleType::SPIKE] = graphics.loadTexture("D:/projectBTL/bananakong/image/ITEM_BACK/cot.png");
@@ -58,13 +57,13 @@ int main(int argc, char* argv[]) {
     bananaTextures[BananaType::NORMAL] = graphics.loadTexture("D:/projectBTL/bananakong/image/ITEM_BACK/banana.png");
     BananaManager bananaManager(bananaTextures, platformManager, obstacleManager);
 
-    // Khởi tạo GameLoop và Menu
     GameLoop gameLoop(graphics, kong, obstacleManager, platformManager, bananaManager, backgroundSky, background, leafTop);
     Menu menu(graphics, gameLoop);
 
     bool quit = false;
     SDL_Event e;
     GameState gameState = HOMEPLAY;
+    MenuState menuState = NONE;
     bool isPaused = false;
 
     Uint32 lastFrameTime = SDL_GetTicks();
@@ -77,7 +76,7 @@ int main(int argc, char* argv[]) {
             if (e.type == SDL_QUIT) {
                 quit = true;
             }
-            menu.handleEvents(e, gameState, isPaused);
+            menu.handleEvents(e, gameState, menuState, isPaused);
             if (!isPaused && gameState == PLAYING) {
                 gameLoop.handleEvents(e, gameState);
             }
@@ -87,15 +86,11 @@ int main(int argc, char* argv[]) {
             gameLoop.update(gameState, deltaTime);
         }
 
-        if ((gameState == PLAYING && !isPaused) || gameState == GAME_OVER) {
-            graphics.prepareScene();
-        }
-
-        if (gameState == PLAYING || (gameState == GAME_OVER && !menu.isMenuVisible())) {
+        graphics.prepareScene();
+        if (gameState == PLAYING || gameState == GAME_OVER) {
             gameLoop.render(graphics, gameState, font);
         }
-        menu.render(graphics, gameState, isPaused);
-
+        menu.render(graphics, gameState, menuState, isPaused);
         graphics.presentScene();
         SDL_Delay(16);
     }
@@ -105,7 +100,7 @@ int main(int argc, char* argv[]) {
 
     SDL_DestroyTexture(kongrunTexture);
     SDL_DestroyTexture(kongflyTexture);
-    SDL_DestroyTexture(kongdieTexture); // Hủy texture DIE
+    SDL_DestroyTexture(kongdieTexture);
     for (auto& [type, tex] : platformTextures) {
         SDL_DestroyTexture(tex);
     }
