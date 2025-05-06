@@ -8,13 +8,14 @@
 #include "platform.h"
 #include "banana.h"
 #include "menu.h"
+#include "audio.h"
 
 class GameLoop {
 public:
     GameLoop(Graphics& graphics, Player& player, ObstacleManager& obstacleManager,
              PlatformManager& platformManager, BananaManager& bananaManager,
              ScrollingBackground& backgroundSky, ScrollingBackground& background,
-             ScrollingBackground& leafTop);
+             ScrollingBackground& leafTop, AudioManager& audioManager);
     void handleEvents(SDL_Event& e, GameState& gameState);
     void update(GameState& gameState, float deltaTime);
     void render(Graphics& graphics, GameState gameState, TTF_Font* font);
@@ -34,6 +35,7 @@ private:
     ScrollingBackground& backgroundSky;
     ScrollingBackground& background;
     ScrollingBackground& leafTop;
+    AudioManager& audioManager;
 
     bool isSpaceHeld;
     Uint32 lastFrameTime;
