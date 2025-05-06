@@ -1,4 +1,3 @@
-
 #include "player.h"
 #include "obstacle.h"
 #include "platform.h"
@@ -7,7 +6,7 @@
 
 Player::Player() {
     x = 400;
-    y = KONG_DRAW_Y_START; //
+    y = KONG_DRAW_Y_START;
     velocityX = 0;
     velocityY = 0;
     gravity = 2000.0f;
@@ -16,7 +15,7 @@ Player::Player() {
     height = KONG_HEIGHT;
     onGround = true;
     isClimbingDown = false;
-    state = RUNNING;
+    state = RUN;
     collisionRadius = 50;
     showCollision = true;
     flyStartY = 0.0f;
@@ -24,26 +23,24 @@ Player::Player() {
 
 Player::~Player() {}
 
-void Player::init(SDL_Texture* runTexture, SDL_Texture* flyTexture) {
-    runSprite.texture = runTexture;
-    for (int i = 0; i < KONGRUN_FRAMES; i++) {
-        SDL_Rect clip;
-        clip.x = KONGRUN_CLIPS[i][0];
-        clip.y = KONGRUN_CLIPS[i][1];
-        clip.w = KONGRUN_CLIPS[i][2];
-        clip.h = KONGRUN_CLIPS[i][3];
-        runSprite.clips.push_back(clip);
-    }
+void Player::init(SDL_Texture* runTexture, SDL_Texture* flyTexture, SDL_Texture* dieTexture) {
+    runSprite.init(runTexture, KONGRUN_FRAMES, KONGRUN_CLIPS);
     runSprite.frameDelayMax = 3;
 
-    flySprite.texture = flyTexture;
-    SDL_Rect clip = {0, 0, 200, 149};
-    flySprite.clips.push_back(clip);
+    flySprite.init(flyTexture, KONGFLY_FRAMES, KONGFLY_CLIPS);
     flySprite.frameDelayMax = 0;
     flySprite.currentFrame = 0;
+
+    dieSprite.init(dieTexture, KONGDIE_FRAMES, KONGDIE_CLIPS); // Khởi tạo sprite DIE
+    dieSprite.frameDelayMax = 0; // Không cần hoạt ảnh
+    dieSprite.currentFrame = 0;
 }
 
 void Player::update(float deltaTime, const std::vector<SDL_Rect>& platforms, PlatformManager& platformManager) {
+    if (state == DIE) {
+        return; // Không cập nhật khi đã chết
+    }
+
     bool onAnyGround = false;
     for (const auto& platform : platforms) {
         if (checkPlatformCollision(platform)) {
@@ -57,7 +54,7 @@ void Player::update(float deltaTime, const std::vector<SDL_Rect>& platforms, Pla
     }
 
     if (!onGround) {
-        if (state == FLYING) {
+        if (state == FLY) {
             if (y < flyStartY - 210.0f) {
                 y = flyStartY - 210.0f;
                 velocityY = 100.0f;
@@ -80,20 +77,20 @@ void Player::update(float deltaTime, const std::vector<SDL_Rect>& platforms, Pla
         y = KONG_DRAW_Y_START;
         velocityY = 0;
         onGround = true;
-        if (state == FLYING) {
-            state = RUNNING;
+        if (state == FLY) {
+            state = RUN;
         }
     }
 
     if (onGround) {
-        state = RUNNING;
+        state = RUN;
         isClimbingDown = false;
     } else {
-        if (state != FLYING) {
+        if (state != FLY) {
             if (velocityY < 0) {
-                state = JUMPING;
+                state = JUMP;
             } else {
-                state = FALLING;
+                state = FALL;
             }
         }
     }
@@ -127,13 +124,15 @@ void Player::climbDown(PlatformManager& platformManager) {
     velocityY = 300.0f;
     isClimbingDown = true;
     onGround = false;
-    state = FALLING;
+    state = FALL;
     y = targetY - height;
 }
 
 void Player::render(Graphics* graphics) {
-    if (state == FLYING) {
+    if (state == FLY) {
         graphics->render(x, y, flySprite);
+    } else if (state == DIE) {
+        graphics->render(x, y + 15, dieSprite); // Hiển thị sprite DIE
     } else {
         graphics->render(x, y, runSprite);
     }
@@ -143,8 +142,8 @@ void Player::render(Graphics* graphics) {
 }
 
 void Player::startFly() {
-    if (state == JUMPING || state == FALLING) {
-        state = FLYING;
+    if (state == JUMP || state == FALL) {
+        state = FLY;
         flyStartY = y;
         if (velocityY < 0) {
             velocityY *= 0.44f;
@@ -155,8 +154,8 @@ void Player::startFly() {
 }
 
 void Player::stopFly() {
-    if (state == FLYING) {
-        state = FALLING;
+    if (state == FLY) {
+        state = FALL;
         velocityY = 100.0f;
     }
 }
@@ -165,14 +164,14 @@ void Player::jump() {
     if (onGround) {
         velocityY = jumpForce;
         onGround = false;
-        state = JUMPING;
+        state = JUMP;
     }
 }
 
 bool Player::checkPlatformCollision(const SDL_Rect& obstacle) {
     SDL_Point playerCenter = getCollisionCenter();
     int playerRadius = getCollisionRadius();
-    if (velocityY >= 0 || state == FLYING) {
+    if (velocityY >= 0 || state == FLY) {
         int closestX = std::max(obstacle.x, std::min(playerCenter.x, obstacle.x + obstacle.w));
         int closestY = std::max(obstacle.y, std::min(playerCenter.y, obstacle.y + obstacle.h));
         int deltaX = playerCenter.x - closestX;
@@ -183,8 +182,8 @@ bool Player::checkPlatformCollision(const SDL_Rect& obstacle) {
                 y = obstacle.y - height + (playerCenter.y - y - playerRadius);
                 velocityY = 0;
                 setOnGround(true);
-                if (state == FLYING) {
-                    state = RUNNING;
+                if (state == FLY) {
+                    state = RUN;
                 }
                 return true;
             }
@@ -195,8 +194,8 @@ bool Player::checkPlatformCollision(const SDL_Rect& obstacle) {
 
 void Player::setOnGround(bool grounded) {
     onGround = grounded;
-    if (grounded && (state == JUMPING || state == FALLING || state == FLYING)) {
-        state = RUNNING;
+    if (grounded && (state == JUMP || state == FALL || state == FLY)) {
+        state = RUN;
     }
 }
 
@@ -285,4 +284,8 @@ void Player::setCollisionRadius(int radius) {
 
 void Player::toggleCollisionDisplay() {
     showCollision = !showCollision;
+}
+
+void Player::setState(PlayerState newState) {
+    state = newState;
 }
