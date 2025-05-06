@@ -9,9 +9,9 @@ enum class SoundType {
     DIE,
     COUNT_DOWN,
     EAT,
+    RUN,
     JUMP,
     CLIMB_DOWN,
-    IDLE,
     SLIDE,
     CLICK
 };
