@@ -3,26 +3,27 @@
 
 #include <SDL.h>
 #include <SDL_ttf.h>
+#include <stack>
+#include <variant>
 #include "graphics.h"
 #include "audio.h"
-#include <vector>
-#include <variant>
 
-enum GameState {
-    HOMEPLAY, // Sảnh chính
-    PLAYING,  // Trò chơi
-    MAIN_MENU, // Menu chính
-    GAME_OVER // Kết thúc trò chơi
-};
-
-enum MenuState {
-    NONE,    // Không hiển thị menu
-    MENU,    // Menu chính (menu.png)
-    OPTIONS, // Menu tùy chọn (options.png)
-    REVIVE   // Màn hình hồi sinh (revive.png)
-};
-
+// Khai báo trước lớp GameLoop
 class GameLoop;
+
+enum class GameState {
+    HOMEPLAY,  // Sảnh chính
+    PLAYING,   // Trò chơi
+    MAIN_MENU, // Menu chính
+    GAME_OVER  // Kết thúc trò chơi
+};
+
+enum class MenuState {
+    NONE,
+    MENU,
+    OPTIONS,
+    REVIVE
+};
 
 class Menu {
 public:
@@ -30,16 +31,15 @@ public:
     ~Menu();
 
     void handleEvents(SDL_Event& e, GameState& gameState, MenuState& menuState, bool& isPaused);
-    void updateReviveCountdown(GameState& gameState, MenuState& menuState, bool& isPaused);
     void render(Graphics& graphics, GameState gameState, MenuState menuState, bool& isPaused);
-    bool isMenuVisible() const { return menuVisible; }
     void togglePause(GameState& gameState, MenuState& menuState, bool& isPaused);
     void startCountdown();
     void startReviveCountdown();
+    void updateReviveCountdown(GameState& gameState, MenuState& menuState, bool& isPaused);
 
 private:
-    SDL_Texture* createCountdownTexture(Graphics& graphics, int value);
-
+    GameLoop& gameLoop;
+    AudioManager& audioManager;
     SDL_Texture* homeplayTexture;
     SDL_Texture* menuTexture;
     SDL_Texture* offTexture;
@@ -47,19 +47,20 @@ private:
     SDL_Texture* optionsTexture;
     SDL_Texture* backTexture;
     SDL_Texture* reviveTexture;
-
-    GameLoop& gameLoop;
-    AudioManager& audioManager;
+    SDL_Texture* musicOnTexture;    // Texture cho nút Music bật
+    SDL_Texture* musicOffTexture;   // Texture cho nút Music tắt
+    SDL_Texture* effectOnTexture;   // Texture cho nút Effect bật
+    SDL_Texture* effectOffTexture;  // Texture cho nút Effect tắt
     bool menuVisible;
     bool isOffButtonActive;
     bool isCountingDown;
     int countdownValue;
     Uint32 countdownStartTime;
     bool isReviveCountingDown;
-    float reviveCountdownValue; // Thời gian đếm ngược (giây, ví dụ: 5.0f)
+    float reviveCountdownValue;
     Uint32 reviveCountdownStartTime;
-    using State = std::variant<GameState, MenuState>;
-    std::vector<State> stateHistory;
+    std::stack<std::variant<GameState, MenuState>> stateHistory;
+    SDL_Texture* createCountdownTexture(Graphics& graphics, int value);
 };
 
 #endif // MENU_H
