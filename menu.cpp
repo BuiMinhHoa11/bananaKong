@@ -4,7 +4,8 @@
 
 Menu::Menu(Graphics& graphics, GameLoop& gameLoop, AudioManager& audioManager)
     : gameLoop(gameLoop), audioManager(audioManager), menuVisible(false),
-      isOffButtonActive(true), isCountingDown(false), countdownValue(0) {
+      isOffButtonActive(true), isCountingDown(false), countdownValue(0),
+      isReviveCountingDown(false), reviveCountdownValue(5.0f) {
     homeplayTexture = graphics.loadTexture("D:/projectBTL/bananakong/image/MENU/homeplay.png");
     if (!homeplayTexture) {
         SDL_Log("Failed to load homeplay texture: %s", SDL_GetError());
@@ -29,6 +30,10 @@ Menu::Menu(Graphics& graphics, GameLoop& gameLoop, AudioManager& audioManager)
     if (!backTexture) {
         SDL_Log("Failed to load back texture: %s", SDL_GetError());
     }
+    reviveTexture = graphics.loadTexture("D:/projectBTL/bananakong/image/MENU/revive.png");
+    if (!reviveTexture) {
+        SDL_Log("Failed to load revive texture: %s", SDL_GetError());
+    }
 }
 
 Menu::~Menu() {
@@ -38,11 +43,12 @@ Menu::~Menu() {
     SDL_DestroyTexture(onTexture);
     SDL_DestroyTexture(optionsTexture);
     SDL_DestroyTexture(backTexture);
+    SDL_DestroyTexture(reviveTexture);
 }
 
 void Menu::togglePause(GameState& gameState, MenuState& menuState, bool& isPaused) {
     if (isOffButtonActive) {
-        // Chuyển từ OFF (đang chơi) sang ON (tạm dừng)
+        // Từ OFF (đang chơi) sang ON (tạm dừng)
         isPaused = true;
         menuVisible = true;
         isOffButtonActive = false;
@@ -50,7 +56,7 @@ void Menu::togglePause(GameState& gameState, MenuState& menuState, bool& isPause
         menuState = MENU;
         audioManager.playSound(SoundType::CLICK);
     } else {
-        // Chuyển từ ON (tạm dừng) sang OFF (đang chơi)
+        // Từ ON (tạm dừng) sang OFF (đang chơi)
         menuVisible = false;
         menuState = NONE;
         startCountdown();
@@ -65,8 +71,15 @@ void Menu::startCountdown() {
     audioManager.playSound(SoundType::COUNT_DOWN);
 }
 
+void Menu::startReviveCountdown() {
+    isReviveCountingDown = true;
+    reviveCountdownValue = 5.0f; // 5 giây để quyết định hồi sinh
+    reviveCountdownStartTime = SDL_GetTicks();
+    audioManager.playSound(SoundType::COUNT_DOWN);
+}
+
 SDL_Texture* Menu::createCountdownTexture(Graphics& graphics, int value) {
-    TTF_Font* font = TTF_OpenFont("D:/projectBTL/bananakong/font/Gameplay.ttf", 200);
+    TTF_Font* font = TTF_OpenFont("D:/projectBTL/bananakong/font/Gameplay.ttf", 50); // Font nhỏ cho số đếm ngược
     if (!font) {
         SDL_Log("Failed to load font for countdown: %s", TTF_GetError());
         return nullptr;
@@ -87,6 +100,25 @@ SDL_Texture* Menu::createCountdownTexture(Graphics& graphics, int value) {
     return texture;
 }
 
+void Menu::updateReviveCountdown(GameState& gameState, MenuState& menuState, bool& isPaused) {
+    if (menuState == REVIVE && gameState == GAME_OVER && isReviveCountingDown) {
+        Uint32 currentTime = SDL_GetTicks();
+        float elapsedTime = (currentTime - reviveCountdownStartTime) / 1000.0f;
+        int remainingTime = static_cast<int>(ceil(reviveCountdownValue - elapsedTime));
+        if (remainingTime <= 0) {
+            // Hết thời gian, tự động chuyển về HOMEPLAY
+            isReviveCountingDown = false;
+            gameState = HOMEPLAY;
+            menuState = NONE;
+            menuVisible = false;
+            isPaused = false;
+            isOffButtonActive = true;
+            gameLoop.reset();
+            audioManager.playMusic(MusicType::HOMEPLAY);
+        }
+    }
+}
+
 void Menu::handleEvents(SDL_Event& e, GameState& gameState, MenuState& menuState, bool& isPaused) {
     int mouseX, mouseY;
     SDL_GetMouseState(&mouseX, &mouseY);
@@ -101,26 +133,37 @@ void Menu::handleEvents(SDL_Event& e, GameState& gameState, MenuState& menuState
                 isCountingDown = false;
                 audioManager.playSound(SoundType::CLICK);
             } else if (mouseX >= 1346 && mouseX <= 1500 && mouseY >= 0 && mouseY <= 963) {
-                SDL_Log("Opening menu in HOMEPLAY: mouseX=%d, mouseY=%d", mouseX, mouseY);
                 stateHistory.push_back(gameState);
                 menuVisible = true;
                 menuState = MENU;
                 audioManager.playSound(SoundType::SLIDE);
             }
+        } else if (gameState == HOMEPLAY && menuState == MENU && menuVisible) {
+            // Nhấn bất kỳ đâu để thu menu trong HOMEPLAY
+            if (mouseX >= 780 && mouseX <= 1197 && mouseY >= 408 && mouseY <= 545) {
+                stateHistory.push_back(menuState);
+                menuState = OPTIONS;
+                audioManager.playSound(SoundType::CLICK);
+            } else {
+                menuVisible = false;
+                menuState = NONE;
+                if (!stateHistory.empty()) {
+                    stateHistory.pop_back(); // Xóa trạng thái HOMEPLAY khỏi lịch sử
+                }
+                audioManager.playSound(SoundType::CLICK);
+            }
         } else if (gameState == PLAYING && menuState == NONE && !isCountingDown) {
             if (mouseX >= 1447 && mouseX <= 1500 && mouseY >= 0 && mouseY <= 53) {
                 togglePause(gameState, menuState, isPaused);
             }
-        } else if (menuState == MENU && menuVisible) {
+        } else if (menuState == MENU && menuVisible && gameState != HOMEPLAY) {
             if (mouseX >= 780 && mouseX <= 1197 && mouseY >= 408 && mouseY <= 545) {
-                SDL_Log("Switching to OPTIONS: mouseX=%d, mouseY=%d", mouseX, mouseY);
                 stateHistory.push_back(menuState);
                 menuState = OPTIONS;
                 audioManager.playSound(SoundType::CLICK);
             } else if (mouseX >= 1447 && mouseX <= 1500 && mouseY >= 0 && mouseY <= 53 && !isOffButtonActive) {
                 togglePause(gameState, menuState, isPaused);
             }
-            // Đã bỏ logic ẩn menu khi nhấp ngoài nút ON
         } else if (menuState == OPTIONS) {
             int backW, backH;
             SDL_QueryTexture(backTexture, nullptr, nullptr, &backW, &backH);
@@ -143,14 +186,19 @@ void Menu::handleEvents(SDL_Event& e, GameState& gameState, MenuState& menuState
                 }
                 audioManager.playSound(SoundType::CLICK);
             }
-        } else if (gameState == GAME_OVER) {
-            gameLoop.reset();
-            gameState = PLAYING;
-            menuState = NONE;
-            isPaused = false;
-            isOffButtonActive = true;
-            isCountingDown = false;
-            audioManager.playSound(SoundType::CLICK);
+        } else if (menuState == REVIVE && gameState == GAME_OVER && isReviveCountingDown) {
+            // Nhấn vào khu vực cố định để hồi sinh chỉ khi còn trong thời gian
+            int reviveW, reviveH;
+            SDL_QueryTexture(reviveTexture, nullptr, nullptr, &reviveW, &reviveH);
+            if (mouseX >= 570 && mouseX <= 950 && mouseY >= 445 && mouseY <= 625) {
+                gameLoop.revivePlayer(); // Hồi sinh Kong, giữ nguyên chuối và khoảng cách
+                gameState = PLAYING;
+                menuState = NONE;
+                isPaused = false;
+                isOffButtonActive = true;
+                isReviveCountingDown = false;
+                audioManager.playSound(SoundType::CLICK);
+            }
         }
     }
 }
@@ -165,41 +213,47 @@ void Menu::render(Graphics& graphics, GameState gameState, MenuState menuState, 
             graphics.renderTexture(backTexture, 50, 50);
         }
     } else if (gameState == PLAYING || gameState == GAME_OVER) {
-        // Xử lý hiển thị menu và nút on/off
         if (menuState == MENU && menuVisible) {
-            // Hiển thị menu chính và nút ON
             graphics.renderTexture(menuTexture, 0, 170);
             graphics.renderTexture(onTexture, 1447, 0);
         } else if (menuState == OPTIONS) {
-            // Hiển thị menu tùy chọn và nút back
             graphics.renderTexture(optionsTexture, 300, 210);
             graphics.renderTexture(backTexture, 50, 50);
-        } else if (isCountingDown) {
-            // Đang đếm ngược, hiển thị nút ON
-            graphics.renderTexture(onTexture, 1447, 0);
+        } else if (menuState == REVIVE && gameState == GAME_OVER && isReviveCountingDown) {
+            int reviveW, reviveH;
+            SDL_QueryTexture(reviveTexture, nullptr, nullptr, &reviveW, &reviveH);
+            int reviveX = (1500 - reviveW) / 2; // Trung tâm màn hình
+            int reviveY = (963 - reviveH) / 2;
+            graphics.renderTexture(reviveTexture, reviveX, reviveY);
 
-            // Xử lý đếm ngược
+            Uint32 currentTime = SDL_GetTicks();
+            float elapsedTime = (currentTime - reviveCountdownStartTime) / 1000.0f;
+            int remainingTime = static_cast<int>(ceil(reviveCountdownValue - elapsedTime));
+            // Hiển thị số đếm ngược ở mép trái bảng revive
+            SDL_Texture* countdownTexture = createCountdownTexture(graphics, remainingTime);
+            if (countdownTexture) {
+                int w, h;
+                SDL_QueryTexture(countdownTexture, nullptr, nullptr, &w, &h);
+                graphics.renderTexture(countdownTexture, reviveX + 38, reviveY + 19);
+                SDL_DestroyTexture(countdownTexture);
+            }
+        } else if (isCountingDown) {
+            graphics.renderTexture(onTexture, 1447, 0);
             Uint32 currentTime = SDL_GetTicks();
             Uint32 elapsedTime = currentTime - countdownStartTime;
             if (elapsedTime >= 1000) {
                 countdownValue--;
                 countdownStartTime = currentTime;
-
                 if (countdownValue <= 0) {
-                    // Kết thúc đếm ngược
                     isCountingDown = false;
                     isPaused = false;
                     isOffButtonActive = true;
                     menuState = NONE;
-
-                    // Hiển thị nút OFF sau khi đếm ngược kết thúc
                     graphics.renderTexture(offTexture, 1447, 0);
                     return;
                 }
                 audioManager.playSound(SoundType::COUNT_DOWN);
             }
-
-            // Hiển thị số đếm ngược
             SDL_Texture* countdownTexture = createCountdownTexture(graphics, countdownValue);
             if (countdownTexture) {
                 int w, h;
@@ -209,7 +263,6 @@ void Menu::render(Graphics& graphics, GameState gameState, MenuState menuState, 
                 SDL_DestroyTexture(countdownTexture);
             }
         } else if ((gameState == PLAYING || gameState == GAME_OVER) && menuState == NONE) {
-            // Game đang chạy bình thường hoặc đã kết thúc, hiển thị nút OFF
             graphics.renderTexture(offTexture, 1447, 0);
         }
     }
