@@ -15,7 +15,7 @@ void GameLoop::handleEvents(SDL_Event& e, GameState& gameState) {
     SDL_GetMouseState(&mouseX, &mouseY);
 
     if (e.type == SDL_KEYDOWN) {
-        if (gameState == PLAYING) {
+        if (gameState == GameState::PLAYING) {
             if (e.key.keysym.sym == SDLK_SPACE && !isSpaceHeld) {
                 if (kong.isOnGround()) {
                     kong.jump();
@@ -31,7 +31,7 @@ void GameLoop::handleEvents(SDL_Event& e, GameState& gameState) {
                 kong.toggleCollisionDisplay();
             }
         }
-        if (gameState == GAME_OVER && e.key.keysym.sym == SDLK_r) {
+        if (gameState == GameState::GAME_OVER && e.key.keysym.sym == SDLK_r) {
             distance = 0;
             currentBananas = 0;
             kong.setPosition(400, KONG_DRAW_Y_START);
@@ -40,27 +40,32 @@ void GameLoop::handleEvents(SDL_Event& e, GameState& gameState) {
             obstacleManager.clear();
             platformManager.clear();
             bananaManager.clear();
-            gameState = PLAYING;
+            gameState = GameState::PLAYING;
         }
     }
-    if (e.type == SDL_KEYUP && e.key.keysym.sym == SDLK_SPACE && gameState == PLAYING) {
+    if (e.type == SDL_KEYUP && e.key.keysym.sym == SDLK_SPACE && gameState == GameState::PLAYING) {
         isSpaceHeld = false;
         kong.stopFly();
     }
 }
 
 void GameLoop::update(GameState& gameState, float deltaTime) {
-    if (gameState == PLAYING) {
+    if (gameState == GameState::PLAYING) {
         scoreTimer += deltaTime;
         float difficulty = platformManager.getDifficulty();
-        distance += static_cast<int>(deltaTime * 1.0f * difficulty);
+
+        // Fix distance calculation: Use scroll speed to determine how far Kong travels
+        float scrollSpeed = platformManager.getScrollSpeed();
+        // Convert pixels to meters - assuming 100 pixels = 1 meter
+        float distanceIncrement = scrollSpeed * deltaTime * 0.01f;
+        distance += static_cast<int>(distanceIncrement * 100);
+
         if (scoreTimer >= 1.0f) {
             if (distance > bestDistance) bestDistance = distance;
             scoreTimer -= 1.0f;
         }
 
         platformManager.update(deltaTime);
-        float scrollSpeed = platformManager.getScrollSpeed();
         obstacleManager.setDifficulty(platformManager.getDifficulty());
         obstacleManager.update(deltaTime, scrollSpeed);
         bananaManager.setScrollSpeed(scrollSpeed);
@@ -93,13 +98,13 @@ void GameLoop::update(GameState& gameState, float deltaTime) {
         SDL_Point center = kong.getCollisionCenter();
         int radius = kong.getCollisionRadius();
         if (obstacleManager.checkCollision(center.x, center.y, radius)) {
-            if (kong.getState() == FLY) {
+            if (kong.getState() == PlayerState::FLY) {
                 kong.stopFly();
                 kong.setOnGround(true);
             } else {
                 kong.setState(PlayerState::DIE);
                 audioManager.playSound(SoundType::DIE);
-                gameState = GAME_OVER;
+                gameState = GameState::GAME_OVER;
             }
         }
 
@@ -121,10 +126,10 @@ void GameLoop::render(Graphics& graphics, GameState gameState, TTF_Font* font) {
     }
     obstacleManager.renderDebugCollision(&graphics);
     bananaManager.render();
-    bananaManager.renderDebugCollision(graphics.getRenderer()); // Truyền renderer từ Graphics
+    bananaManager.renderDebugCollision(graphics.getRenderer());
     kong.render(&graphics);
 
-    if (gameState == PLAYING) {
+    if (gameState == GameState::PLAYING) {
         SDL_Color white = {255, 255, 255, 255};
         int textW, textH;
         std::string distanceText = "Distance: " + std::to_string(distance) + "m";
@@ -155,14 +160,9 @@ void GameLoop::reset() {
 }
 
 void GameLoop::revivePlayer() {
-    // Xóa các chướng ngại vật trong phạm vi 600 pixel từ vị trí hiện tại của Kong
     int kongX = kong.getX();
     obstacleManager.removeObstaclesNear(kongX, 600);
-
-    // Dịch chuyển Kong ngay lập tức 600 pixel theo trục X
     kong.setPosition(kong.getX() + 600, KONG_DRAW_Y_START);
     kong.setOnGround(true);
     kong.setState(PlayerState::RUN);
-
-    // Giữ nguyên distance, currentBananas, và các trạng thái khác
 }
