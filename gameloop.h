@@ -7,7 +7,7 @@
 #include "player.h"
 #include "platform.h"
 #include "banana.h"
-#include "menu.h"
+#include "menu.h" // Đảm bảo bao gồm menu.h để có GameState
 #include "audio.h"
 
 class GameLoop {
@@ -49,4 +49,4 @@ private:
     int bestBananas;
 };
 
-#endif
+#endif // GAMELOOP_H
