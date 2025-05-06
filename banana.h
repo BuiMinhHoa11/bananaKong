@@ -3,6 +3,7 @@
 
 #include "common_func.h"
 #include "platform.h"
+#include "graphics.h" // Thêm include file graphics.h
 #include <map>
 #include <vector>
 #include <set>
@@ -28,10 +29,10 @@ private:
 
 class BananaManager {
 public:
-    BananaManager(std::map<BananaType, SDL_Texture*> textures, const PlatformManager& platformMgr, const ObstacleManager& obstacleMgr);
+    BananaManager(std::map<BananaType, SDL_Texture*> textures, const PlatformManager& platformMgr, const ObstacleManager& obstacleMgr, Graphics& graphics);
     ~BananaManager();
     void update(float deltaTime);
-    void render(SDL_Renderer* renderer);
+    void render();
     bool checkCollision(int playerX, int playerY, int playerRadius, int& score, bool& magnetActivated);
     void spawnBananas();
     void spawnOnPlatform(const Platform& platform);
@@ -41,7 +42,8 @@ public:
     void setScrollSpeed(float speed);
     void setDifficultyFactor(float difficulty);
     void clear();
-    void renderDebugCollision(SDL_Renderer* renderer);
+    void renderDebugCollision(SDL_Renderer* renderer); // Thay đổi để nhận SDL_Renderer*
+    bool checkObstacleCollision(const SDL_Rect& bananaRect, const ObstacleManager& obstacleMgr) const;
 
 private:
     std::map<BananaType, SDL_Texture*> bananaTextures;
@@ -50,6 +52,7 @@ private:
     std::vector<SDL_Point> collectedPositions;
     const PlatformManager& platformManager;
     const ObstacleManager& obstacleManager;
+    Graphics& graphics; // Giữ tham chiếu đến Graphics
     float scrollSpeed;
     float spawnTimer;
     float spawnInterval;
