@@ -117,28 +117,10 @@ void Menu::handleEvents(SDL_Event& e, GameState& gameState, MenuState& menuState
                 stateHistory.push_back(menuState);
                 menuState = OPTIONS;
                 audioManager.playSound(SoundType::CLICK);
-            } else if (mouseX < 1447 || mouseX > 1500 || mouseY < 0 || mouseY > 53) {
-                menuVisible = false;
-                if (!stateHistory.empty()) {
-                    auto prevState = stateHistory.back();
-                    stateHistory.pop_back();
-                    if (auto* prevMenuState = std::get_if<MenuState>(&prevState)) {
-                        menuState = *prevMenuState;
-                        menuVisible = true;
-                    } else if (auto* prevGameState = std::get_if<GameState>(&prevState)) {
-                        gameState = *prevGameState;
-                        menuState = NONE;
-                        menuVisible = false;
-                    }
-                } else {
-                    gameState = HOMEPLAY;
-                    menuState = NONE;
-                    menuVisible = false;
-                }
-                audioManager.playSound(SoundType::SLIDE);
             } else if (mouseX >= 1447 && mouseX <= 1500 && mouseY >= 0 && mouseY <= 53 && !isOffButtonActive) {
                 togglePause(gameState, menuState, isPaused);
             }
+            // Đã bỏ logic ẩn menu khi nhấp ngoài nút ON
         } else if (menuState == OPTIONS) {
             int backW, backH;
             SDL_QueryTexture(backTexture, nullptr, nullptr, &backW, &backH);
