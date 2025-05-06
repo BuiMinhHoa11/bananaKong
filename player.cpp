@@ -4,7 +4,7 @@
 #include "common_func.h"
 #include <algorithm>
 
-Player::Player() {
+Player::Player(AudioManager& audioManager) : audioManager(audioManager) {
     x = 400;
     y = KONG_DRAW_Y_START;
     velocityX = 0;
@@ -31,14 +31,14 @@ void Player::init(SDL_Texture* runTexture, SDL_Texture* flyTexture, SDL_Texture*
     flySprite.frameDelayMax = 0;
     flySprite.currentFrame = 0;
 
-    dieSprite.init(dieTexture, KONGDIE_FRAMES, KONGDIE_CLIPS); // Khởi tạo sprite DIE
-    dieSprite.frameDelayMax = 0; // Không cần hoạt ảnh
+    dieSprite.init(dieTexture, KONGDIE_FRAMES, KONGDIE_CLIPS);
+    dieSprite.frameDelayMax = 0;
     dieSprite.currentFrame = 0;
 }
 
 void Player::update(float deltaTime, const std::vector<SDL_Rect>& platforms, PlatformManager& platformManager) {
     if (state == DIE) {
-        return; // Không cập nhật khi đã chết
+        return;
     }
 
     bool onAnyGround = false;
@@ -83,7 +83,12 @@ void Player::update(float deltaTime, const std::vector<SDL_Rect>& platforms, Pla
     }
 
     if (onGround) {
-        state = RUN;
+        if (state == RUN && velocityX == 0 && velocityY == 0) {
+            state = IDLE;
+            // audioManager.playSound(SoundType::IDLE); // Đã comment vì chưa cần dùng
+        } else if (state != IDLE) {
+            state = RUN;
+        }
         isClimbingDown = false;
     } else {
         if (state != FLY) {
@@ -126,13 +131,14 @@ void Player::climbDown(PlatformManager& platformManager) {
     onGround = false;
     state = FALL;
     y = targetY - height;
+    audioManager.playSound(SoundType::CLIMB_DOWN);
 }
 
 void Player::render(Graphics* graphics) {
     if (state == FLY) {
         graphics->render(x, y, flySprite);
     } else if (state == DIE) {
-        graphics->render(x, y + 15, dieSprite); // Hiển thị sprite DIE
+        graphics->render(x, y + 15, dieSprite);
     } else {
         graphics->render(x, y, runSprite);
     }
@@ -165,6 +171,7 @@ void Player::jump() {
         velocityY = jumpForce;
         onGround = false;
         state = JUMP;
+        audioManager.playSound(SoundType::JUMP);
     }
 }
 
