@@ -11,6 +11,10 @@ extern const char* KONGFLY_SPRITE_FILE;
 extern const int KONGFLY_CLIPS[][4];
 extern const int KONGFLY_FRAMES;
 
+extern const char* KONGDIE_SPRITE_FILE; // Thêm cho DIE
+extern const int KONGDIE_CLIPS[][4];   // Thêm cho DIE
+extern const int KONGDIE_FRAMES;       // Thêm cho DIE
+
 struct ScrollingBackground {
     SDL_Texture* texture;
     int scrollingOffset = 0;
