@@ -79,7 +79,7 @@ void Menu::startReviveCountdown() {
 }
 
 SDL_Texture* Menu::createCountdownTexture(Graphics& graphics, int value) {
-    TTF_Font* font = TTF_OpenFont("D:/projectBTL/bananakong/font/Gameplay.ttf", 50); // Font nhỏ cho số đếm ngược
+    TTF_Font* font = TTF_OpenFont("D:/projectBTL/bananakong/font/Gameplay.ttf", 200); // Font nhỏ cho số đếm ngược
     if (!font) {
         SDL_Log("Failed to load font for countdown: %s", TTF_GetError());
         return nullptr;
@@ -136,7 +136,7 @@ void Menu::handleEvents(SDL_Event& e, GameState& gameState, MenuState& menuState
                 stateHistory.push_back(gameState);
                 menuVisible = true;
                 menuState = MENU;
-                audioManager.playSound(SoundType::SLIDE);
+                audioManager.playSound(SoundType::SLIDE); // Âm thanh slide khi menu xổ ra
             }
         } else if (gameState == HOMEPLAY && menuState == MENU && menuVisible) {
             // Nhấn bất kỳ đâu để thu menu trong HOMEPLAY
@@ -150,7 +150,7 @@ void Menu::handleEvents(SDL_Event& e, GameState& gameState, MenuState& menuState
                 if (!stateHistory.empty()) {
                     stateHistory.pop_back(); // Xóa trạng thái HOMEPLAY khỏi lịch sử
                 }
-                audioManager.playSound(SoundType::CLICK);
+                audioManager.playSound(SoundType::SLIDE); // Âm thanh slide khi menu xổ vào
             }
         } else if (gameState == PLAYING && menuState == NONE && !isCountingDown) {
             if (mouseX >= 1447 && mouseX <= 1500 && mouseY >= 0 && mouseY <= 53) {
@@ -234,7 +234,7 @@ void Menu::render(Graphics& graphics, GameState gameState, MenuState menuState, 
             if (countdownTexture) {
                 int w, h;
                 SDL_QueryTexture(countdownTexture, nullptr, nullptr, &w, &h);
-                graphics.renderTexture(countdownTexture, reviveX + 38, reviveY + 19);
+                graphics.renderTexture(countdownTexture, reviveX + 36, reviveY + 19);
                 SDL_DestroyTexture(countdownTexture);
             }
         } else if (isCountingDown) {
