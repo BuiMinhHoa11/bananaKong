@@ -138,7 +138,7 @@ void Player::render(Graphics* graphics) {
     if (state == FLY) {
         graphics->render(x, y, flySprite);
     } else if (state == DIE) {
-        graphics->render(x, y + 15, dieSprite);
+        graphics->render(x, y + 8, dieSprite);
     } else {
         graphics->render(x, y, runSprite);
     }
