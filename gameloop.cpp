@@ -60,7 +60,7 @@ void GameLoop::update(GameState& gameState, float deltaTime) {
         }
 
         platformManager.update(deltaTime);
-        float scrollSpeed = platformManager.getScrollSpeed(); // Đã sửa từ getScroll simileSpeed()
+        float scrollSpeed = platformManager.getScrollSpeed();
         obstacleManager.setDifficulty(platformManager.getDifficulty());
         obstacleManager.update(deltaTime, scrollSpeed);
         bananaManager.setScrollSpeed(scrollSpeed);
@@ -98,17 +98,15 @@ void GameLoop::update(GameState& gameState, float deltaTime) {
                 kong.setOnGround(true);
             } else {
                 kong.setState(PlayerState::DIE);
-                audioManager.playSound(SoundType::DIE); // Phát âm thanh khi chết
+                audioManager.playSound(SoundType::DIE);
                 gameState = GAME_OVER;
-                totalBananas += currentBananas;
-                if (currentBananas > bestBananas) bestBananas = currentBananas;
             }
         }
 
         bool magnetActivated = false;
         if (bananaManager.checkCollision(center.x, center.y, radius, totalBananas, magnetActivated)) {
             currentBananas++;
-            audioManager.playSound(SoundType::EAT); // Phát âm thanh khi ăn chuối
+            audioManager.playSound(SoundType::EAT);
         }
     }
 }
@@ -122,7 +120,8 @@ void GameLoop::render(Graphics& graphics, GameState gameState, TTF_Font* font) {
         graphics.renderTexture(obs.texture, obs.rect.x, obs.rect.y);
     }
     obstacleManager.renderDebugCollision(&graphics);
-    bananaManager.render(graphics.getRenderer());
+    bananaManager.render();
+    bananaManager.renderDebugCollision(graphics.getRenderer()); // Truyền renderer từ Graphics
     kong.render(&graphics);
 
     if (gameState == PLAYING) {
@@ -153,4 +152,17 @@ void GameLoop::reset() {
     obstacleManager.clear();
     platformManager.clear();
     bananaManager.clear();
+}
+
+void GameLoop::revivePlayer() {
+    // Xóa các chướng ngại vật trong phạm vi 600 pixel từ vị trí hiện tại của Kong
+    int kongX = kong.getX();
+    obstacleManager.removeObstaclesNear(kongX, 600);
+
+    // Dịch chuyển Kong ngay lập tức 600 pixel theo trục X
+    kong.setPosition(kong.getX() + 600, KONG_DRAW_Y_START);
+    kong.setOnGround(true);
+    kong.setState(PlayerState::RUN);
+
+    // Giữ nguyên distance, currentBananas, và các trạng thái khác
 }
