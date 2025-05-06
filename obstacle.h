@@ -1,4 +1,3 @@
-
 #ifndef OBSTACLE_H
 #define OBSTACLE_H
 
@@ -36,12 +35,13 @@ public:
     void addObstacle(const Obstacle& obstacle);
     SDL_Texture* getTextureForType(ObstacleType type) const;
     ObstacleType getRandomObstacleType() const;
+    void removeObstaclesNear(int x, int range); // Thêm phương thức này
 
+    SDL_Rect adjustCollisionBox(const SDL_Rect& obsBox, ObstacleType type) const;
 private:
     std::vector<Obstacle> obstacles;
     std::map<ObstacleType, SDL_Texture*> textureMap;
     float difficulty;
-    SDL_Rect adjustCollisionBox(const SDL_Rect& obsBox, ObstacleType type) const;
 };
 
 #endif
