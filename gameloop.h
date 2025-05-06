@@ -20,6 +20,7 @@ public:
     void update(GameState& gameState, float deltaTime);
     void render(Graphics& graphics, GameState gameState, TTF_Font* font);
     void reset();
+    void revivePlayer();
 
     int getDistance() const { return distance; }
     int getBestDistance() const { return bestDistance; }
@@ -48,4 +49,4 @@ private:
     int bestBananas;
 };
 
-#endif // GAMELOOP_H
+#endif
