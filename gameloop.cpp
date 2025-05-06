@@ -3,10 +3,10 @@
 GameLoop::GameLoop(Graphics& graphics, Player& player, ObstacleManager& obstacleManager,
                    PlatformManager& platformManager, BananaManager& bananaManager,
                    ScrollingBackground& backgroundSky, ScrollingBackground& background,
-                   ScrollingBackground& leafTop)
+                   ScrollingBackground& leafTop, AudioManager& audioManager)
     : kong(player), obstacleManager(obstacleManager), platformManager(platformManager),
       bananaManager(bananaManager), backgroundSky(backgroundSky), background(background),
-      leafTop(leafTop), isSpaceHeld(false), lastFrameTime(SDL_GetTicks()),
+      leafTop(leafTop), audioManager(audioManager), isSpaceHeld(false), lastFrameTime(SDL_GetTicks()),
       animationUpdateTimer(0.0f), scoreTimer(0.0f), distance(0), bestDistance(0),
       currentBananas(0), totalBananas(0), bestBananas(0) {}
 
@@ -36,7 +36,7 @@ void GameLoop::handleEvents(SDL_Event& e, GameState& gameState) {
             currentBananas = 0;
             kong.setPosition(400, KONG_DRAW_Y_START);
             kong.setOnGround(true);
-            kong.setState(PlayerState::RUN); // Đặt lại trạng thái RUN
+            kong.setState(PlayerState::RUN);
             obstacleManager.clear();
             platformManager.clear();
             bananaManager.clear();
@@ -60,7 +60,7 @@ void GameLoop::update(GameState& gameState, float deltaTime) {
         }
 
         platformManager.update(deltaTime);
-        float scrollSpeed = platformManager.getScrollSpeed();
+        float scrollSpeed = platformManager.getScrollSpeed(); // Đã sửa từ getScroll simileSpeed()
         obstacleManager.setDifficulty(platformManager.getDifficulty());
         obstacleManager.update(deltaTime, scrollSpeed);
         bananaManager.setScrollSpeed(scrollSpeed);
@@ -97,7 +97,8 @@ void GameLoop::update(GameState& gameState, float deltaTime) {
                 kong.stopFly();
                 kong.setOnGround(true);
             } else {
-                kong.setState(PlayerState::DIE); // Chuyển sang trạng thái DIE
+                kong.setState(PlayerState::DIE);
+                audioManager.playSound(SoundType::DIE); // Phát âm thanh khi chết
                 gameState = GAME_OVER;
                 totalBananas += currentBananas;
                 if (currentBananas > bestBananas) bestBananas = currentBananas;
@@ -107,6 +108,7 @@ void GameLoop::update(GameState& gameState, float deltaTime) {
         bool magnetActivated = false;
         if (bananaManager.checkCollision(center.x, center.y, radius, totalBananas, magnetActivated)) {
             currentBananas++;
+            audioManager.playSound(SoundType::EAT); // Phát âm thanh khi ăn chuối
         }
     }
 }
@@ -147,7 +149,7 @@ void GameLoop::reset() {
     currentBananas = 0;
     kong.setPosition(400, KONG_DRAW_Y_START);
     kong.setOnGround(true);
-    kong.setState(PlayerState::RUN); // Đặt lại trạng thái RUN
+    kong.setState(PlayerState::RUN);
     obstacleManager.clear();
     platformManager.clear();
     bananaManager.clear();
