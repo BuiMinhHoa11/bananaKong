@@ -9,10 +9,11 @@ class PlatformManager;
 
 enum PlayerState {
     IDLE,
-    RUNNING,
-    JUMPING,
-    FALLING,
-    FLYING // Đổi từ FLY thành FLYING
+    RUN,
+    JUMP,
+    FALL,
+    FLY,
+    DIE // Thêm trạng thái DIE
 };
 
 class Player {
@@ -26,10 +27,11 @@ private:
     bool onGround;
     bool isClimbingDown;
     Sprite runSprite;
-    Sprite flySprite; // Sprite cho FLYING (1 frame)
+    Sprite flySprite;
+    Sprite dieSprite; // Sprite cho DIE
     int collisionRadius;
     bool showCollision;
-    float flyStartY; // Lưu y khi bắt đầu FLYING
+    float flyStartY;
 
     bool checkPlatformCollision(const SDL_Rect& obstacle);
 
@@ -37,7 +39,7 @@ public:
     Player();
     ~Player();
 
-    void init(SDL_Texture* runTexture, SDL_Texture* flyTexture);
+    void init(SDL_Texture* runTexture, SDL_Texture* flyTexture, SDL_Texture* dieTexture); // Thêm dieTexture
     void update(float deltaTime, const std::vector<SDL_Rect>& platforms, PlatformManager& platformManager);
     void render(Graphics* graphics);
     void renderDebugCollision(Graphics* graphics);
@@ -45,7 +47,7 @@ public:
 
     void jump();
     void climbDown(PlatformManager& platformManager);
-    void startFly(); // Đổi tên hàm cho thống nhất
+    void startFly();
     void stopFly();
 
     SDL_Rect getCollisionBox() const;
@@ -62,6 +64,7 @@ public:
     void setPosition(float newX, float newY);
 
     PlayerState getState() const { return state; }
+    void setState(PlayerState newState); // Thêm để set trạng thái
 
     void toggleCollisionDisplay();
     bool isCollisionDisplayed() const { return showCollision; }
