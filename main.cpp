@@ -14,7 +14,7 @@ int main(int argc, char* argv[]) {
 
     TTF_Font* font = TTF_OpenFont("D:/projectBTL/bananakong/font/Drawing_Kids.ttf", 24);
     if (!font) {
-        // SDL_Log("Failed to load font: %s", TTF_GetError());
+        SDL_Log("Failed to load font: %s", TTF_GetError());
         return 1;
     }
 
@@ -35,7 +35,8 @@ int main(int argc, char* argv[]) {
     Player kong;
     SDL_Texture* kongrunTexture = graphics.loadTexture(KONGRUN_SPRITE_FILE);
     SDL_Texture* kongflyTexture = graphics.loadTexture(KONGFLY_SPRITE_FILE);
-    kong.init(kongrunTexture, kongflyTexture);
+    SDL_Texture* kongdieTexture = graphics.loadTexture(KONGDIE_SPRITE_FILE); // Tải texture DIE
+    kong.init(kongrunTexture, kongflyTexture, kongdieTexture);
     kong.setPosition(400, KONG_DRAW_Y_START);
 
     // Khởi tạo các đối tượng trong game
@@ -64,16 +65,14 @@ int main(int argc, char* argv[]) {
     bool quit = false;
     SDL_Event e;
     GameState gameState = HOMEPLAY;
-    bool isPaused = false; // Quản lý trạng thái pause
+    bool isPaused = false;
 
     Uint32 lastFrameTime = SDL_GetTicks();
     while (!quit) {
-        // Tính deltaTime
         Uint32 currentTime = SDL_GetTicks();
         float deltaTime = (currentTime - lastFrameTime) / 1000.0f;
         lastFrameTime = currentTime;
 
-        // Xử lý sự kiện
         while (SDL_PollEvent(&e) != 0) {
             if (e.type == SDL_QUIT) {
                 quit = true;
@@ -84,12 +83,10 @@ int main(int argc, char* argv[]) {
             }
         }
 
-        // Cập nhật logic trò chơi với deltaTime (chỉ khi không pause)
         if (!isPaused && gameState == PLAYING) {
             gameLoop.update(gameState, deltaTime);
         }
 
-        // Chỉ xóa màn hình khi ở trạng thái PLAYING và không pause, hoặc GAME_OVER
         if ((gameState == PLAYING && !isPaused) || gameState == GAME_OVER) {
             graphics.prepareScene();
         }
@@ -108,6 +105,7 @@ int main(int argc, char* argv[]) {
 
     SDL_DestroyTexture(kongrunTexture);
     SDL_DestroyTexture(kongflyTexture);
+    SDL_DestroyTexture(kongdieTexture); // Hủy texture DIE
     for (auto& [type, tex] : platformTextures) {
         SDL_DestroyTexture(tex);
     }
