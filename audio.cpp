@@ -28,9 +28,9 @@ void AudioManager::loadSounds() {
     soundEffects[SoundType::EAT] = Mix_LoadWAV("D:/projectBTL/bananakong/audio/sound_effect/eat.mp3");
     soundEffects[SoundType::JUMP] = Mix_LoadWAV("D:/projectBTL/bananakong/audio/sound_effect/jump.mp3");
     soundEffects[SoundType::CLIMB_DOWN] = Mix_LoadWAV("D:/projectBTL/bananakong/audio/sound_effect/climb_down.mp3");
-    soundEffects[SoundType::IDLE] = Mix_LoadWAV("D:/projectBTL/bananakong/audio/incidental_music/idle.mp3");
     soundEffects[SoundType::SLIDE] = Mix_LoadWAV("D:/projectBTL/bananakong/audio/sound_effect/slide.mp3");
     soundEffects[SoundType::CLICK] = Mix_LoadWAV("D:/projectBTL/bananakong/audio/sound_effect/click.mp3");
+    soundEffects[SoundType::RUN] = Mix_LoadWAV("D:/projectBTL/bananakong/audio/sound_effect/run.mp3");
 
     backgroundMusic[MusicType::HOMEPLAY] = Mix_LoadMUS("D:/projectBTL/bananakong/audio/incidental_music/homeplay_music.mp3");
     backgroundMusic[MusicType::LOOP] = Mix_LoadMUS("D:/projectBTL/bananakong/audio/incidental_music/loop_music.mp3");
