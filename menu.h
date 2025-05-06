@@ -3,12 +3,20 @@
 
 #include <SDL.h>
 #include "graphics.h"
+#include <vector>
+#include <variant>
 
 enum GameState {
-    HOMEPLAY,
-    PLAYING,
-    MENU,
-    GAME_OVER
+    HOMEPLAY, // Sảnh chính
+    PLAYING,  // Trò chơi
+    MAIN_MENU, // Thay thế MENU để tránh xung đột
+    GAME_OVER // Kết thúc trò chơi
+};
+
+enum MenuState {
+    NONE,    // Không hiển thị menu
+    MENU,    // Bảng menu.png
+    OPTIONS  // Bảng options.png
 };
 
 class GameLoop;
@@ -18,10 +26,10 @@ public:
     Menu(Graphics& graphics, GameLoop& gameLoop);
     ~Menu();
 
-    void handleEvents(SDL_Event& e, GameState& gameState, bool& isPaused);
-    void render(Graphics& graphics, GameState gameState, bool& isPaused);
+    void handleEvents(SDL_Event& e, GameState& gameState, MenuState& menuState, bool& isPaused);
+    void render(Graphics& graphics, GameState gameState, MenuState menuState, bool& isPaused);
     bool isMenuVisible() const { return menuVisible; }
-    void togglePause(GameState& gameState, bool& isPaused);
+    void togglePause(GameState& gameState, MenuState& menuState, bool& isPaused);
     void startCountdown();
 
 private:
@@ -31,14 +39,17 @@ private:
     SDL_Texture* menuTexture;
     SDL_Texture* offTexture;
     SDL_Texture* onTexture;
+    SDL_Texture* optionsTexture; // Texture cho bảng options
+    SDL_Texture* backTexture;    // Texture cho nút back
 
     GameLoop& gameLoop;
-    bool menuVisible;
-
-    bool isOffButtonActive;  // true khi hiển thị nút OFF, false khi hiển thị nút ON
-    bool isCountingDown;     // true khi đang đếm ngược
-    int countdownValue;      // giá trị đếm ngược hiện tại (3,2,1)
-    Uint32 countdownStartTime; // thời điểm bắt đầu đếm ngược
+    bool menuVisible; // Đặt trước để tránh cảnh báo khởi tạo
+    bool isOffButtonActive;
+    bool isCountingDown;
+    int countdownValue;
+    Uint32 countdownStartTime;
+    using State = std::variant<GameState, MenuState>;
+    std::vector<State> stateHistory; // Lưu lịch sử trạng thái
 };
 
 #endif // MENU_H
