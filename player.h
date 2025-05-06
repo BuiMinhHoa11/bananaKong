@@ -2,6 +2,7 @@
 #define PLAYER_H_
 #include "common_func.h"
 #include "graphics.h"
+#include "audio.h"
 #include <vector>
 #include <map>
 
@@ -13,7 +14,7 @@ enum PlayerState {
     JUMP,
     FALL,
     FLY,
-    DIE // Thêm trạng thái DIE
+    DIE
 };
 
 class Player {
@@ -28,18 +29,19 @@ private:
     bool isClimbingDown;
     Sprite runSprite;
     Sprite flySprite;
-    Sprite dieSprite; // Sprite cho DIE
+    Sprite dieSprite;
     int collisionRadius;
     bool showCollision;
     float flyStartY;
+    AudioManager& audioManager;
 
     bool checkPlatformCollision(const SDL_Rect& obstacle);
 
 public:
-    Player();
+    Player(AudioManager& audioManager);
     ~Player();
 
-    void init(SDL_Texture* runTexture, SDL_Texture* flyTexture, SDL_Texture* dieTexture); // Thêm dieTexture
+    void init(SDL_Texture* runTexture, SDL_Texture* flyTexture, SDL_Texture* dieTexture);
     void update(float deltaTime, const std::vector<SDL_Rect>& platforms, PlatformManager& platformManager);
     void render(Graphics* graphics);
     void renderDebugCollision(Graphics* graphics);
@@ -64,7 +66,7 @@ public:
     void setPosition(float newX, float newY);
 
     PlayerState getState() const { return state; }
-    void setState(PlayerState newState); // Thêm để set trạng thái
+    void setState(PlayerState newState);
 
     void toggleCollisionDisplay();
     bool isCollisionDisplayed() const { return showCollision; }
