@@ -65,15 +65,15 @@ int main(int argc, char* argv[]) {
 
     std::map<BananaType, SDL_Texture*> bananaTextures;
     bananaTextures[BananaType::NORMAL] = graphics.loadTexture("D:/projectBTL/bananakong/image/ITEM_BACK/banana.png");
-    BananaManager bananaManager(bananaTextures, platformManager, obstacleManager, graphics); // Đảm bảo truyền graphics
+    BananaManager bananaManager(bananaTextures, platformManager, obstacleManager, graphics);
 
     GameLoop gameLoop(graphics, kong, obstacleManager, platformManager, bananaManager, backgroundSky, background, leafTop, audioManager);
     Menu menu(graphics, gameLoop, audioManager);
 
     bool quit = false;
     SDL_Event e;
-    GameState gameState = HOMEPLAY;
-    MenuState menuState = NONE;
+    GameState gameState = GameState::HOMEPLAY;
+    MenuState menuState = MenuState::NONE;
     bool isPaused = false;
 
     audioManager.playMusic(MusicType::HOMEPLAY);
@@ -89,19 +89,19 @@ int main(int argc, char* argv[]) {
                 quit = true;
             }
             menu.handleEvents(e, gameState, menuState, isPaused);
-            if (!isPaused && gameState == PLAYING) {
+            if (!isPaused && gameState == GameState::PLAYING) {
                 gameLoop.handleEvents(e, gameState);
             }
         }
 
-        if (gameState == HOMEPLAY && !isPaused) {
+        if (gameState == GameState::HOMEPLAY && !isPaused) {
             audioManager.playMusic(MusicType::HOMEPLAY);
-        } else if (gameState == PLAYING && !isPaused) {
+        } else if (gameState == GameState::PLAYING && !isPaused) {
             audioManager.playMusic(MusicType::LOOP);
-        } else if (gameState == GAME_OVER || isPaused) {
+        } else if (gameState == GameState::GAME_OVER || isPaused) {
             audioManager.stopMusic();
-            if (gameState == GAME_OVER && menuState == NONE) {
-                menuState = REVIVE;
+            if (gameState == GameState::GAME_OVER && menuState == MenuState::NONE) {
+                menuState = MenuState::REVIVE;
                 menu.startReviveCountdown();
             }
         }
@@ -109,12 +109,12 @@ int main(int argc, char* argv[]) {
         // Cập nhật trạng thái đếm ngược trước khi render
         menu.updateReviveCountdown(gameState, menuState, isPaused);
 
-        if (!isPaused && gameState == PLAYING) {
+        if (!isPaused && gameState == GameState::PLAYING) {
             gameLoop.update(gameState, deltaTime);
         }
 
         graphics.prepareScene();
-        if (gameState == PLAYING || gameState == GAME_OVER) {
+        if (gameState == GameState::PLAYING || gameState == GameState::GAME_OVER) {
             gameLoop.render(graphics, gameState, font);
         }
         menu.render(graphics, gameState, menuState, isPaused);
