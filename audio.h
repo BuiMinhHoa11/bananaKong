@@ -33,6 +33,8 @@ public:
     void stopMusic();
     void setMusicEnabled(bool enabled);
     void setSoundEnabled(bool enabled);
+    bool getMusicEnabled() const { return musicEnabled; }
+    bool getSoundEnabled() const { return soundEnabled; }
 
 private:
     std::map<SoundType, Mix_Chunk*> soundEffects;
