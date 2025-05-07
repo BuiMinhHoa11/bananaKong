@@ -28,7 +28,7 @@ public:
     void update(float deltaTime, float scrollSpeed);
     void setDifficulty(float diff);
     bool checkCollision(int centerX, int centerY, int radius) const;
-    void renderDebugCollision(Graphics* graphics) const;
+    //void renderDebugCollision(Graphics* graphics) const;
     const std::vector<Obstacle>& getObstacles() const;
     void clear();
 
