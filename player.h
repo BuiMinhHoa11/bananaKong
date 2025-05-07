@@ -42,8 +42,6 @@ public:
     void init(SDL_Texture* runTexture, SDL_Texture* flyTexture, SDL_Texture* dieTexture);
     void update(float deltaTime, const std::vector<SDL_Rect>& platforms, PlatformManager& platformManager);
     void render(Graphics* graphics);
-    void renderDebugCollision(Graphics* graphics);
-    void renderCircularCollision(Graphics* graphics);
 
     void jump();
     void climbDown(PlatformManager& platformManager);

@@ -141,9 +141,6 @@ void Player::render(Graphics* graphics) {
     } else {
         graphics->render(x, y, runSprite);
     }
-    if (showCollision) {
-        renderDebugCollision(graphics);
-    }
 }
 
 void Player::startFly() {
@@ -203,48 +200,6 @@ void Player::setOnGround(bool grounded) {
     if (grounded && (state == JUMP || state == FALL || state == FLY)) {
         state = RUN;
     }
-}
-
-void Player::renderDebugCollision(Graphics* graphics) {
-    renderCircularCollision(graphics);
-}
-
-void Player::renderCircularCollision(Graphics* graphics) {
-    SDL_Point center = getCollisionCenter();
-    int radius = getCollisionRadius();
-
-    Uint8 r, g, b, a;
-    SDL_GetRenderDrawColor(graphics->getRenderer(), &r, &g, &b, &a);
-    SDL_SetRenderDrawColor(graphics->getRenderer(), 255, 0, 0, 255);
-
-    int x = radius;
-    int y = 0;
-    int err = 0;
-    while (x >= y) {
-        SDL_RenderDrawPoint(graphics->getRenderer(), center.x + x, center.y + y);
-        SDL_RenderDrawPoint(graphics->getRenderer(), center.x + y, center.y + x);
-        SDL_RenderDrawPoint(graphics->getRenderer(), center.x - y, center.y + x);
-        SDL_RenderDrawPoint(graphics->getRenderer(), center.x - x, center.y + y);
-        SDL_RenderDrawPoint(graphics->getRenderer(), center.x - x, center.y - y);
-        SDL_RenderDrawPoint(graphics->getRenderer(), center.x - y, center.y - x);
-        SDL_RenderDrawPoint(graphics->getRenderer(), center.x + y, center.y - x);
-        SDL_RenderDrawPoint(graphics->getRenderer(), center.x + x, center.y - y);
-
-        if (err <= 0) { y += 1; err += 2*y + 1; }
-        if (err > 0) { x -= 1; err -= 2*x + 1; }
-    }
-
-    SDL_SetRenderDrawColor(graphics->getRenderer(), 0, 255, 0, 255);
-    for (int i = -2; i <= 2; i++) {
-        for (int j = -2; j <= 2; j++) {
-            SDL_RenderDrawPoint(graphics->getRenderer(), center.x + i, center.y + j);
-        }
-    }
-
-    SDL_SetRenderDrawColor(graphics->getRenderer(), 0, 255, 0, 128);
-    SDL_RenderDrawLine(graphics->getRenderer(), center.x - radius, center.y - radius, center.x + radius, center.y + radius);
-    SDL_RenderDrawLine(graphics->getRenderer(), center.x - radius, center.y + radius, center.x + radius, center.y - radius);
-    SDL_SetRenderDrawColor(graphics->getRenderer(), r, g, b, a);
 }
 
 SDL_Point Player::getCollisionCenter() const {
