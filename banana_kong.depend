@@ -76,24 +76,16 @@
 1746555489 d:\projectbtl\bananakong\graphics.h
 	"common_func.h"
 
-1746558834 source:d:\projectbtl\bananakong\main.cpp
-	"audio.h"
-	"common_func.h"
-	"graphics.h"
-	"obstacle.h"
-	"player.h"
-	"platform.h"
-	"banana.h"
-	"gameloop.h"
-	"menu.h"
+1584205420 source:d:\projectbtl\bananakong\main.cpp
+	<iostream>
 
-1746560690 d:\projectbtl\bananakong\obstacle.h
+1746577073 d:\projectbtl\bananakong\obstacle.h
 	<SDL.h>
 	<vector>
 	<map>
 	"graphics.h"
 
-1746565774 d:\projectbtl\bananakong\player.h
+1746577073 d:\projectbtl\bananakong\player.h
 	"common_func.h"
 	"graphics.h"
 	"audio.h"
@@ -107,7 +99,7 @@
 	"obstacle.h"
 	"common_func.h"
 
-1746556213 source:d:\projectbtl\bananakong\obstacle.cpp
+1746577073 source:d:\projectbtl\bananakong\obstacle.cpp
 	"obstacle.h"
 	<cstdlib>
 	<cmath>
@@ -126,7 +118,7 @@
 	<algorithm>
 	<random>
 
-1746565701 source:d:\projectbtl\bananakong\player.cpp
+1746577073 source:d:\projectbtl\bananakong\player.cpp
 	"player.h"
 	"obstacle.h"
 	"platform.h"
@@ -137,7 +129,7 @@
 
 1745181746 d:\projectbtl\bananakong\speed_manager.h
 
-1746560448 source:d:\projectbtl\bananakong\banana.cpp
+1746577073 source:d:\projectbtl\bananakong\banana.cpp
 	"banana.h"
 	<cmath>
 	<cstdlib>
@@ -146,7 +138,7 @@
 	<ctime>
 	<set>
 
-1746558834 d:\projectbtl\bananakong\banana.h
+1746577073 d:\projectbtl\bananakong\banana.h
 	"common_func.h"
 	"platform.h"
 	"graphics.h"
@@ -154,10 +146,10 @@
 	<vector>
 	<set>
 
-1746571819 source:d:\projectbtl\bananakong\gameloop.cpp
+1746577073 source:d:\projectbtl\bananakong\gameloop.cpp
 	"gameloop.h"
 
-1746571819 d:\projectbtl\bananakong\gameloop.h
+1746577073 d:\projectbtl\bananakong\gameloop.h
 	"common_func.h"
 	"graphics.h"
 	"obstacle.h"
@@ -167,7 +159,7 @@
 	"menu.h"
 	"audio.h"
 
-1746571819 d:\projectbtl\bananakong\menu.h
+1746577073 d:\projectbtl\bananakong\menu.h
 	<SDL.h>
 	<SDL_ttf.h>
 	<stack>
@@ -175,7 +167,7 @@
 	"graphics.h"
 	"audio.h"
 
-1746571819 source:d:\projectbtl\bananakong\menu.cpp
+1746577171 source:d:\projectbtl\bananakong\menu.cpp
 	"menu.h"
 	"gameloop.h"
 	<SDL_ttf.h>
