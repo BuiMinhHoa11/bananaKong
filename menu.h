@@ -22,7 +22,8 @@ enum class MenuState {
     NONE,
     MENU,
     OPTIONS,
-    REVIVE
+    REVIVE,
+    NEW_PANEL  // Trạng thái cho bảng Record
 };
 
 class Menu {
@@ -51,6 +52,7 @@ private:
     SDL_Texture* musicOffTexture;   // Texture cho nút Music tắt
     SDL_Texture* effectOnTexture;   // Texture cho nút Effect bật
     SDL_Texture* effectOffTexture;  // Texture cho nút Effect tắt
+    SDL_Texture* recordTexture;     // Texture cho bảng Record
     bool menuVisible;
     bool isOffButtonActive;
     bool isCountingDown;
