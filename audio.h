@@ -6,14 +6,13 @@
 #include <string>
 
 enum class SoundType {
-    DIE,
     COUNT_DOWN,
     EAT,
-    RUN,
     JUMP,
     CLIMB_DOWN,
     SLIDE,
-    CLICK
+    CLICK,
+    DIE_EFFECT
 };
 
 enum class MusicType {
