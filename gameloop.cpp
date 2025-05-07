@@ -91,6 +91,10 @@ void GameLoop::update(GameState& gameState, float deltaTime) {
                 kong.setState(PlayerState::DIE);
                 audioManager.playSound(SoundType::DIE);
                 gameState = GameState::GAME_OVER;
+                // Cập nhật bestBananas khi trò chơi kết thúc
+                if (currentBananas > bestBananas) {
+                    bestBananas = currentBananas;
+                }
             }
         }
 
@@ -117,9 +121,9 @@ void GameLoop::render(Graphics& graphics, GameState gameState, TTF_Font* font) {
 
     if (gameState == GameState::PLAYING) {
         SDL_Color white = {255, 255, 255, 255};
-        int textW, textH;
+        SDL_Rect size = {0, 0, 0, 0};
         std::string bananasText = "Bananas: " + std::to_string(currentBananas);
-        SDL_Texture* bananasTexture = createTextTexture(graphics.getRenderer(), bananasText.c_str(), font, white, textW, textH);
+        SDL_Texture* bananasTexture = createTextTexture(graphics.getRenderer(), bananasText.c_str(), font, white, size);
         if (bananasTexture) {
             graphics.renderTexture(bananasTexture, 10, 40);
             SDL_DestroyTexture(bananasTexture);
@@ -128,6 +132,10 @@ void GameLoop::render(Graphics& graphics, GameState gameState, TTF_Font* font) {
 }
 
 void GameLoop::reset() {
+    // Cập nhật bestBananas trước khi reset currentBananas
+    if (currentBananas > bestBananas) {
+        bestBananas = currentBananas;
+    }
     currentBananas = 0;
     kong.setPosition(400, KONG_DRAW_Y_START);
     kong.setOnGround(true);
