@@ -348,8 +348,8 @@ void Menu::render(Graphics& graphics, GameState gameState, MenuState menuState, 
                     SDL_DestroyTexture(bestScoreTexture);
                 }
 
-                // Điểm hiện tại (Current Bananas)
-                std::string currentScoreText = "Current Score: " + std::to_string(gameLoop.getCurrentBananas());
+                // Điểm hiện tại (Current Bananas) - Sử dụng lastGameBananas
+                std::string currentScoreText = "Current Score: " + std::to_string(gameLoop.getLastGameBananas());
                 SDL_Texture* currentScoreTexture = createTextTexture(graphics.getRenderer(), currentScoreText.c_str(), recordFont, white, size);
                 if (currentScoreTexture) {
                     graphics.renderTexture(currentScoreTexture, 350, 360); // Cách dòng trên 60px
@@ -367,7 +367,7 @@ void Menu::render(Graphics& graphics, GameState gameState, MenuState menuState, 
                 std::string totalBananasText = std::to_string(gameLoop.getTotalBananas());
                 SDL_Texture* totalBananasTexture = createTextTexture(graphics.getRenderer(), totalBananasText.c_str(), recordFont, white, size);
                 if (totalBananasTexture) {
-                    graphics.renderTexture(totalBananasTexture, 1030, 374);
+                    graphics.renderTexture(totalBananasTexture, 1030, 285);
                     SDL_DestroyTexture(totalBananasTexture);
                 }
             }
@@ -393,8 +393,8 @@ void Menu::render(Graphics& graphics, GameState gameState, MenuState menuState, 
                     SDL_DestroyTexture(bestScoreTexture);
                 }
 
-                // Điểm hiện tại (Current Bananas)
-                std::string currentScoreText = "Current Score: " + std::to_string(gameLoop.getCurrentBananas());
+                // Điểm hiện tại (Current Bananas) - Sử dụng lastGameBananas
+                std::string currentScoreText = "Current Score: " + std::to_string(gameLoop.getLastGameBananas());
                 SDL_Texture* currentScoreTexture = createTextTexture(graphics.getRenderer(), currentScoreText.c_str(), recordFont, white, size);
                 if (currentScoreTexture) {
                     graphics.renderTexture(currentScoreTexture, 350, 360);
