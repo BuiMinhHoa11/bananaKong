@@ -4,7 +4,6 @@
 
 Menu::Menu(Graphics& graphics, GameLoop& gameLoop, AudioManager& audioManager)
     : gameLoop(gameLoop), audioManager(audioManager) {
-    // Khởi tạo tất cả các thành viên trong phần thân constructor
     homeplayTexture = nullptr;
     menuTexture = nullptr;
     offTexture = nullptr;
@@ -29,7 +28,6 @@ Menu::Menu(Graphics& graphics, GameLoop& gameLoop, AudioManager& audioManager)
     reviveCountdownValue = 5.0f;
     reviveCountdownStartTime = 0;
 
-    // Khởi tạo các texture
     homeplayTexture = graphics.loadTexture("D:/projectBTL/bananakong/image/MENU/homeplay.png");
     if (!homeplayTexture) {
         SDL_Log("Failed to load homeplay texture: %s", SDL_GetError());

@@ -8,7 +8,7 @@
 #include "graphics.h"
 #include "audio.h"
 
-class GameLoop; // Khai báo trước để tránh phụ thuộc vòng tròn
+class GameLoop;
 
 enum class GameState {
     HOMEPLAY,
