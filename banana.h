@@ -42,7 +42,7 @@ public:
     void setScrollSpeed(float speed);
     void setDifficultyFactor(float difficulty);
     void clear();
-    void renderDebugCollision(SDL_Renderer* renderer); // Thay đổi để nhận SDL_Renderer*
+    //void renderDebugCollision(SDL_Renderer* renderer); // Thay đổi để nhận SDL_Renderer*
     bool checkObstacleCollision(const SDL_Rect& bananaRect, const ObstacleManager& obstacleMgr) const;
 
 private:
