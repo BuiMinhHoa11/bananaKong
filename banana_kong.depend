@@ -60,10 +60,10 @@
 	"player.h"
 	"obstacle.h"
 
-1746515713 source:d:\projectbtl\bananakong\common_func.cpp
+1746589975 source:d:\projectbtl\bananakong\common_func.cpp
 	"common_func.h"
 
-1746515713 d:\projectbtl\bananakong\common_func.h
+1746589974 d:\projectbtl\bananakong\common_func.h
 	<bits/stdc++.h>
 	<SDL.h>
 	<SDL_image.h>
@@ -76,7 +76,7 @@
 1746555489 d:\projectbtl\bananakong\graphics.h
 	"common_func.h"
 
-1746579677 source:d:\projectbtl\bananakong\main.cpp
+1746582872 source:d:\projectbtl\bananakong\main.cpp
 	"audio.h"
 	"common_func.h"
 	"graphics.h"
@@ -154,20 +154,19 @@
 	<vector>
 	<set>
 
-1746579677 source:d:\projectbtl\bananakong\gameloop.cpp
+1746589975 source:d:\projectbtl\bananakong\gameloop.cpp
 	"gameloop.h"
 
-1746579398 d:\projectbtl\bananakong\gameloop.h
-	"common_func.h"
+1746590340 d:\projectbtl\bananakong\gameloop.h
 	"graphics.h"
-	"obstacle.h"
 	"player.h"
+	"obstacle.h"
 	"platform.h"
 	"banana.h"
-	"menu.h"
 	"audio.h"
+	"menu.h"
 
-1746580426 d:\projectbtl\bananakong\menu.h
+1746589714 d:\projectbtl\bananakong\menu.h
 	<SDL.h>
 	<SDL_ttf.h>
 	<stack>
@@ -175,10 +174,12 @@
 	"graphics.h"
 	"audio.h"
 
-1746579677 source:d:\projectbtl\bananakong\menu.cpp
+1746590508 source:d:\projectbtl\bananakong\menu.cpp
 	"menu.h"
 	"gameloop.h"
 	<SDL_ttf.h>
+	<cmath>
+	"common_func.h"
 
 1746571622 source:d:\projectbtl\bananakong\audio.cpp
 	"audio.h"
