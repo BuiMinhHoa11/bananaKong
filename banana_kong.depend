@@ -87,32 +87,32 @@
 	"gameloop.h"
 	"menu.h"
 
-1746577073 d:\projectbtl\bananakong\obstacle.h
+1746597990 d:\projectbtl\bananakong\obstacle.h
 	<SDL.h>
 	<vector>
 	<map>
 	"graphics.h"
 
-1746577073 d:\projectbtl\bananakong\player.h
+1746597990 d:\projectbtl\bananakong\player.h
 	"common_func.h"
 	"graphics.h"
 	"audio.h"
 	<vector>
 	<map>
 
-1745762942 d:\projectbtl\bananakong\platform.h
+1746597990 d:\projectbtl\bananakong\platform.h
 	<SDL.h>
 	<map>
 	<vector>
 	"obstacle.h"
 	"common_func.h"
 
-1746577073 source:d:\projectbtl\bananakong\obstacle.cpp
+1746597990 source:d:\projectbtl\bananakong\obstacle.cpp
 	"obstacle.h"
 	<cstdlib>
 	<cmath>
 
-1745762942 source:d:\projectbtl\bananakong\platform.cpp
+1746598140 source:d:\projectbtl\bananakong\platform.cpp
 	"platform.h"
 	<ctime>
 	<cstdlib>
@@ -126,7 +126,7 @@
 	<algorithm>
 	<random>
 
-1746577073 source:d:\projectbtl\bananakong\player.cpp
+1746598322 source:d:\projectbtl\bananakong\player.cpp
 	"player.h"
 	"obstacle.h"
 	"platform.h"
@@ -137,7 +137,7 @@
 
 1745181746 d:\projectbtl\bananakong\speed_manager.h
 
-1746577073 source:d:\projectbtl\bananakong\banana.cpp
+1746597990 source:d:\projectbtl\bananakong\banana.cpp
 	"banana.h"
 	<cmath>
 	<cstdlib>
@@ -146,7 +146,7 @@
 	<ctime>
 	<set>
 
-1746577073 d:\projectbtl\bananakong\banana.h
+1746597990 d:\projectbtl\bananakong\banana.h
 	"common_func.h"
 	"platform.h"
 	"graphics.h"
@@ -154,10 +154,10 @@
 	<vector>
 	<set>
 
-1746592759 source:d:\projectbtl\bananakong\gameloop.cpp
+1746598266 source:d:\projectbtl\bananakong\gameloop.cpp
 	"gameloop.h"
 
-1746592759 d:\projectbtl\bananakong\gameloop.h
+1746597388 d:\projectbtl\bananakong\gameloop.h
 	"graphics.h"
 	"player.h"
 	"obstacle.h"
@@ -174,19 +174,19 @@
 	"graphics.h"
 	"audio.h"
 
-1746590508 source:d:\projectbtl\bananakong\menu.cpp
+1746597388 source:d:\projectbtl\bananakong\menu.cpp
 	"menu.h"
 	"gameloop.h"
 	<SDL_ttf.h>
 	<cmath>
 	"common_func.h"
 
-1746571622 source:d:\projectbtl\bananakong\audio.cpp
+1746598252 source:d:\projectbtl\bananakong\audio.cpp
 	"audio.h"
 	<SDL.h>
 	<iostream>
 
-1746571622 d:\projectbtl\bananakong\audio.h
+1746598224 d:\projectbtl\bananakong\audio.h
 	<SDL_mixer.h>
 	<map>
 	<string>
