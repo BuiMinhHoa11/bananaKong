@@ -30,7 +30,6 @@ bool ObstacleManager::checkCollision(int centerX, int centerY, int radius) const
         int distX = centerX - obsCenterX;
         int distY = centerY - obsCenterY;
 
-        // Kiểm tra nếu Kong ở phía trên chướng ngại vật (cho phép đứng lên)
         if (obstacle.isPlatform) {
             int kongBottomY = centerY + radius;
             int obstacleTopY = collisionBox.y;
@@ -84,19 +83,6 @@ SDL_Rect ObstacleManager::adjustCollisionBox(const SDL_Rect& obsBox, ObstacleTyp
     return adjusted;
 }
 
-/*void ObstacleManager::renderDebugCollision(Graphics* graphics) const {
-    Uint8 r, g, b, a;
-    SDL_GetRenderDrawColor(graphics->getRenderer(), &r, &g, &b, &a);
-    SDL_SetRenderDrawColor(graphics->getRenderer(), 255, 0, 0, 128);
-
-    for (const auto& obstacle : obstacles) {
-        SDL_Rect collisionBox = adjustCollisionBox(obstacle.rect, obstacle.type);
-        SDL_RenderDrawRect(graphics->getRenderer(), &collisionBox);
-    }
-
-    SDL_SetRenderDrawColor(graphics->getRenderer(), r, g, b, a);
-}*/
-
 ObstacleType ObstacleManager::getRandomObstacleType() const {
     int r = rand() % 3;
     switch (r) {
@@ -130,7 +116,7 @@ void ObstacleManager::clear() {
     obstacles.clear();
 }
 
-void ObstacleManager::removeObstaclesNear(int x, int range) { // Thêm triển khai phương thức
+void ObstacleManager::removeObstaclesNear(int x, int range) {
     auto it = obstacles.begin();
     while (it != obstacles.end()) {
         int obstacleCenterX = it->rect.x + it->rect.w / 2;

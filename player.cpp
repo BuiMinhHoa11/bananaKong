@@ -85,10 +85,8 @@ void Player::update(float deltaTime, const std::vector<SDL_Rect>& platforms, Pla
     if (onGround) {
         if (state == RUN && velocityX == 0 && velocityY == 0) {
             state = IDLE;
-            // audioManager.playSound(SoundType::IDLE); // Đã comment vì chưa cần dùng
         } else if (state != IDLE) {
             state = RUN;
-            // Phát âm thanh RUN khi thay đổi trạng thái thành RUN
         }
         isClimbingDown = false;
     } else {
@@ -298,7 +296,7 @@ void Player::setState(PlayerState newState) {
     if (state != newState) {
         state = newState;
         if (state == DIE) {
-            audioManager.playSound(SoundType::DIE_EFFECT); // Phát hiệu ứng khi chết
+            audioManager.playSound(SoundType::DIE_EFFECT);
         }
     }
 }

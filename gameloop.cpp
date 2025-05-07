@@ -49,7 +49,6 @@ void GameLoop::handleEvents(SDL_Event& e, GameState& gameState) {
 
 void GameLoop::update(GameState& gameState, float deltaTime) {
     if (gameState == GameState::PLAYING) {
-        float difficulty = platformManager.getDifficulty();
 
         platformManager.update(deltaTime);
         obstacleManager.setDifficulty(platformManager.getDifficulty());
@@ -78,6 +77,7 @@ void GameLoop::update(GameState& gameState, float deltaTime) {
             float difficulty = platformManager.getDifficulty();
             int newFrameDelayMax = static_cast<int>(3.0f - (difficulty - 1.0f) * 0.2f);
             if (newFrameDelayMax < 1) newFrameDelayMax = 1;
+            lastFrameTime = SDL_GetTicks();
             animationUpdateTimer = 0.0f;
         }
 
@@ -89,9 +89,8 @@ void GameLoop::update(GameState& gameState, float deltaTime) {
                 kong.setOnGround(true);
             } else {
                 kong.setState(PlayerState::DIE);
-                audioManager.playSound(SoundType::DIE_EFFECT); // Phát hiệu ứng khi chết
+                audioManager.playSound(SoundType::DIE_EFFECT);
                 gameState = GameState::GAME_OVER;
-                // Cập nhật bestBananas khi trò chơi kết thúc
                 if (currentBananas > bestBananas) {
                     bestBananas = currentBananas;
                 }
@@ -114,9 +113,7 @@ void GameLoop::render(Graphics& graphics, GameState gameState, TTF_Font* font) {
     for (const auto& obs : obstacleManager.getObstacles()) {
         graphics.renderTexture(obs.texture, obs.rect.x, obs.rect.y);
     }
-    //obstacleManager.renderDebugCollision(&graphics);
     bananaManager.render();
-    //bananaManager.renderDebugCollision(graphics.getRenderer());
     kong.render(&graphics);
 
     if (gameState == GameState::PLAYING) {
@@ -127,6 +124,13 @@ void GameLoop::render(Graphics& graphics, GameState gameState, TTF_Font* font) {
         if (bananasTexture) {
             graphics.renderTexture(bananasTexture, 10, 40);
             SDL_DestroyTexture(bananasTexture);
+        }
+    } else if (gameState == GameState::GAME_OVER) {
+        SDL_Color white = {255, 255, 255, 255};
+        SDL_Rect size = {0, 0, 0, 0};
+        SDL_Texture* dummyTexture = createTextTexture(graphics.getRenderer(), "", font, white, size);
+        if (dummyTexture) {
+            SDL_DestroyTexture(dummyTexture);
         }
     }
 }

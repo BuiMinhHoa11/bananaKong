@@ -29,7 +29,7 @@ void AudioManager::loadSounds() {
     soundEffects[SoundType::CLIMB_DOWN] = Mix_LoadWAV("D:/projectBTL/bananakong/audio/sound_effect/climb_down.mp3");
     soundEffects[SoundType::SLIDE] = Mix_LoadWAV("D:/projectBTL/bananakong/audio/sound_effect/slide.mp3");
     soundEffects[SoundType::CLICK] = Mix_LoadWAV("D:/projectBTL/bananakong/audio/sound_effect/click.mp3");
-    soundEffects[SoundType::DIE_EFFECT] = Mix_LoadWAV("D:/projectBTL/bananakong/audio/sound_effect/die_effect.mp3"); // Thêm hiệu ứng chết
+    soundEffects[SoundType::DIE_EFFECT] = Mix_LoadWAV("D:/projectBTL/bananakong/audio/sound_effect/die_effect.mp3");
 
     backgroundMusic[MusicType::HOMEPLAY] = Mix_LoadMUS("D:/projectBTL/bananakong/audio/incidental_music/homeplay_music.mp3");
     backgroundMusic[MusicType::LOOP] = Mix_LoadMUS("D:/projectBTL/bananakong/audio/incidental_music/loop_music.mp3");

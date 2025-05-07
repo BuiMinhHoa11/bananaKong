@@ -1,9 +1,6 @@
 #ifndef PLATFORM_H
 #define PLATFORM_H
 
-#include <SDL.h>
-#include <map>
-#include <vector>
 #include "obstacle.h"
 #include "common_func.h"
 
@@ -62,7 +59,6 @@ private:
     void increaseDifficulty(float amount);
     int findValidYForGrass(int x, int kongHeight) const;
     bool isValidPositionForObstacle(int x, int y, int width, int height) const;
-    //void renderDebugCollision(Graphics* graphics, const Platform& platform);
 };
 
 #endif

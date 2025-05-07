@@ -106,7 +106,6 @@ int main(int argc, char* argv[]) {
             }
         }
 
-        // Cập nhật trạng thái đếm ngược trước khi render
         menu.updateReviveCountdown(gameState, menuState, isPaused);
 
         if (!isPaused && gameState == GameState::PLAYING) {

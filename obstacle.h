@@ -28,14 +28,13 @@ public:
     void update(float deltaTime, float scrollSpeed);
     void setDifficulty(float diff);
     bool checkCollision(int centerX, int centerY, int radius) const;
-    //void renderDebugCollision(Graphics* graphics) const;
     const std::vector<Obstacle>& getObstacles() const;
     void clear();
 
     void addObstacle(const Obstacle& obstacle);
     SDL_Texture* getTextureForType(ObstacleType type) const;
     ObstacleType getRandomObstacleType() const;
-    void removeObstaclesNear(int x, int range); // Thêm phương thức này
+    void removeObstaclesNear(int x, int range);
 
     SDL_Rect adjustCollisionBox(const SDL_Rect& obsBox, ObstacleType type) const;
 private:

@@ -1,9 +1,7 @@
 #ifndef AUDIO_H
 #define AUDIO_H
 
-#include <SDL_mixer.h>
-#include <map>
-#include <string>
+#include "common_func.h"
 
 enum class SoundType {
     COUNT_DOWN,

@@ -43,13 +43,12 @@ PlatformManager::PlatformManager(std::map<PlatformType, SDL_Texture*> textures, 
     scrollSpeed = 4.0f;
     difficulty = 1.0f;
     difficultyTimer = 0;
-    spawnTimer = 0.0f; // Biến để trì hoãn spawn platform đầu tiên
+    spawnTimer = 0.0f;
     difficultyIncreaseInterval = 25000;
     srand(static_cast<unsigned>(time(nullptr)));
 }
 
 void PlatformManager::update(float deltaTime) {
-    // Cập nhật thời gian spawn
     spawnTimer += deltaTime;
 
     for (auto& platform : platforms) {
@@ -65,7 +64,6 @@ void PlatformManager::update(float deltaTime) {
         platforms.end()
     );
 
-    // Chỉ spawn platform khi spawnTimer đạt 5 giây
     if (spawnTimer >= 5.0f && canSpawnPlatform()) {
         spawnPlatformPattern();
     }
@@ -109,7 +107,6 @@ void PlatformManager::increaseDifficulty(float amount) {
     float minDistance = 700.0f - t * 400.0f;
     if (minDistance < 300.0f) minDistance = 300.0f;
 
-    // Chỉ in thông báo khi độ khó tăng, bằng tiếng Anh
     std::cout << "Difficulty increased to: " << difficulty
               << ", Scroll Speed: " << scrollSpeed
               << ", Min Distance: " << minDistance << std::endl;
@@ -178,19 +175,9 @@ void PlatformManager::render(Graphics* graphics) {
     for (const auto& platform : platforms) {
         if (platform.active) {
             graphics->renderTexture(platform.texture, platform.rect.x, platform.rect.y);
-            //renderDebugCollision(graphics, platform);
         }
     }
 }
-
-/*void PlatformManager::renderDebugCollision(Graphics* graphics, const Platform& platform) {
-    Uint8 r, g, b, a;
-    SDL_GetRenderDrawColor(graphics->getRenderer(), &r, &g, &b, &a);
-    SDL_SetRenderDrawColor(graphics->getRenderer(), 0, 255, 0, 128);
-    SDL_Rect outlineRect = platform.rect;
-    SDL_RenderDrawRect(graphics->getRenderer(), &outlineRect);
-    SDL_SetRenderDrawColor(graphics->getRenderer(), r, g, b, a);
-}*/
 
 const std::vector<Platform>& PlatformManager::getPlatforms() const {
     return platforms;

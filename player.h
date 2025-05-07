@@ -3,8 +3,6 @@
 #include "common_func.h"
 #include "graphics.h"
 #include "audio.h"
-#include <vector>
-#include <map>
 
 class PlatformManager;
 

@@ -75,7 +75,7 @@ void PlatformManager::spawnLadderType1() {
                     newObstacle.rect = {obstacleX, obstacleY, obstacleWidth, obstacleHeight};
                     newObstacle.texture = obstacleTexture;
                     newObstacle.speed = scrollSpeed / 5.0f;
-                    newObstacle.isPlatform = true; // Cho phép đi lên
+                    newObstacle.isPlatform = true;
                     obstacleManager.addObstacle(newObstacle);
                 }
             }
@@ -128,7 +128,7 @@ void PlatformManager::spawnLadderType2() {
                             newObstacle.rect = {obstacleX, obstacleY, obstacleWidth, obstacleHeight};
                             newObstacle.texture = obstacleTexture;
                             newObstacle.speed = scrollSpeed / 5.0f;
-                            newObstacle.isPlatform = true; // Cho phép đi lên
+                            newObstacle.isPlatform = true;
                             obstacleManager.addObstacle(newObstacle);
                         }
                     }
@@ -188,7 +188,7 @@ void PlatformManager::spawnLadderType3() {
                     newObstacle.rect = {obstacleX, obstacleY, obstacleWidth, obstacleHeight};
                     newObstacle.texture = obstacleTexture;
                     newObstacle.speed = scrollSpeed / 5.0f;
-                    newObstacle.isPlatform = true; // Cho phép đi lên
+                    newObstacle.isPlatform = true;
                     obstacleManager.addObstacle(newObstacle);
                 }
             }
@@ -224,7 +224,7 @@ void PlatformManager::spawnGapType1() {
                     newObstacle.rect = {obstacleX, obstacleY, obstacleWidth, obstacleHeight};
                     newObstacle.texture = obstacleTexture;
                     newObstacle.speed = scrollSpeed / 5.0f;
-                    newObstacle.isPlatform = true; // Cho phép đi lên
+                    newObstacle.isPlatform = true;
                     obstacleManager.addObstacle(newObstacle);
                 }
             }
@@ -278,7 +278,7 @@ void PlatformManager::spawnGapType2() {
                             newObstacle.rect = {obstacleX, obstacleY, obstacleWidth, obstacleHeight};
                             newObstacle.texture = obstacleTexture;
                             newObstacle.speed = scrollSpeed / 5.0f;
-                            newObstacle.isPlatform = true; // Cho phép đi lên
+                            newObstacle.isPlatform = true;
                             obstacleManager.addObstacle(newObstacle);
                         }
                     }
@@ -349,7 +349,7 @@ void PlatformManager::spawnGapType3() {
                                 newObstacle.rect = {obstacleX, obstacleY, obstacleWidth, obstacleHeight};
                                 newObstacle.texture = obstacleTexture;
                                 newObstacle.speed = scrollSpeed / 5.0f;
-                                newObstacle.isPlatform = true; // Cho phép đi lên
+                                newObstacle.isPlatform = true;
                                 obstacleManager.addObstacle(newObstacle);
                             }
                         }

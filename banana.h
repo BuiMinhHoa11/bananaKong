@@ -3,10 +3,7 @@
 
 #include "common_func.h"
 #include "platform.h"
-#include "graphics.h" // Thêm include file graphics.h
-#include <map>
-#include <vector>
-#include <set>
+#include "graphics.h"
 
 class PlatformManager;
 class ObstacleManager;
@@ -42,7 +39,6 @@ public:
     void setScrollSpeed(float speed);
     void setDifficultyFactor(float difficulty);
     void clear();
-    //void renderDebugCollision(SDL_Renderer* renderer); // Thay đổi để nhận SDL_Renderer*
     bool checkObstacleCollision(const SDL_Rect& bananaRect, const ObstacleManager& obstacleMgr) const;
 
 private:
@@ -52,7 +48,7 @@ private:
     std::vector<SDL_Point> collectedPositions;
     const PlatformManager& platformManager;
     const ObstacleManager& obstacleManager;
-    Graphics& graphics; // Giữ tham chiếu đến Graphics
+    Graphics& graphics;
     float scrollSpeed;
     float spawnTimer;
     float spawnInterval;

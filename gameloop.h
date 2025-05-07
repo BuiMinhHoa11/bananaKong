@@ -26,7 +26,7 @@ public:
     int getCurrentBananas() const { return currentBananas; }
     int getTotalBananas() const { return totalBananas; }
     int getBestBananas() const { return bestBananas; }
-    int getLastGameBananas() const { return lastGameBananas; } // Thêm phương thức lấy điểm trận cuối
+    int getLastGameBananas() const { return lastGameBananas; }
 
 private:
     Player& kong;
@@ -43,7 +43,7 @@ private:
     int currentBananas;
     int totalBananas;
     int bestBananas;
-    int lastGameBananas; // Thêm biến lưu điểm trận cuối
+    int lastGameBananas;
 };
 
 #endif // GAMELOOP_H

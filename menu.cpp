@@ -62,16 +62,15 @@ Menu::Menu(Graphics& graphics, GameLoop& gameLoop, AudioManager& audioManager)
         SDL_Log("Failed to load record texture: %s", SDL_GetError());
     }
 
-    // Khởi tạo phông chữ
-    countdownFont = TTF_OpenFont("D:/projectBTL/bananakong/font/Gameplay.ttf", 200); // Cỡ chữ lớn
+    countdownFont = TTF_OpenFont("D:/projectBTL/bananakong/font/Gameplay.ttf", 200);
     if (!countdownFont) {
         SDL_Log("Failed to load countdown font: %s", TTF_GetError());
     }
-    reviveCountdownFont = TTF_OpenFont("D:/projectBTL/bananakong/font/Gameplay.ttf", 40); // Cỡ chữ nhỏ
+    reviveCountdownFont = TTF_OpenFont("D:/projectBTL/bananakong/font/Gameplay.ttf", 40);
     if (!reviveCountdownFont) {
         SDL_Log("Failed to load revive countdown font: %s", TTF_GetError());
     }
-    recordFont = TTF_OpenFont("D:/projectBTL/bananakong/font/Gameplay.ttf", 40); // Cỡ chữ cho Record Panel
+    recordFont = TTF_OpenFont("D:/projectBTL/bananakong/font/Gameplay.ttf", 40);
     if (!recordFont) {
         SDL_Log("Failed to load record font: %s", TTF_GetError());
     }
@@ -91,7 +90,6 @@ Menu::~Menu() {
     SDL_DestroyTexture(effectOffTexture);
     SDL_DestroyTexture(recordTexture);
 
-    // Giải phóng phông chữ
     if (countdownFont) {
         TTF_CloseFont(countdownFont);
         countdownFont = nullptr;
@@ -335,24 +333,20 @@ void Menu::render(Graphics& graphics, GameState gameState, MenuState menuState, 
             graphics.renderTexture(recordTexture, 300, 210);
             graphics.renderTexture(backTexture, 50, 50);
 
-            // Hiển thị điểm số trên Record Panel
             if (recordFont) {
                 SDL_Color white = {255, 255, 255, 255};
                 SDL_Rect size = {0, 0, 0, 0};
 
-                // Điểm cao nhất (Best Bananas)
                 std::string bestScoreText = "Best Score: " + std::to_string(gameLoop.getBestBananas());
                 SDL_Texture* bestScoreTexture = createTextTexture(graphics.getRenderer(), bestScoreText.c_str(), recordFont, white, size);
                 if (bestScoreTexture) {
-                    graphics.renderTexture(bestScoreTexture, 350, 300); // Vị trí: cách lề trái 50px, cách đỉnh 90px
+                    graphics.renderTexture(bestScoreTexture, 350, 300);
                     SDL_DestroyTexture(bestScoreTexture);
                 }
-
-                // Điểm hiện tại (Current Bananas) - Sử dụng lastGameBananas
                 std::string currentScoreText = "Current Score: " + std::to_string(gameLoop.getLastGameBananas());
                 SDL_Texture* currentScoreTexture = createTextTexture(graphics.getRenderer(), currentScoreText.c_str(), recordFont, white, size);
                 if (currentScoreTexture) {
-                    graphics.renderTexture(currentScoreTexture, 350, 360); // Cách dòng trên 60px
+                    graphics.renderTexture(currentScoreTexture, 350, 360);
                     SDL_DestroyTexture(currentScoreTexture);
                 }
             }
@@ -380,12 +374,10 @@ void Menu::render(Graphics& graphics, GameState gameState, MenuState menuState, 
             graphics.renderTexture(recordTexture, 300, 210);
             graphics.renderTexture(backTexture, 50, 50);
 
-            // Hiển thị điểm số trên Record Panel
             if (recordFont) {
                 SDL_Color white = {255, 255, 255, 255};
                 SDL_Rect size = {0, 0, 0, 0};
 
-                // Điểm cao nhất (Best Bananas)
                 std::string bestScoreText = "Best Score: " + std::to_string(gameLoop.getBestBananas());
                 SDL_Texture* bestScoreTexture = createTextTexture(graphics.getRenderer(), bestScoreText.c_str(), recordFont, white, size);
                 if (bestScoreTexture) {
@@ -393,7 +385,6 @@ void Menu::render(Graphics& graphics, GameState gameState, MenuState menuState, 
                     SDL_DestroyTexture(bestScoreTexture);
                 }
 
-                // Điểm hiện tại (Current Bananas) - Sử dụng lastGameBananas
                 std::string currentScoreText = "Current Score: " + std::to_string(gameLoop.getLastGameBananas());
                 SDL_Texture* currentScoreTexture = createTextTexture(graphics.getRenderer(), currentScoreText.c_str(), recordFont, white, size);
                 if (currentScoreTexture) {
@@ -412,7 +403,6 @@ void Menu::render(Graphics& graphics, GameState gameState, MenuState menuState, 
             float elapsedTime = (currentTime - reviveCountdownStartTime) / 1000.0f;
             int remainingTime = static_cast<int>(ceil(reviveCountdownValue - elapsedTime));
 
-            // Tạo texture cho revive countdown
             if (reviveCountdownFont) {
                 std::string text = std::to_string(remainingTime);
                 SDL_Color white = {255, 255, 255, 255};
@@ -441,7 +431,6 @@ void Menu::render(Graphics& graphics, GameState gameState, MenuState menuState, 
                 audioManager.playSound(SoundType::COUNT_DOWN);
             }
 
-            // Tạo texture cho countdown
             if (countdownFont) {
                 std::string text = std::to_string(countdownValue);
                 SDL_Color white = {255, 255, 255, 255};
