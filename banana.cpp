@@ -377,7 +377,7 @@ void BananaManager::clear() {
     collectedPositions.clear();
 }
 
-void BananaManager::renderDebugCollision(SDL_Renderer* renderer) {
+/*void BananaManager::renderDebugCollision(SDL_Renderer* renderer) {
     Uint8 r, g, b, a;
     SDL_GetRenderDrawColor(renderer, &r, &g, &b, &a);
 
@@ -390,4 +390,4 @@ void BananaManager::renderDebugCollision(SDL_Renderer* renderer) {
     }
 
     SDL_SetRenderDrawColor(renderer, r, g, b, a);
-}
+}*/
