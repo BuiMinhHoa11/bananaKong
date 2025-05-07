@@ -32,6 +32,8 @@
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
 		</Compiler>
+		<Unit filename="audio.cpp" />
+		<Unit filename="audio.h" />
 		<Unit filename="banana.cpp" />
 		<Unit filename="banana.h" />
 		<Unit filename="common_func.cpp" />
