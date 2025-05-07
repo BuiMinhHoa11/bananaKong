@@ -7,7 +7,7 @@ GameLoop::GameLoop(Graphics& graphics, Player& player, ObstacleManager& obstacle
     : kong(player), obstacleManager(obstacleManager), platformManager(platformManager),
       bananaManager(bananaManager), backgroundSky(backgroundSky), background(background),
       leafTop(leafTop), audioManager(audioManager), isSpaceHeld(false), lastFrameTime(SDL_GetTicks()),
-      animationUpdateTimer(0.0f), currentBananas(0), totalBananas(0), bestBananas(0) {}
+      animationUpdateTimer(0.0f), currentBananas(0), totalBananas(0), bestBananas(0), lastGameBananas(0) {}
 
 void GameLoop::handleEvents(SDL_Event& e, GameState& gameState) {
     int mouseX, mouseY;
@@ -132,7 +132,9 @@ void GameLoop::render(Graphics& graphics, GameState gameState, TTF_Font* font) {
 }
 
 void GameLoop::reset() {
-    // Cập nhật bestBananas trước khi reset currentBananas
+    // Lưu currentBananas vào lastGameBananas trước khi reset
+    lastGameBananas = currentBananas;
+    // Cập nhật bestBananas
     if (currentBananas > bestBananas) {
         bestBananas = currentBananas;
     }
