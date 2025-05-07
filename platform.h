@@ -62,7 +62,7 @@ private:
     void increaseDifficulty(float amount);
     int findValidYForGrass(int x, int kongHeight) const;
     bool isValidPositionForObstacle(int x, int y, int width, int height) const;
-    void renderDebugCollision(Graphics* graphics, const Platform& platform);
+    //void renderDebugCollision(Graphics* graphics, const Platform& platform);
 };
 
 #endif
