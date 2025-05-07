@@ -1,5 +1,5 @@
 #include "menu.h"
-#include "gameloop.h" // Thêm include này để có định nghĩa của GameLoop
+#include "gameloop.h"
 #include <SDL_ttf.h>
 
 Menu::Menu(Graphics& graphics, GameLoop& gameLoop, AudioManager& audioManager)
@@ -160,6 +160,18 @@ void Menu::handleEvents(SDL_Event& e, GameState& gameState, MenuState& menuState
                 stateHistory.push(menuState);
                 menuState = MenuState::OPTIONS;
                 audioManager.playSound(SoundType::CLICK);
+            } else if (mouseX >= 230 && mouseX <= 615 && mouseY >= 545 && mouseY <= 690) {
+                gameLoop.reset();
+                gameState = GameState::PLAYING;
+                menuState = MenuState::NONE;
+                menuVisible = false;
+                isPaused = false;
+                isOffButtonActive = true;
+                audioManager.playSound(SoundType::CLICK);
+                audioManager.playMusic(MusicType::LOOP);
+                while (!stateHistory.empty()) {
+                    stateHistory.pop();
+                }
             } else {
                 menuVisible = false;
                 menuState = MenuState::NONE;
@@ -219,6 +231,33 @@ void Menu::handleEvents(SDL_Event& e, GameState& gameState, MenuState& menuState
                 isOffButtonActive = true;
                 isReviveCountingDown = false;
                 audioManager.playSound(SoundType::CLICK);
+            }
+        }
+        if (menuState == MenuState::MENU && menuVisible) {
+            if (mouseX >= 645 && mouseX <= 750 && mouseY >= 240 && mouseY <= 360) {
+                gameState = GameState::HOMEPLAY;
+                menuState = MenuState::NONE;
+                menuVisible = false;
+                isPaused = false;
+                isOffButtonActive = true;
+                audioManager.playSound(SoundType::CLICK);
+                audioManager.playMusic(MusicType::HOMEPLAY);
+                gameLoop.reset();
+                while (!stateHistory.empty()) {
+                    stateHistory.pop();
+                }
+            } else if (mouseX >= 230 && mouseX <= 615 && mouseY >= 545 && mouseY <= 690) {
+                gameLoop.reset();
+                gameState = GameState::PLAYING;
+                menuState = MenuState::NONE;
+                menuVisible = false;
+                isPaused = false;
+                isOffButtonActive = true;
+                audioManager.playSound(SoundType::CLICK);
+                audioManager.playMusic(MusicType::LOOP);
+                while (!stateHistory.empty()) {
+                    stateHistory.pop();
+                }
             }
         }
     }
