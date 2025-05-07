@@ -1,14 +1,15 @@
 #ifndef GAMELOOP_H
 #define GAMELOOP_H
 
-#include "common_func.h"
 #include "graphics.h"
-#include "obstacle.h"
 #include "player.h"
+#include "obstacle.h"
 #include "platform.h"
 #include "banana.h"
-#include "menu.h" // Đảm bảo bao gồm menu.h để có GameState
 #include "audio.h"
+#include "menu.h"
+
+class ScrollingBackground;
 
 class GameLoop {
 public:
@@ -22,8 +23,6 @@ public:
     void reset();
     void revivePlayer();
 
-    int getDistance() const { return distance; }
-    int getBestDistance() const { return bestDistance; }
     int getCurrentBananas() const { return currentBananas; }
     int getTotalBananas() const { return totalBananas; }
     int getBestBananas() const { return bestBananas; }
@@ -37,13 +36,9 @@ private:
     ScrollingBackground& background;
     ScrollingBackground& leafTop;
     AudioManager& audioManager;
-
     bool isSpaceHeld;
     Uint32 lastFrameTime;
     float animationUpdateTimer;
-    float scoreTimer;
-    int distance;
-    int bestDistance;
     int currentBananas;
     int totalBananas;
     int bestBananas;
