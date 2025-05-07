@@ -7,8 +7,7 @@ GameLoop::GameLoop(Graphics& graphics, Player& player, ObstacleManager& obstacle
     : kong(player), obstacleManager(obstacleManager), platformManager(platformManager),
       bananaManager(bananaManager), backgroundSky(backgroundSky), background(background),
       leafTop(leafTop), audioManager(audioManager), isSpaceHeld(false), lastFrameTime(SDL_GetTicks()),
-      animationUpdateTimer(0.0f), scoreTimer(0.0f), distance(0), bestDistance(0),
-      currentBananas(0), totalBananas(0), bestBananas(0) {}
+      animationUpdateTimer(0.0f), currentBananas(0), totalBananas(0), bestBananas(0) {}
 
 void GameLoop::handleEvents(SDL_Event& e, GameState& gameState) {
     int mouseX, mouseY;
@@ -32,7 +31,6 @@ void GameLoop::handleEvents(SDL_Event& e, GameState& gameState) {
             }
         }
         if (gameState == GameState::GAME_OVER && e.key.keysym.sym == SDLK_r) {
-            distance = 0;
             currentBananas = 0;
             kong.setPosition(400, KONG_DRAW_Y_START);
             kong.setOnGround(true);
@@ -51,24 +49,12 @@ void GameLoop::handleEvents(SDL_Event& e, GameState& gameState) {
 
 void GameLoop::update(GameState& gameState, float deltaTime) {
     if (gameState == GameState::PLAYING) {
-        scoreTimer += deltaTime;
         float difficulty = platformManager.getDifficulty();
-
-        // Fix distance calculation: Use scroll speed to determine how far Kong travels
-        float scrollSpeed = platformManager.getScrollSpeed();
-        // Convert pixels to meters - assuming 100 pixels = 1 meter
-        float distanceIncrement = scrollSpeed * deltaTime * 0.01f;
-        distance += static_cast<int>(distanceIncrement * 100);
-
-        if (scoreTimer >= 1.0f) {
-            if (distance > bestDistance) bestDistance = distance;
-            scoreTimer -= 1.0f;
-        }
 
         platformManager.update(deltaTime);
         obstacleManager.setDifficulty(platformManager.getDifficulty());
-        obstacleManager.update(deltaTime, scrollSpeed);
-        bananaManager.setScrollSpeed(scrollSpeed);
+        obstacleManager.update(deltaTime, platformManager.getScrollSpeed());
+        bananaManager.setScrollSpeed(platformManager.getScrollSpeed());
         bananaManager.setDifficultyFactor(platformManager.getDifficulty());
         bananaManager.update(deltaTime);
 
@@ -83,9 +69,9 @@ void GameLoop::update(GameState& gameState, float deltaTime) {
         }
         kong.update(deltaTime, allPlatforms, platformManager);
 
-        backgroundSky.scroll(static_cast<int>(scrollSpeed * 0.4f));
-        background.scroll(static_cast<int>(scrollSpeed * 1.0f));
-        leafTop.scroll(static_cast<int>(scrollSpeed * 2.5f));
+        backgroundSky.scroll(static_cast<int>(platformManager.getScrollSpeed() * 0.4f));
+        background.scroll(static_cast<int>(platformManager.getScrollSpeed() * 1.0f));
+        leafTop.scroll(static_cast<int>(platformManager.getScrollSpeed() * 2.5f));
 
         animationUpdateTimer += deltaTime;
         if (animationUpdateTimer >= 1.0f) {
@@ -132,13 +118,6 @@ void GameLoop::render(Graphics& graphics, GameState gameState, TTF_Font* font) {
     if (gameState == GameState::PLAYING) {
         SDL_Color white = {255, 255, 255, 255};
         int textW, textH;
-        std::string distanceText = "Distance: " + std::to_string(distance) + "m";
-        SDL_Texture* distanceTexture = createTextTexture(graphics.getRenderer(), distanceText.c_str(), font, white, textW, textH);
-        if (distanceTexture) {
-            graphics.renderTexture(distanceTexture, 10, 10);
-            SDL_DestroyTexture(distanceTexture);
-        }
-
         std::string bananasText = "Bananas: " + std::to_string(currentBananas);
         SDL_Texture* bananasTexture = createTextTexture(graphics.getRenderer(), bananasText.c_str(), font, white, textW, textH);
         if (bananasTexture) {
@@ -149,7 +128,6 @@ void GameLoop::render(Graphics& graphics, GameState gameState, TTF_Font* font) {
 }
 
 void GameLoop::reset() {
-    distance = 0;
     currentBananas = 0;
     kong.setPosition(400, KONG_DRAW_Y_START);
     kong.setOnGround(true);
