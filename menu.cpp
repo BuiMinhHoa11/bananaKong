@@ -50,6 +50,10 @@ Menu::Menu(Graphics& graphics, GameLoop& gameLoop, AudioManager& audioManager)
     if (!effectOffTexture) {
         SDL_Log("Failed to load effect_off texture: %s", SDL_GetError());
     }
+    recordTexture = graphics.loadTexture("D:/projectBTL/bananakong/image/MENU/record.png");
+    if (!recordTexture) {
+        SDL_Log("Failed to load record texture: %s", SDL_GetError());
+    }
 }
 
 Menu::~Menu() {
@@ -64,6 +68,7 @@ Menu::~Menu() {
     SDL_DestroyTexture(musicOffTexture);
     SDL_DestroyTexture(effectOnTexture);
     SDL_DestroyTexture(effectOffTexture);
+    SDL_DestroyTexture(recordTexture);
 }
 
 void Menu::togglePause(GameState& gameState, MenuState& menuState, bool& isPaused) {
@@ -160,6 +165,10 @@ void Menu::handleEvents(SDL_Event& e, GameState& gameState, MenuState& menuState
                 stateHistory.push(menuState);
                 menuState = MenuState::OPTIONS;
                 audioManager.playSound(SoundType::CLICK);
+            } else if (mouseX >= 780 && mouseX <= 1200 && mouseY >= 580 && mouseY <= 720) {
+                stateHistory.push(menuState);
+                menuState = MenuState::NEW_PANEL;
+                audioManager.playSound(SoundType::CLICK);
             } else if (mouseX >= 230 && mouseX <= 615 && mouseY >= 545 && mouseY <= 690) {
                 gameLoop.reset();
                 gameState = GameState::PLAYING;
@@ -188,6 +197,10 @@ void Menu::handleEvents(SDL_Event& e, GameState& gameState, MenuState& menuState
             if (mouseX >= 780 && mouseX <= 1197 && mouseY >= 408 && mouseY <= 545) {
                 stateHistory.push(menuState);
                 menuState = MenuState::OPTIONS;
+                audioManager.playSound(SoundType::CLICK);
+            } else if (mouseX >= 780 && mouseX <= 1200 && mouseY >= 580 && mouseY <= 720) {
+                stateHistory.push(menuState);
+                menuState = MenuState::NEW_PANEL;
                 audioManager.playSound(SoundType::CLICK);
             } else if (mouseX >= 1447 && mouseX <= 1500 && mouseY >= 0 && mouseY <= 53 && !isOffButtonActive) {
                 togglePause(gameState, menuState, isPaused);
@@ -218,6 +231,28 @@ void Menu::handleEvents(SDL_Event& e, GameState& gameState, MenuState& menuState
                 audioManager.playSound(SoundType::CLICK);
             } else if (mouseX >= 805 && mouseX <= 1030 && mouseY >= 340 && mouseY <= 458) {
                 audioManager.setSoundEnabled(!audioManager.getSoundEnabled());
+                audioManager.playSound(SoundType::CLICK);
+            }
+        } else if (menuState == MenuState::NEW_PANEL) {
+            int backW, backH;
+            SDL_QueryTexture(backTexture, nullptr, nullptr, &backW, &backH);
+            if (mouseX >= 50 && mouseX <= 50 + backW && mouseY >= 50 && mouseY <= 50 + backH) {
+                if (!stateHistory.empty()) {
+                    auto prevState = stateHistory.top();
+                    stateHistory.pop();
+                    if (auto* prevMenuState = std::get_if<MenuState>(&prevState)) {
+                        menuState = *prevMenuState;
+                        menuVisible = true;
+                    } else if (auto* prevGameState = std::get_if<GameState>(&prevState)) {
+                        gameState = *prevGameState;
+                        menuState = MenuState::NONE;
+                        menuVisible = false;
+                    }
+                } else {
+                    gameState = GameState::HOMEPLAY;
+                    menuState = MenuState::NONE;
+                    menuVisible = false;
+                }
                 audioManager.playSound(SoundType::CLICK);
             }
         } else if (menuState == MenuState::REVIVE && gameState == GameState::GAME_OVER && isReviveCountingDown) {
@@ -273,6 +308,9 @@ void Menu::render(Graphics& graphics, GameState gameState, MenuState menuState, 
             graphics.renderTexture(backTexture, 50, 50);
             graphics.renderTexture(audioManager.getMusicEnabled() ? musicOnTexture : musicOffTexture, 458, 340);
             graphics.renderTexture(audioManager.getSoundEnabled() ? effectOnTexture : effectOffTexture, 805, 340);
+        } else if (menuState == MenuState::NEW_PANEL) {
+            graphics.renderTexture(recordTexture, 300, 210);
+            graphics.renderTexture(backTexture, 50, 50);
         }
     } else if (gameState == GameState::PLAYING || gameState == GameState::GAME_OVER) {
         if (menuState == MenuState::MENU && menuVisible) {
@@ -283,6 +321,9 @@ void Menu::render(Graphics& graphics, GameState gameState, MenuState menuState, 
             graphics.renderTexture(backTexture, 50, 50);
             graphics.renderTexture(audioManager.getMusicEnabled() ? musicOnTexture : musicOffTexture, 458, 340);
             graphics.renderTexture(audioManager.getSoundEnabled() ? effectOnTexture : effectOffTexture, 805, 340);
+        } else if (menuState == MenuState::NEW_PANEL) {
+            graphics.renderTexture(recordTexture, 300, 210);
+            graphics.renderTexture(backTexture, 50, 50);
         } else if (menuState == MenuState::REVIVE && gameState == GameState::GAME_OVER && isReviveCountingDown) {
             int reviveW, reviveH;
             SDL_QueryTexture(reviveTexture, nullptr, nullptr, &reviveW, &reviveH);
