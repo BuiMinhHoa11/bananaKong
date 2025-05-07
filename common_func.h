@@ -27,6 +27,6 @@ void quitSDL(SDL_Window* window, SDL_Renderer* renderer);
 void waitUntilKeyPressed();
 
 void initTTF();
-SDL_Texture* createTextTexture(SDL_Renderer* renderer, const char* text, TTF_Font* font, SDL_Color color, int& width, int& height);
+SDL_Texture* createTextTexture(SDL_Renderer* renderer, const char* text, TTF_Font* font, SDL_Color color, SDL_Rect& size);
 
 #endif // COMMON_FUNC__H_
