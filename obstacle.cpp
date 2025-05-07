@@ -84,7 +84,7 @@ SDL_Rect ObstacleManager::adjustCollisionBox(const SDL_Rect& obsBox, ObstacleTyp
     return adjusted;
 }
 
-void ObstacleManager::renderDebugCollision(Graphics* graphics) const {
+/*void ObstacleManager::renderDebugCollision(Graphics* graphics) const {
     Uint8 r, g, b, a;
     SDL_GetRenderDrawColor(graphics->getRenderer(), &r, &g, &b, &a);
     SDL_SetRenderDrawColor(graphics->getRenderer(), 255, 0, 0, 128);
@@ -95,7 +95,7 @@ void ObstacleManager::renderDebugCollision(Graphics* graphics) const {
     }
 
     SDL_SetRenderDrawColor(graphics->getRenderer(), r, g, b, a);
-}
+}*/
 
 ObstacleType ObstacleManager::getRandomObstacleType() const {
     int r = rand() % 3;
