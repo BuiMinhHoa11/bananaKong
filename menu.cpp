@@ -1,18 +1,35 @@
 #include "menu.h"
 #include "gameloop.h"
-#include <SDL_ttf.h>
 #include <cmath>
-#include "common_func.h"
 
 Menu::Menu(Graphics& graphics, GameLoop& gameLoop, AudioManager& audioManager)
-    : gameLoop(gameLoop), audioManager(audioManager), menuVisible(false),
-      isOffButtonActive(true), isCountingDown(false), countdownValue(0),
-      isReviveCountingDown(false), reviveCountdownValue(5.0f),
-      countdownFont(nullptr), reviveCountdownFont(nullptr), recordFont(nullptr),
-      homeplayTexture(nullptr), menuTexture(nullptr), offTexture(nullptr),
-      onTexture(nullptr), optionsTexture(nullptr), backTexture(nullptr),
-      reviveTexture(nullptr), musicOnTexture(nullptr), musicOffTexture(nullptr),
-      effectOnTexture(nullptr), effectOffTexture(nullptr), recordTexture(nullptr) {
+    : gameLoop(gameLoop), audioManager(audioManager) {
+    // Khởi tạo tất cả các thành viên trong phần thân constructor
+    homeplayTexture = nullptr;
+    menuTexture = nullptr;
+    offTexture = nullptr;
+    onTexture = nullptr;
+    optionsTexture = nullptr;
+    backTexture = nullptr;
+    reviveTexture = nullptr;
+    musicOnTexture = nullptr;
+    musicOffTexture = nullptr;
+    effectOnTexture = nullptr;
+    effectOffTexture = nullptr;
+    recordTexture = nullptr;
+    countdownFont = nullptr;
+    reviveCountdownFont = nullptr;
+    recordFont = nullptr;
+    menuVisible = false;
+    isOffButtonActive = true;
+    isCountingDown = false;
+    countdownValue = 0;
+    countdownStartTime = 0;
+    isReviveCountingDown = false;
+    reviveCountdownValue = 5.0f;
+    reviveCountdownStartTime = 0;
+
+    // Khởi tạo các texture
     homeplayTexture = graphics.loadTexture("D:/projectBTL/bananakong/image/MENU/homeplay.png");
     if (!homeplayTexture) {
         SDL_Log("Failed to load homeplay texture: %s", SDL_GetError());
@@ -62,6 +79,7 @@ Menu::Menu(Graphics& graphics, GameLoop& gameLoop, AudioManager& audioManager)
         SDL_Log("Failed to load record texture: %s", SDL_GetError());
     }
 
+    // Khởi tạo các font
     countdownFont = TTF_OpenFont("D:/projectBTL/bananakong/font/Gameplay.ttf", 200);
     if (!countdownFont) {
         SDL_Log("Failed to load countdown font: %s", TTF_GetError());
@@ -433,9 +451,9 @@ void Menu::render(Graphics& graphics, GameState gameState, MenuState menuState, 
 
             if (countdownFont) {
                 std::string text = std::to_string(countdownValue);
-                SDL_Color white = {255, 255, 255, 255};
+                SDL_Color black = {0, 0, 0, 255};
                 SDL_Rect size = {0, 0, 0, 0};
-                SDL_Texture* countdownTexture = createTextTexture(graphics.getRenderer(), text.c_str(), countdownFont, white, size);
+                SDL_Texture* countdownTexture = createTextTexture(graphics.getRenderer(), text.c_str(), countdownFont, black, size);
                 if (countdownTexture) {
                     SDL_Rect dstRect = {800 - size.w / 2, 400 - size.h / 2, size.w, size.h};
                     graphics.renderTexture(countdownTexture, dstRect.x, dstRect.y);

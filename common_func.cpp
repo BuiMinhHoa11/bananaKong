@@ -58,13 +58,11 @@ SDL_Texture* createTextTexture(SDL_Renderer* renderer, const char* text, TTF_Fon
 
     SDL_Surface* surface = TTF_RenderText_Solid(font, text, color);
     if (!surface) {
-        SDL_Log("Failed to create text surface: %s", TTF_GetError());
         return nullptr;
     }
 
     SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
     if (!texture) {
-        SDL_Log("Failed to create text texture: %s", SDL_GetError());
         SDL_FreeSurface(surface);
         return nullptr;
     }

@@ -20,15 +20,15 @@ const int KONGRUN_FRAMES = sizeof(KONGRUN_CLIPS)/sizeof(int)/4;
 
 const char* KONGFLY_SPRITE_FILE = "D:/projectBTL/bananakong/image/CHAR/kong_fly.png";
 const int KONGFLY_CLIPS[][4] = {
-    {0, 0, 200, 149} // 1 frame
+    {0, 0, 200, 149}
 };
 const int KONGFLY_FRAMES = sizeof(KONGFLY_CLIPS)/sizeof(int)/4;
 
-const char* KONGDIE_SPRITE_FILE = "D:/projectBTL/bananakong/image/CHAR/kong_die.png"; // Thêm cho DIE
+const char* KONGDIE_SPRITE_FILE = "D:/projectBTL/bananakong/image/CHAR/kong_die.png";
 const int KONGDIE_CLIPS[][4] = {
-    {0, 0, 156, 117} // 1 frame, giả định kích thước tương tự
+    {0, 0, 156, 117}
 };
-const int KONGDIE_FRAMES = sizeof(KONGDIE_CLIPS)/sizeof(int)/4; // Thêm cho DIE
+const int KONGDIE_FRAMES = sizeof(KONGDIE_CLIPS)/sizeof(int)/4;
 
 Graphics::Graphics(SDL_Renderer* renderer) : renderer(renderer) {}
 

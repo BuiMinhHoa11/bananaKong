@@ -13,7 +13,7 @@ Banana::Banana(SDL_Texture* tex, BananaType t, int x, int y) {
     int width, height;
     if (SDL_QueryTexture(texture, NULL, NULL, &width, &height) != 0) {
         SDL_Log("Failed to query texture dimensions: %s", SDL_GetError());
-        width = 50; // Kích thước mặc định nếu thất bại
+        width = 50;
         height = 50;
     }
     rect.w = width;
