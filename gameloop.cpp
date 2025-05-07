@@ -89,7 +89,7 @@ void GameLoop::update(GameState& gameState, float deltaTime) {
                 kong.setOnGround(true);
             } else {
                 kong.setState(PlayerState::DIE);
-                audioManager.playSound(SoundType::DIE);
+                audioManager.playSound(SoundType::DIE_EFFECT); // Phát hiệu ứng khi chết
                 gameState = GameState::GAME_OVER;
                 // Cập nhật bestBananas khi trò chơi kết thúc
                 if (currentBananas > bestBananas) {
@@ -114,9 +114,9 @@ void GameLoop::render(Graphics& graphics, GameState gameState, TTF_Font* font) {
     for (const auto& obs : obstacleManager.getObstacles()) {
         graphics.renderTexture(obs.texture, obs.rect.x, obs.rect.y);
     }
-    obstacleManager.renderDebugCollision(&graphics);
+    //obstacleManager.renderDebugCollision(&graphics);
     bananaManager.render();
-    bananaManager.renderDebugCollision(graphics.getRenderer());
+    //bananaManager.renderDebugCollision(graphics.getRenderer());
     kong.render(&graphics);
 
     if (gameState == GameState::PLAYING) {
@@ -132,9 +132,7 @@ void GameLoop::render(Graphics& graphics, GameState gameState, TTF_Font* font) {
 }
 
 void GameLoop::reset() {
-    // Lưu currentBananas vào lastGameBananas trước khi reset
     lastGameBananas = currentBananas;
-    // Cập nhật bestBananas
     if (currentBananas > bestBananas) {
         bestBananas = currentBananas;
     }
