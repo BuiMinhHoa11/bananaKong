@@ -53,6 +53,9 @@ private:
     SDL_Texture* effectOnTexture;   // Texture cho nút Effect bật
     SDL_Texture* effectOffTexture;  // Texture cho nút Effect tắt
     SDL_Texture* recordTexture;     // Texture cho bảng Record
+    TTF_Font* countdownFont;       // Phông chữ cho countdown (cỡ lớn)
+    TTF_Font* reviveCountdownFont; // Phông chữ cho revive countdown (cỡ nhỏ)
+    TTF_Font* recordFont;          // Phông chữ cho Record Panel
     bool menuVisible;
     bool isOffButtonActive;
     bool isCountingDown;
@@ -62,7 +65,6 @@ private:
     float reviveCountdownValue;
     Uint32 reviveCountdownStartTime;
     std::stack<std::variant<GameState, MenuState>> stateHistory;
-    SDL_Texture* createCountdownTexture(Graphics& graphics, int value);
 };
 
 #endif // MENU_H
