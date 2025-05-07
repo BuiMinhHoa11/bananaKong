@@ -178,19 +178,19 @@ void PlatformManager::render(Graphics* graphics) {
     for (const auto& platform : platforms) {
         if (platform.active) {
             graphics->renderTexture(platform.texture, platform.rect.x, platform.rect.y);
-            renderDebugCollision(graphics, platform);
+            //renderDebugCollision(graphics, platform);
         }
     }
 }
 
-void PlatformManager::renderDebugCollision(Graphics* graphics, const Platform& platform) {
+/*void PlatformManager::renderDebugCollision(Graphics* graphics, const Platform& platform) {
     Uint8 r, g, b, a;
     SDL_GetRenderDrawColor(graphics->getRenderer(), &r, &g, &b, &a);
     SDL_SetRenderDrawColor(graphics->getRenderer(), 0, 255, 0, 128);
     SDL_Rect outlineRect = platform.rect;
     SDL_RenderDrawRect(graphics->getRenderer(), &outlineRect);
     SDL_SetRenderDrawColor(graphics->getRenderer(), r, g, b, a);
-}
+}*/
 
 const std::vector<Platform>& PlatformManager::getPlatforms() const {
     return platforms;
