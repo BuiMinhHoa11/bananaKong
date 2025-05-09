@@ -1,7 +1,7 @@
 Em chào các thầy, cô.
 Tên em là: Bùi Minh Hòa  
 MSV: 24022791
-Ngưỡng điểm xứng đáng: 9
+Ngưỡng điểm xứng đáng: 8.5
 
 Em xin trình bày về mục tiêu của project:
  - Tạo ra được 1 trò chơi chạy vô tận 
