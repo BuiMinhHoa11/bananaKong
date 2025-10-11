@@ -1,6 +1,6 @@
 Em chào các thầy, cô.
 Tên em là: Bùi Minh Hòa  
-MSV: 24022791
+MSV: 
 Ngưỡng điểm xứng đáng: 9
 
 Em xin trình bày về mục tiêu của project:
